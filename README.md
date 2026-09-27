@@ -16,7 +16,14 @@ Aplicativo web (um único `index.html`, sem instalação) para controlar a fresa
    - **Segmentos extras** (Editar/Excluir) aparecem só aqui e somam na massa necessária.
    - No final: **saldo** = disponível − necessária. Falta → alerta para acionar a usina. Sobra → metros a mais a fresar = saldo ÷ (espessura × largura × densidade).
 
-Um aviso fixo no topo mostra a situação do acompanhamento em todos os painéis.
+Um aviso fixo no topo mostra o saldo do painel aberto, sempre a partir da mesma massa usinada:
+- Fresagem: usinado − fresado.
+- RDO: usinado − apontado no RDO.
+- Acompanhamento: usinado − acumulado até o último caminhão + sobra desse caminhão − a aplicar.
+
+Amarelo = sobra, vermelho = falta, verde = dentro da tolerância.
+
+No Acompanhamento, o quadro de caminhões mostra o total usinado, o nº e a placa do último aplicado e os restantes a aplicar (total − nº do último, +1 se o último teve sobra).
 
 ## Dados
 

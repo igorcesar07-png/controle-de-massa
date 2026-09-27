@@ -181,6 +181,16 @@ main{max-width:1100px;margin:auto;padding:14px 12px 8px}
 .dline>.dif{justify-self:end}
 
 /* Acompanhamento */
+.truckbox{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:#e3ecf2;border-radius:12px;padding:12px}
+.truckbox div{font-size:12px;color:var(--muted);font-weight:600;min-width:0}
+.truckbox b{display:block;font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums;margin-top:2px}
+.truckbox b small{font-size:12px;font-weight:600;color:var(--muted);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.truckbox .rest{background:var(--navy2);border-radius:10px;padding:8px 10px;color:#c3d6e0}
+.truckbox .rest b{color:#fff}
+.truckbox .rest b small{color:#c3d6e0}
+.truckbox .msg{grid-column:1/-1;font-size:13px;color:#3c5566;font-weight:500}
+.truckbox .msg b{display:inline;font-size:inherit;margin:0}
+.truckbox .msg.err{color:var(--bad);font-weight:700}
 .dispbox{background:var(--navy2);color:#fff;border-radius:var(--radius);padding:16px;margin-bottom:14px}
 .dispbox .l{font-size:13px;color:#c3d6e0;font-weight:600}
 .dispbox .v{font-size:32px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.5px;margin:4px 0}
@@ -279,7 +289,7 @@ details.notes p{font-size:14px;color:var(--muted);line-height:1.55;margin:8px 0 
     <div class="brand"><i></i><b id="brandTitle">CONTROLE DE MASSA</b></div>
     <button class="iconbtn" id="menuBtn" aria-label="Abrir menu" aria-haspopup="dialog">⋯<span class="dot"></span></button>
   </div>
-  <button id="massAlert" class="alert" data-state="invalid" aria-live="polite" aria-atomic="true" title="Abrir acompanhamento">
+  <button id="massAlert" class="alert" data-state="invalid" aria-live="polite" aria-atomic="true" >
     <span class="in">
       <span class="ico" id="alertIcon" aria-hidden="true">!</span>
       <span class="txt"><span class="kind" id="alertKind">Verificar</span><span class="amount" id="alertAmount" style="display:block">Complete os dados</span></span>
@@ -359,11 +369,14 @@ details.notes p{font-size:14px;color:var(--muted);line-height:1.55;margin:8px 0 
       <h2>Caminhões e massa</h2>
       <div class="fields">
         <div class="field full"><label for="aUsinado">Total usinado</label><div class="unit" data-unit="t"><input id="aUsinado" type="text" readonly tabindex="-1"></div><small>Preenchido automaticamente pela Fresagem</small></div>
+        <div class="field full"><label for="trucksTotal">Total de caminhões usinados</label><input id="trucksTotal" type="number" inputmode="numeric" min="0" step="1" placeholder="Ex.: 18"></div>
+        <div class="field"><label for="truckNo">Nº do último caminhão aplicado</label><input id="truckNo" type="number" inputmode="numeric" min="0" step="1" placeholder="Ex.: 12"><small>Posição na sequência (1º, 2º…)</small></div>
         <div class="field"><label for="plate">Placa do último caminhão aplicado</label><input id="plate" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC1D23" maxlength="10"></div>
         <div class="field"><label for="accum">Total acumulado até esse caminhão</label><div class="unit" data-unit="t"><input id="accum" type="number" inputmode="decimal" min="0" step="0.01" required></div></div>
         <div class="field full"><span class="lbl">Esse caminhão foi aplicado por inteiro?</span><div class="segctl" role="radiogroup" aria-label="Caminhão aplicado por inteiro"><label><input type="radio" name="truckFull" value="1">Sim</label><label><input type="radio" name="truckFull" value="0">Não</label></div></div>
         <div class="field full" id="leftField"><label for="truckLeft">Sobra no caminhão</label><div class="unit" data-unit="t"><input id="truckLeft" type="number" inputmode="decimal" min="0" step="0.01"></div></div>
-        <div class="field full"><label for="tolerance">Tolerância</label><div class="unit" data-unit="%"><input id="tolerance" type="number" inputmode="decimal" min="0" max="50" step="0.1" required></div><small>Saldo até esse % do total usinado conta como equilibrado</small></div>
+        <div class="field full"><div class="truckbox" id="truckBox"></div></div>
+        <div class="field full"><label for="tolerance">Tolerância</label><div class="unit" data-unit="%"><input id="tolerance" type="number" inputmode="decimal" min="0" max="50" step="0.1" required></div><small>Saldo até esse % da massa usinada conta como equilibrado (alerta verde)</small></div>
       </div>
     </section>
 
@@ -443,12 +456,12 @@ details.notes p{font-size:14px;color:var(--muted);line-height:1.55;margin:8px 0 
 const STORE='controle-massa-v2';
 const example=[['230+600',230,3.72,.08],['230+830',30,3.75,.1],['230+860',18,3.85,.08],['230+878',59,3.72,.06],['230+937',50,3.7,.1],['231+000',120,3.7,.1],['231+340',260,3.55,.08],['231+600',30,3.53,.06],['231+630',30,3.55,.075]];
 const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4);
-function emptyState(){return {version:3,job:'',density:2.528,usinado:0,plate:'',accum:0,truckFull:true,truckLeft:0,tolerance:0,planWidth:3.5,planThickness:0.05,fres:[],rdo:{},applied:{},extras:[]}}
+function emptyState(){return {version:3,job:'',density:2.528,usinado:0,plate:'',accum:0,trucksTotal:NaN,truckNo:NaN,truckFull:true,truckLeft:0,tolerance:0,planWidth:3.5,planThickness:0.05,fres:[],rdo:{},applied:{},extras:[]}}
 function exampleState(){
   const s=emptyState();
   s.fres=example.map(r=>({id:uid(),start:r[0],end:'',direction:'Crescente',lane:1,length:r[1],width:r[2],thickness:r[3],sequential:false}));
   s.fres.forEach((f,i)=>{s.rdo[f.id]={over:{},obs:''};if(i<6)s.applied[f.id]=true});
-  Object.assign(s,{usinado:631.76,plate:'ABC1D23',accum:410,truckFull:false,truckLeft:4.5,planWidth:3.55});
+  Object.assign(s,{usinado:631.76,plate:'ABC1D23',accum:410,trucksTotal:18,truckNo:12,truckFull:false,truckLeft:4.5,planWidth:3.55});
   return s;
 }
 let S,dirty=false,tab='fres',lastState='';
@@ -509,7 +522,13 @@ function calc(){
  const state=!ok?'invalid':Math.abs(saldo)<=limit?'balanced':saldo>0?'surplus':'shortage';
  const planOk=pos(S.planWidth)&&pos(S.planThickness);
  const meters=planOk&&dOk&&saldo>0?saldo/(S.planThickness*S.planWidth*d):null;
- return {d,dOk,U,uOk,fresAllOk,rdoAllOk,extrasOk,fVol,fMass,fLen,rVol,rMass,edited,pendFres,pendExtra,pendingCount:pendFres.length+pendExtra.length,need,left,disp,accOk,leftOk,ok,saldo,state,meters,planOk};
+ const tIntOk=n=>Number.isInteger(n)&&n>=0;
+ const trucksOk=tIntOk(S.trucksTotal)&&tIntOk(S.truckNo)&&S.truckNo<=S.trucksTotal;
+ const truckExtra=!S.truckFull&&leftOk&&left>0?1:0;
+ const trucksLeft=trucksOk?S.trucksTotal-S.truckNo+truckExtra:null;
+ const stOf=(ok,x)=>!ok?'invalid':Math.abs(x)<=limit?'balanced':x>0?'surplus':'shortage';
+ const panel={fres:{saldo:U-fMass,state:stOf(dOk&&uOk&&fresAllOk&&S.fres.length>0,U-fMass)},rdo:{saldo:U-rMass,state:stOf(dOk&&uOk&&rdoAllOk&&S.fres.length>0,U-rMass)},acomp:{saldo,state}};
+ return {panel,trucksOk,truckExtra,trucksLeft,d,dOk,U,uOk,fresAllOk,rdoAllOk,extrasOk,fVol,fMass,fLen,rVol,rMass,edited,pendFres,pendExtra,pendingCount:pendFres.length+pendExtra.length,need,left,disp,accOk,leftOk,ok,saldo,state,meters,planOk};
 }
 
 /* ======================= Resumo (linhas) ======================= */
@@ -607,7 +626,11 @@ function renderAcomp(t){
  $('leftField').hidden=!!S.truckFull;
  const dOk=t.uOk&&t.accOk&&t.leftOk;
  $('aDisp').textContent=dOk?fmt(t.disp)+' t':'—';
- $('aDispF').innerHTML=dOk?`${fmt(t.U)} usinado − ${fmt(S.accum)} acumulado${S.plate?` até <b>${esc(S.plate)}</b>`:''}${S.truckFull?' · caminhão aplicado por inteiro':` + ${fmt(t.left)} sobra do caminhão`}`:'Preencha o total usinado (Fresagem), o acumulado e a sobra.';
+ $('aDispF').innerHTML=dOk?`${fmt(t.U)} usinado − ${fmt(S.accum)} acumulado até o ${Number.isFinite(S.truckNo)?S.truckNo+'º caminhão':'último caminhão'}${S.plate?` (<b>${esc(S.plate)}</b>)`:''}${S.truckFull?' · caminhão aplicado por inteiro':` + ${fmt(t.left)} sobra do caminhão`}`:'Preencha o total usinado (Fresagem), o acumulado e a sobra.';
+ const ord=n=>Number.isFinite(n)?n+'º':'—';
+ const tb=$('truckBox');
+ const tMsg=!Number.isFinite(S.trucksTotal)||!Number.isFinite(S.truckNo)?'<div class="msg">Informe o total de caminhões usinados e o nº do último aplicado.</div>':!t.trucksOk?'<div class="msg err">O nº do último caminhão aplicado não pode ser maior que o total usinado (use números inteiros).</div>':`<div class="msg">${S.trucksTotal} usinados − ${S.truckNo} aplicados${t.truckExtra?' + 1 (último caminhão com sobra)':''} = <b>${t.trucksLeft}</b> a aplicar</div>`;
+ tb.innerHTML=`<div>Usinados<b>${Number.isFinite(S.trucksTotal)?S.trucksTotal:'—'}</b></div><div>Último aplicado<b>${ord(S.truckNo)}<small>${esc(S.plate||'sem placa')}</small></b></div><div class="rest">Restantes a aplicar<b>${t.trucksLeft!==null?t.trucksLeft:'—'}${t.truckExtra&&t.trucksLeft!==null?'<small>+1 com sobra</small>':''}</b></div>${tMsg}`;
  const pend=[...t.pendFres.map(s=>sRow(s,S.fres.indexOf(s)+1,{toggle:true})),...t.pendExtra.map(s=>sRow(s,'E'+(S.extras.indexOf(s)+1),{toggle:true,actions:true,kind:'extra',extra:true}))];
  $('aPend').innerHTML=pend.join('')||'<div class="empty">Nenhum segmento a aplicar.</div>';
  $('aPendCount').textContent=`(${t.pendingCount})`;
@@ -632,14 +655,23 @@ function renderAcomp(t){
  if(mo){mo.textContent=t.meters!==null?fmt(t.meters,0):'—';ms.textContent=t.meters!==null?`${fmt(t.saldo)} t ÷ (${fmtN(S.planThickness)} m × ${fmtN(S.planWidth)} m × ${fmtN(t.d)} t/m³)`:'Informe largura e espessura.'}
 }
 function updateAlert(t){
- const a=$('massAlert');let ico='!',kind='Verificar',amt='Complete os dados',side='';
- if(t.state==='shortage'){kind='Falta CBUQ · acionar usina';amt='−'+fmt(-t.saldo)+' <small>t</small>';side=`${t.pendingCount}<small>a aplicar</small>`}
- else if(t.state==='surplus'){ico='▲';kind='Sobra de CBUQ · fresar mais';amt='+'+fmt(t.saldo)+' <small>t</small>';side=t.meters!==null?`${fmt(t.meters,0)} m<small>a fresar</small>`:''}
- else if(t.state==='balanced'){ico='✓';kind='Massa suficiente';amt=(t.saldo>=0?'+':'−')+fmt(Math.abs(t.saldo))+' <small>t</small>';side=`${t.pendingCount}<small>a aplicar</small>`}
- a.dataset.state=t.state;$('alertIcon').textContent=ico;$('alertKind').textContent=kind;$('alertAmount').innerHTML=amt;$('alertSide').innerHTML=side;
- a.classList.toggle('urgent',t.state==='shortage');a.setAttribute('aria-label',kind+'. '+$('alertAmount').textContent);
- if(lastState&&t.state!==lastState){a.classList.remove('flash');void a.offsetWidth;a.classList.add('flash');if(t.state==='shortage'&&navigator.vibrate)navigator.vibrate([150,80,150])}
- lastState=t.state;$('tabBadge').classList.toggle('on',t.state==='shortage');
+ // Cada painel calcula o seu saldo: usinado − (fresado | apontado no RDO | acumulado − sobra + a aplicar)
+ const a=$('massAlert'),P=t.panel[tab]||t.panel.acomp,st=P.state,x=P.saldo;
+ const name={fres:'Fresagem',rdo:'RDO aplicação',acomp:'Acompanhamento'}[tab];
+ const sig=(x>0?'+':x<0?'−':'')+fmt(Math.abs(x))+' <small>t</small>';
+ let ico='!',kind=name+' · verificar',amt='Complete os dados',side='';
+ if(st!=='invalid'){
+  amt=sig;ico=st==='shortage'?'▼':st==='surplus'?'▲':'✓';
+  if(tab==='fres'){kind=`Fresagem · ${st==='shortage'?'falta CBUQ':st==='surplus'?'sobra CBUQ':'equilibrado'}`;side=`${fmt(t.fMass)} t<small>fresado</small>`}
+  else if(tab==='rdo'){kind=`RDO · ${st==='shortage'?'falta CBUQ':st==='surplus'?'sobra CBUQ':'equilibrado'}`;side=`${fmt(t.rMass)} t<small>apontado</small>`}
+  else{kind=st==='shortage'?'Falta CBUQ · acionar usina':st==='surplus'?'Sobra de CBUQ · fresar mais':'Massa suficiente';side=st==='surplus'&&t.meters!==null?`${fmt(t.meters,0)} m<small>a fresar</small>`:`${t.pendingCount}<small>a aplicar</small>`}
+ }
+ a.dataset.state=st;$('alertIcon').textContent=ico;$('alertKind').textContent=kind;$('alertAmount').innerHTML=amt;$('alertSide').innerHTML=side;
+ a.title=`Usinado ${fmt(t.U)} t − ${tab==='fres'?'fresado':tab==='rdo'?'apontado no RDO':'acumulado + sobra − a aplicar'}`;
+ a.classList.toggle('urgent',tab==='acomp'&&st==='shortage');a.setAttribute('aria-label',kind+'. '+$('alertAmount').textContent);
+ const key=tab+':'+st;
+ if(lastState&&lastState.split(':')[0]===tab&&key!==lastState){a.classList.remove('flash');void a.offsetWidth;a.classList.add('flash');if(st==='shortage'&&navigator.vibrate)navigator.vibrate([150,80,150])}
+ lastState=key;$('tabBadge').classList.toggle('on',t.panel.acomp.state==='shortage');
 }
 function renderPrint(t){
  const D=n=>fmt(n);
@@ -743,7 +775,7 @@ function normalize(d){
  out.fres=d.fres.map(clean);out.job=typeof d.job==='string'?d.job:'';out.density=d.density;
  const num=(k,def)=>Number.isFinite(d[k])?d[k]:def;
  out.usinado=d.version===2?num('received',0):num('usinado',0);
- ['accum','truckLeft','tolerance','planWidth','planThickness'].forEach(k=>out[k]=num(k,out[k]));
+ ['accum','truckLeft','tolerance','planWidth','planThickness','trucksTotal','truckNo'].forEach(k=>out[k]=num(k,out[k]));
  out.plate=typeof d.plate==='string'?d.plate.slice(0,10):'';out.truckFull=d.truckFull!==false;
  out.extras=Array.isArray(d.extras)?d.extras.filter(okSeg).map(clean):[];
  const ids=new Set([...out.fres,...out.extras].map(s=>s.id));
@@ -755,9 +787,9 @@ function normalize(d){
 function load(){try{const raw=localStorage.getItem(STORE);if(raw)return normalize(JSON.parse(raw))}catch{}return exampleState()}
 
 /* ======================= Entradas ======================= */
-function fillStatic(){$('job').value=S.job;$('density').value=S.density;$('usinado').value=S.usinado;$('plate').value=S.plate;$('accum').value=S.accum;$('truckLeft').value=S.truckLeft;$('tolerance').value=S.tolerance}
+function fillStatic(){$('job').value=S.job;$('density').value=S.density;$('usinado').value=S.usinado;$('plate').value=S.plate;$('trucksTotal').value=Number.isFinite(S.trucksTotal)?S.trucksTotal:'';$('truckNo').value=Number.isFinite(S.truckNo)?S.truckNo:'';$('accum').value=S.accum;$('truckLeft').value=S.truckLeft;$('tolerance').value=S.tolerance}
 function renderAll(){fillStatic();renderRdoCards();update()}
-[['job','job',0],['density','density',1],['usinado','usinado',1],['plate','plate',0],['accum','accum',1],['truckLeft','truckLeft',1],['tolerance','tolerance',1]].forEach(([id,k,num])=>$(id).addEventListener('input',e=>{
+[['job','job',0],['density','density',1],['usinado','usinado',1],['trucksTotal','trucksTotal',1],['truckNo','truckNo',1],['plate','plate',0],['accum','accum',1],['truckLeft','truckLeft',1],['tolerance','tolerance',1]].forEach(([id,k,num])=>$(id).addEventListener('input',e=>{
  if(k==='plate'){const p=e.target.selectionStart;S.plate=e.target.value.toUpperCase();if(e.target.value!==S.plate){e.target.value=S.plate;try{e.target.setSelectionRange(p,p)}catch{}}}
  else S[k]=num?(e.target.value===''?NaN:Number(e.target.value)):e.target.value;
  changed()}));
@@ -779,9 +811,9 @@ $('addInline').onclick=()=>openEditor('fres',null);
 $('fab').onclick=()=>openEditor(tab==='acomp'?'extra':'fres',null);
 
 /* ======================= Abas e menu ======================= */
-function setTab(t){tab=t;document.querySelectorAll('.screen[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==t);document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));$('fab').hidden=t==='rdo';$('fab').textContent=t==='acomp'?'+ Extra':'+ Segmento';window.scrollTo({top:0});try{localStorage.setItem(STORE+'-tab',t)}catch{}}
+function setTab(t){tab=t;document.querySelectorAll('.screen[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==t);document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));$('fab').hidden=t==='rdo';$('fab').textContent=t==='acomp'?'+ Extra':'+ Segmento';updateAlert(calc());window.scrollTo({top:0});try{localStorage.setItem(STORE+'-tab',t)}catch{}}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
-$('massAlert').onclick=()=>setTab('acomp');
+$('massAlert').onclick=()=>{const el=$({fres:'fSumBig',rdo:'rCmp',acomp:'decision'}[tab]);if(el)el.scrollIntoView({behavior:'smooth',block:'center'})};
 function openMenu(){$('sheet').classList.add('open');$('sheetBg').classList.add('open')}
 function closeMenu(){$('sheet').classList.remove('open');if(!ED)$('sheetBg').classList.remove('open')}
 $('menuBtn').onclick=openMenu;$('closeMenu').onclick=closeMenu;$('sheetBg').onclick=()=>{if(ED)closeEditor();closeMenu()};
