@@ -1,36 +1,26 @@
-# Controle de massa — pavimentação
+# Controle de massa — fresagem, RDO e aplicação
 
-Aplicativo HTML para apontamento de trechos e comparação entre massa usinada e aplicada.
+Aplicativo web (um único `index.html`, sem instalação) para controlar a fresagem, o RDO da aplicação e o consumo de CBUQ em campo. Pensado para uso no celular.
 
-## Recursos
+## Painéis
 
-- Interface pensada para celular: panos em cartões, campos grandes com teclado numérico, barra fixa com “Salvar” e “+ Adicionar pano”, menu inferior para abrir/imprimir.
-- Aviso fixo no topo quando a massa está **sobrando** (amarelo) ou **faltando** (vermelho), com toneladas e percentual; verde quando dentro da tolerância configurável.
+1. **Controle de fresagem** — cadastro dos segmentos fresados (estaca inicial, sentido, comprimento, faixa, largura, espessura). A estaca final é calculada; “Sequencial” encadeia com o segmento anterior. Mostra a massa de CBUQ equivalente ao volume fresado (volume × densidade) e um resumo com o total de massa “fresada”.
+2. **RDO da aplicação** — recebe automaticamente todos os segmentos da fresagem. Os valores podem ser editados sem alterar a fresagem; quando ficam diferentes, o valor original da fresagem aparece discretamente em roxo abaixo do campo. Cada segmento pode ser marcado como **Concluído**, ter observação e ser restaurado (↺).
+3. **Acompanhamento da aplicação** — massa recebida da usina (com botão “+1 caminhão”), massa já aplicada (segmentos concluídos), restante, necessário para os pendentes e o saldo:
+   - **Falta** → alerta vermelho “acionar a usina imediatamente” com toneladas e número de caminhões, e botão para copiar/compartilhar o pedido.
+   - **Sobra** → quanto ainda precisa fresar, em toneladas e em metros, para a largura e espessura informadas.
 
-- Edição de dimensões em metros: comprimento com passo de 1 m, largura de 0,01 m e espessura de 0,001 m.
-- Cálculo automático da estaca final conforme comprimento e sentido.
-- Panos sequenciais vinculados à estaca final do pano anterior.
-- Volume, massa aplicada, saldo e diferença percentual calculados automaticamente.
-- Salvar e reabrir apontamentos em JSON e imprimir relatórios.
+Um aviso fixo no topo mostra a situação em todos os painéis.
 
-## Uso
+## Dados
 
-Abra `index.html` no navegador. Não exige instalação ou compilação.
-
-Os dados iniciais são exemplos. Os apontamentos devem ser salvos em arquivo; esta versão não possui banco de dados nem sincronização entre usuários.
-
-## Publicação
-
-O arquivo `index.html` pode ser hospedado como site estático no Netlify ou GitHub Pages.
+- Salvos automaticamente no próprio aparelho (navegador).
+- Menu ⋯: salvar/abrir arquivo `.json` (compatível com arquivos da versão anterior), imprimir relatório, novo apontamento.
 
 ## Cálculos
 
-Volume = comprimento × largura × espessura.
-
-Massa aplicada = volume × densidade (t/m³).
-
-Saldo = massa usinada − massa aplicada.
-
-Diferença percentual = saldo ÷ massa usinada × 100, quando a massa usinada é maior que zero.
-
-Saldo positivo = sobra; negativo = falta. Com tolerância de X %, diferenças até X % da massa usinada são mostradas como equilibradas (padrão 0 %).
+- Massa do segmento = comprimento × largura × espessura × densidade.
+- Aplicada = Σ massa RDO dos concluídos · Necessário = Σ massa RDO dos pendentes.
+- Saldo = (recebida − aplicada) − necessário. Negativo = falta; positivo = sobra.
+- Metros a fresar = sobra ÷ (densidade × largura × espessura).
+- Caminhões = arredondar para cima (falta ÷ carga por caminhão).

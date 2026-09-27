@@ -7,186 +7,239 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Massa">
-<title>Controle de massa | Apontamento</title>
-<meta name="description" content="Apontamento de pavimentação e comparativo de massa usinada e aplicada.">
+<title>Controle de massa | Fresagem, RDO e aplicação</title>
+<meta name="description" content="Controle de fresagem, RDO da aplicação e acompanhamento de CBUQ.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23112638'/%3E%3Cpath d='M9 27L13 5M23 27L19 5M16 8v5m0 5v6' stroke='%23f5bb40' stroke-width='3'/%3E%3C/svg%3E">
 <style>
 :root{
   --ink:#132d40;--muted:#5a6c79;--line:#d6e0e7;--bg:#eef2f5;--card:#fff;--navy:#102839;--navy2:#17394a;--amber:#f5bb40;
-  --ok:#1f7a4a;--ok-bg:#e6f5ec;--warn:#9a5b00;--warn-bg:#fff1d1;--bad:#b42323;--bad-bg:#fde8e8;--neutral:#4d6270;--neutral-bg:#e9eef2;
+  --ok:#1f7a4a;--ok-bg:#e6f5ec;--warn:#8a5200;--warn-bg:#fff1d1;--bad:#b42323;--bad-bg:#fde8e8;--edit:#7b5bd6;--edit-bg:#f3effd;
   --radius:14px;--safe-b:env(safe-area-inset-bottom,0px);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);font-size:16px;
-  -webkit-text-size-adjust:100%;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);font-size:16px;-webkit-text-size-adjust:100%;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
-body{background:var(--bg);padding-bottom:calc(96px + var(--safe-b));-webkit-tap-highlight-color:transparent}
-button,input,select{font:inherit;color:inherit}
+body{background:var(--bg);padding-bottom:calc(150px + var(--safe-b));-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:3px solid #62b4e2;outline-offset:2px}
+[hidden]{display:none!important}
 
-/* ---------- Topo ---------- */
+/* Topo */
 .top{position:sticky;top:0;z-index:30;background:var(--navy);color:#fff;padding-top:env(safe-area-inset-top,0px)}
 .bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;max-width:1100px;margin:auto}
-.brand{font-weight:700;font-size:16px;letter-spacing:.3px;display:flex;align-items:center;gap:8px}
-.brand i{width:10px;height:18px;background:var(--amber);border-radius:2px;display:inline-block;transform:skewX(-12deg)}
-.iconbtn{background:transparent;border:1px solid #2f4d61;color:#fff;border-radius:10px;min-width:44px;min-height:44px;font-size:20px;line-height:1;display:grid;place-items:center}
+.brand{font-weight:700;font-size:15px;letter-spacing:.3px;display:flex;align-items:center;gap:8px;min-width:0}
+.brand i{width:10px;height:18px;background:var(--amber);border-radius:2px;display:inline-block;transform:skewX(-12deg);flex:0 0 10px}
+.brand b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.iconbtn{position:relative;background:transparent;border:1px solid #2f4d61;color:#fff;border-radius:10px;min-width:44px;min-height:44px;font-size:20px;line-height:1;display:grid;place-items:center}
+.iconbtn .dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:#ff5a5a;display:none}
+.iconbtn.pending .dot{display:block}
 
-/* ---------- Alerta de massa (destaque fixo) ---------- */
-.alert{display:flex;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);transition:background .25s,color .25s}
-.alert .in{display:flex;align-items:center;gap:12px;width:100%;max-width:1100px;margin:auto}
-.alert .ico{flex:0 0 42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:22px;font-weight:800;background:rgba(255,255,255,.55)}
+/* Alerta global */
+.alert{display:block;width:100%;text-align:left;border:0;border-top:1px solid rgba(255,255,255,.08);padding:10px 16px;transition:background .25s,color .25s;font:inherit}
+.alert .in{display:flex;align-items:center;gap:12px;max-width:1100px;margin:auto}
+.alert .ico{flex:0 0 40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:20px;font-weight:800;background:rgba(255,255,255,.5)}
 .alert .txt{flex:1;min-width:0}
-.alert .kind{font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;opacity:.85}
-.alert .amount{font-size:26px;font-weight:800;letter-spacing:-.5px;line-height:1.1;font-variant-numeric:tabular-nums}
+.alert .kind{font-size:11.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;opacity:.9;line-height:1.25}
+.alert .amount{font-size:25px;font-weight:800;letter-spacing:-.5px;line-height:1.1;font-variant-numeric:tabular-nums}
 .alert .amount small{font-size:15px;font-weight:600}
-.alert .pct{flex:0 0 auto;text-align:right;font-weight:800;font-size:18px;font-variant-numeric:tabular-nums}
-.alert .pct small{display:block;font-size:11px;font-weight:600;opacity:.8}
+.alert .side{flex:0 0 auto;text-align:right;font-weight:800;font-size:17px;font-variant-numeric:tabular-nums;line-height:1.15}
+.alert .side small{display:block;font-size:11px;font-weight:600;opacity:.85}
 .alert[data-state="shortage"]{background:var(--bad);color:#fff}
-.alert[data-state="shortage"] .ico{background:rgba(255,255,255,.2)}
+.alert[data-state="shortage"] .ico,.alert[data-state="balanced"] .ico{background:rgba(255,255,255,.2)}
 .alert[data-state="surplus"]{background:var(--amber);color:#3d2800}
 .alert[data-state="balanced"]{background:#2a9a60;color:#fff}
-.alert[data-state="balanced"] .ico{background:rgba(255,255,255,.2)}
 .alert[data-state="invalid"]{background:#dfe6eb;color:#334b5a}
+.alert[data-state="shortage"].urgent .ico{animation:pulse 1.2s ease-in-out infinite}
 .alert.flash{animation:flash .7s ease}
 @keyframes flash{0%{filter:brightness(1.35)}100%{filter:none}}
-@media (prefers-reduced-motion:reduce){.alert.flash{animation:none}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.6)}50%{box-shadow:0 0 0 8px rgba(255,255,255,0)}}
+@media (prefers-reduced-motion:reduce){.alert.flash,.alert.urgent .ico{animation:none!important}}
 
-/* ---------- Conteúdo ---------- */
-main{max-width:1100px;margin:auto;padding:16px 12px 8px}
+/* Conteúdo */
+main{max-width:1100px;margin:auto;padding:14px 12px 8px}
+.panel-title{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:4px 4px 12px}
+.panel-title h1{font-size:22px;margin:0;letter-spacing:-.4px}
+.panel-title span{font-size:13px;color:var(--muted);white-space:nowrap}
 .section{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px}
 .section h2{font-size:17px;margin:0 0 4px;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .section h2 .count{font-weight:500;color:var(--muted);font-size:14px}
 .hint{font-size:13px;color:var(--muted);line-height:1.45;margin:0 0 12px}
-.status{font-size:14px;color:#3d5a6b;min-height:0;margin:0 0 10px;padding:0 4px}
+.status{font-size:14px;color:#3d5a6b;margin:0 0 10px;padding:0 4px}
 .status:empty{display:none}
 
 .fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.fields .full{grid-column:1/-1}
-.field label{display:block;font-size:13px;font-weight:650;color:#3c5566;margin-bottom:6px}
-.field input,.field select{width:100%;min-height:50px;padding:10px 12px;font-size:17px;border:1px solid #bfcdd7;border-radius:10px;background:#fff;appearance:none;-webkit-appearance:none}
+.full,.full-sm{grid-column:1/-1}
+.field label,.field .lbl{display:block;font-size:13px;font-weight:650;color:#3c5566;margin-bottom:6px}
+.field input,.field textarea{width:100%;min-height:50px;padding:10px 12px;font-size:17px;border:1px solid #bfcdd7;border-radius:10px;background:#fff;appearance:none;-webkit-appearance:none}
+.field textarea{min-height:64px;font-size:16px;resize:vertical}
 .field input[readonly]{background:#eef3f7;color:#3f5a69;border-style:dashed}
 .field input:invalid{border-color:#c55555;background:#fff3f3}
 .field small{display:block;font-size:12px;color:var(--muted);margin-top:5px}
 .unit{position:relative}
-.unit input{padding-right:46px}
+.unit input{padding-right:48px}
 .unit::after{content:attr(data-unit);position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:14px;color:#6a7f8d;pointer-events:none}
+.field.edited input{border-color:var(--edit);background:var(--edit-bg)}
+.orig{display:flex!important;align-items:center;gap:5px;color:#6e5aa8!important;font-size:12px!important}
+.orig[hidden]{display:none!important}.orig::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--edit);flex:0 0 6px}
 
-/* Resumo */
+/* KPIs */
 .summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;min-width:0}
 .kpi .l{font-size:12px;color:var(--muted);font-weight:600}
-.kpi .v{font-size:22px;font-weight:750;margin-top:4px;font-variant-numeric:tabular-nums;letter-spacing:-.4px;overflow-wrap:anywhere}
-.kpi .v span{font-size:14px;font-weight:500;letter-spacing:0}
+.kpi .v{font-size:21px;font-weight:750;margin-top:4px;font-variant-numeric:tabular-nums;letter-spacing:-.4px;overflow-wrap:anywhere}
+.kpi .v span{font-size:13px;font-weight:500;letter-spacing:0}
+.kpi .s{font-size:12px;color:var(--muted);margin-top:2px}
 .kpi.dark{background:var(--navy2);border-color:var(--navy2);color:#fff}
-.kpi.dark .l{color:#c3d6e0}
+.kpi.dark .l,.kpi.dark .s{color:#c3d6e0}
 .kpi.state{border-width:2px}
+.summary.five .kpi.state{grid-column:1/-1}
 .kpi.state[data-state="shortage"]{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
 .kpi.state[data-state="surplus"]{border-color:#d69a1d;background:var(--warn-bg);color:var(--warn)}
 .kpi.state[data-state="balanced"]{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
-.kpi.state .l{color:inherit}
+.kpi.state .l,.kpi.state .s{color:inherit}
 
-.compare .row{display:flex;justify-content:space-between;font-size:14px;margin:10px 0 6px}
-.track{height:14px;border-radius:7px;background:#e6edf1;overflow:hidden}
-.fill{height:100%;background:var(--navy2);transition:width .25s;border-radius:7px}
-.fill.applied{background:var(--amber)}
-.fill.applied.over{background:var(--bad)}
-.conclusion{font-size:14px;margin:12px 0 0;color:#3c5566;line-height:1.45}
-
-/* Panos (cards) */
-.panos{display:grid;gap:12px}
-.pano{border:1px solid #cad7e0;border-radius:var(--radius);background:#fff;overflow:hidden}
-.pano-head{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f3f7fa;border-bottom:1px solid #e0e8ee}
-.pano-num{font-weight:800;font-size:16px;margin-right:auto}
-.pano-num em{font-style:normal;font-weight:500;color:var(--muted);font-size:13px;margin-left:6px}
-.switch{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#2d4a5b;min-height:44px;user-select:none}
+/* Cartões de segmento */
+.list{display:grid;gap:12px}
+.seg{border:1px solid #cad7e0;border-radius:var(--radius);background:#fff;overflow:hidden}
+.seg.done{border-color:#9fd1b3}
+.seg.is-edited{border-color:#c9b9f2}
+.seg-head{display:flex;align-items:center;gap:8px;padding:8px 10px 8px 12px;background:#f3f7fa;border-bottom:1px solid #e0e8ee;flex-wrap:wrap}
+.seg.done .seg-head{background:var(--ok-bg)}
+.seg-num{font-weight:800;font-size:16px;margin-right:auto;min-width:0}
+.seg-num em{display:block;font-style:normal;font-weight:500;color:var(--muted);font-size:12.5px}
+.tag{font-size:11px;font-weight:700;padding:3px 7px;border-radius:20px;background:var(--edit-bg);color:#5b43b0;white-space:nowrap}
+.switch{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#2d4a5b;min-height:44px;user-select:none;cursor:pointer}
 .switch input{appearance:none;-webkit-appearance:none;width:46px;height:28px;border-radius:14px;background:#c6d3dc;position:relative;margin:0;transition:background .2s;flex:0 0 46px;cursor:pointer}
 .switch input::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
 .switch input:checked{background:var(--navy2)}
+.switch.green input:checked{background:var(--ok)}
 .switch input:checked::after{transform:translateX(18px)}
 .switch input:disabled{opacity:.45}
 .switch:has(input:disabled){color:#8a9ba6}
-.del{border:1px solid #ecc9c9;background:#fff;color:#a23a3a;border-radius:10px;min-width:44px;min-height:44px;font-size:18px}
-.pano-body{padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.pano-body .full{grid-column:1/-1}
-.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid #bfcdd7;border-radius:10px;overflow:hidden;min-height:50px}
-.seg label{display:grid;place-items:center;margin:0;font-size:15px;font-weight:600;color:#3c5566;cursor:pointer;position:relative}
-.seg label+label{border-left:1px solid #bfcdd7}
-.seg input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
-.seg label:has(input:checked){background:var(--navy2);color:#fff}
-.seg label:has(input:focus-visible){outline:3px solid #62b4e2;outline-offset:-3px}
-.pano-result{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:10px;background:#eef4f7;border-radius:10px;padding:10px 12px}
-.pano-result div{font-size:12px;color:var(--muted);font-weight:600}
-.pano-result b{display:block;font-size:19px;color:var(--ink);font-variant-numeric:tabular-nums;margin-top:2px}
-.totals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;background:#e3ecf2;border-radius:12px;padding:12px}
-.totals div{font-size:12px;color:var(--muted);font-weight:600}
-.totals b{display:block;font-size:17px;color:var(--ink);font-variant-numeric:tabular-nums;margin-top:2px}
+.sq{border:1px solid #c9d5de;background:#fff;color:#2d4a5b;border-radius:10px;min-width:44px;min-height:44px;font-size:17px}
+.sq.del{border-color:#ecc9c9;color:#a23a3a}
+.seg-body{padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.segctl{display:grid;grid-template-columns:1fr 1fr;border:1px solid #bfcdd7;border-radius:10px;overflow:hidden;min-height:50px}
+.segctl label{display:grid;place-items:center;margin:0;font-size:15px;font-weight:600;color:#3c5566;cursor:pointer;position:relative}
+.segctl label+label{border-left:1px solid #bfcdd7}
+.segctl input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.segctl label:has(input:checked){background:var(--navy2);color:#fff}
+.field.edited .segctl{border-color:var(--edit)}
+.field.edited .segctl label:has(input:checked){background:var(--edit)}
+.result{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:10px;background:#eef4f7;border-radius:10px;padding:10px 12px}
+.result div{font-size:12px;color:var(--muted);font-weight:600}
+.result b{display:block;font-size:19px;color:var(--ink);font-variant-numeric:tabular-nums;margin-top:2px}
+.result .orig{margin-top:3px}
 .addinline{width:100%;min-height:52px;margin-top:12px;border:2px dashed #9fb4c2;background:#f7fafc;border-radius:12px;font-weight:700;color:#23445a;font-size:16px}
+.empty{padding:20px;text-align:center;color:var(--muted);font-size:14px;border:2px dashed #cfdae2;border-radius:12px}
+
+/* Tabela-resumo */
+.tbl{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+.tbl th{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#627584;text-align:left;padding:8px 6px;border-bottom:1px solid #dfe7ec}
+.tbl td{padding:9px 6px;border-bottom:1px solid #edf1f4;vertical-align:top}
+.tbl td.n,.tbl th.n{text-align:right}
+.tbl td small{display:block;color:var(--muted);font-size:12px}
+.tbl tfoot td{font-weight:800;border-bottom:0;border-top:2px solid #cfdae2;padding-top:11px}
+.bigtotal{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--navy2);color:#fff;border-radius:12px;padding:14px 16px;margin-top:12px}
+.bigtotal span{font-size:13px;color:#c3d6e0;font-weight:600}
+.bigtotal b{font-size:24px;font-variant-numeric:tabular-nums}
+
+/* Acompanhamento */
+.decision{border-radius:var(--radius);padding:16px;margin-bottom:14px;border:2px solid;line-height:1.45}
+.decision h2{margin:0 0 6px;font-size:19px}
+.decision p{margin:6px 0 0;font-size:15px}
+.decision .big{font-size:30px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums;line-height:1.1;margin:6px 0}
+.decision[data-state="shortage"]{background:var(--bad-bg);border-color:var(--bad);color:#7d1616}
+.decision[data-state="surplus"]{background:var(--warn-bg);border-color:#d69a1d;color:#5c3700}
+.decision[data-state="balanced"]{background:var(--ok-bg);border-color:var(--ok);color:#14502f}
+.decision[data-state="invalid"]{background:#eef2f5;border-color:#9fb0bc;color:#334b5a}
+.decision .calc{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.decision .calc .field label{color:inherit}
+.meters{margin-top:12px;background:rgba(255,255,255,.7);border-radius:10px;padding:12px}
+.meters b{font-size:26px;font-variant-numeric:tabular-nums}
+.callbtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;margin-top:12px;border:0;border-radius:12px;background:var(--bad);color:#fff;font-weight:800;font-size:16px}
+.flow{display:grid;gap:0;font-variant-numeric:tabular-nums}
+.flow div{display:flex;justify-content:space-between;gap:10px;padding:10px 2px;border-bottom:1px solid #edf1f4;font-size:15px}
+.flow div b{white-space:nowrap}
+.flow div.eq{border-bottom:0;border-top:2px solid #cfdae2;font-weight:800;font-size:16px}
+.flow div.sub{color:var(--muted);font-size:13px;padding:4px 2px 10px}
+.progress{height:14px;border-radius:7px;background:#e6edf1;overflow:hidden;display:flex;margin:10px 0 6px}
+.progress i{display:block;height:100%}
+.progress .p-done{background:var(--ok)}
+.progress .p-pend{background:#9fb4c2}
+.progress .p-rest{background:var(--amber)}
+.progress .p-over{background:var(--bad)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;background:var(--c)}
+.statusrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f4}
+.statusrow:last-child{border-bottom:0}
+.statusrow .info{flex:1;min-width:0}
+.statusrow .info b{display:block;font-size:15px}
+.statusrow .info small{display:block;color:var(--muted);font-size:12.5px}
+.statusrow .m{font-weight:750;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.statusrow .m small{display:block;font-weight:500;color:var(--muted);font-size:11.5px}
+.truckrow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
+.truckbtn{min-height:50px;padding:0 14px;border-radius:10px;border:1px solid var(--navy2);background:var(--navy2);color:#fff;font-weight:700;white-space:nowrap}
 
 details.notes summary{font-weight:700;cursor:pointer;min-height:32px;display:flex;align-items:center}
 details.notes p{font-size:14px;color:var(--muted);line-height:1.55;margin:8px 0 0}
 .foot{font-size:12px;color:var(--muted);text-align:center;padding:4px 0 12px}
 
-/* Barra inferior fixa */
-.dock{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:10px 12px calc(10px + var(--safe-b))}
-.dock .in{max-width:1100px;margin:auto;display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
-.btn{min-height:52px;border-radius:12px;border:1px solid #c3d0d9;background:#fff;font-weight:700;font-size:16px;color:#193447;display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
-.btn.primary{background:var(--amber);border-color:var(--amber);color:#142a3a}
-.btn.dark{background:var(--navy2);border-color:var(--navy2);color:#fff}
-.btn .dot{width:8px;height:8px;border-radius:50%;background:#d23c3c;display:none}
-.btn.pending .dot{display:inline-block}
+/* Barra de abas + botão flutuante */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:6px 8px calc(6px + var(--safe-b))}
+.tabs .in{max-width:640px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.tab{border:0;background:transparent;border-radius:12px;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;font-weight:700;color:#5d7282;position:relative}
+.tab .ti{font-size:20px;line-height:1}
+.tab[aria-selected="true"]{background:#e3ecf2;color:var(--navy)}
+.tab .badge{position:absolute;top:6px;right:calc(50% - 22px);min-width:10px;height:10px;border-radius:5px;background:var(--bad);display:none}
+.tab .badge.on{display:block}
+.fab{position:fixed;right:16px;bottom:calc(82px + var(--safe-b));z-index:31;min-height:54px;padding:0 20px;border-radius:27px;border:0;background:var(--amber);color:#142a3a;font-weight:800;font-size:16px;box-shadow:0 6px 18px rgba(16,40,57,.25)}
 
-/* Menu (folha inferior) */
+/* Menu inferior */
 .sheet-bg{position:fixed;inset:0;background:rgba(10,25,36,.45);z-index:40;display:none}
-.sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;background:#fff;border-radius:18px 18px 0 0;padding:8px 16px calc(16px + var(--safe-b));transform:translateY(105%);transition:transform .22s ease;max-width:560px;margin:auto}
-.sheet{visibility:hidden}.sheet.open{transform:none;visibility:visible}
 .sheet-bg.open{display:block}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;background:#fff;border-radius:18px 18px 0 0;padding:8px 16px calc(16px + var(--safe-b));transform:translateY(105%);visibility:hidden;transition:transform .22s ease;max-width:560px;margin:auto}
+.sheet.open{transform:none;visibility:visible}
 .grab{width:40px;height:5px;border-radius:3px;background:#cfd9e0;margin:4px auto 12px}
 .sheet h3{margin:0 0 10px;font-size:16px}
-.sheet .btn{width:100%;margin-bottom:10px;justify-content:flex-start;padding:0 16px}
-.sheet .btn span.e{width:26px;text-align:center}
+.btn{min-height:52px;border-radius:12px;border:1px solid #c3d0d9;background:#fff;font-weight:700;font-size:16px;color:#193447;display:flex;align-items:center;gap:10px;padding:0 16px;width:100%;margin-bottom:10px;cursor:pointer}
+.btn.dark{background:var(--navy2);border-color:var(--navy2);color:#fff;justify-content:center}
+.btn.danger{color:#a23a3a;border-color:#ecc9c9}
 
-/* Relatório de impressão */
 .print-only{display:none}
 
-/* ---------- Telas maiores ---------- */
 @media (min-width:700px){
-  main{padding:24px 20px}
+  main{padding:22px 20px}
   .summary{grid-template-columns:repeat(4,1fr)}
-  .fields{grid-template-columns:2fr 1fr 1fr 1fr}
-  .fields .full{grid-column:auto}
-  .panos{grid-template-columns:1fr 1fr}
-  .alert .amount{font-size:30px}
-  .dock .in{grid-template-columns:repeat(4,1fr)}
+  .summary.five{grid-template-columns:repeat(5,1fr)}
+  .summary.five .kpi.state{grid-column:auto}
+  .fields.wide{grid-template-columns:2fr 1fr}
+  .fields.wide .full-sm{grid-column:auto}
+  .list{grid-template-columns:1fr 1fr}
+  .alert .amount{font-size:29px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 }
-@media (min-width:1000px){.panos{grid-template-columns:1fr 1fr 1fr}}
+@media (min-width:1000px){.list{grid-template-columns:1fr 1fr 1fr}}
 @media (max-width:359px){
   .summary{grid-template-columns:1fr}
-  .alert .amount{font-size:22px}
-  .pano-body{grid-template-columns:1fr}
+  .alert .amount{font-size:21px}
+  .seg-body{grid-template-columns:1fr}
 }
-.dock .wide-only{display:none}
-@media (min-width:700px){.dock .wide-only{display:flex}}
 
-/* ---------- Impressão ---------- */
 @media print{
   @page{size:landscape;margin:10mm}
   body{padding:0;background:#fff}
-  .top{position:static;background:#fff;color:#000}
-  .bar .iconbtn,.dock,.sheet,.sheet-bg,.panos-section,.addinline,.status,.foot,details.notes{display:none!important}
-  .alert{border:2px solid currentColor;border-radius:8px;margin:6px 0}
-  .alert[data-state="shortage"]{background:#fff;color:#b42323}
-  .alert[data-state="surplus"]{background:#fff;color:#8a5a00}
-  .alert[data-state="balanced"]{background:#fff;color:#1f7a4a}
-  .field input{min-height:0;border:0;padding:0;font-size:12px}
-  .section,.kpi{break-inside:avoid;padding:8px}
-  .fields{grid-template-columns:2fr 1fr 1fr 1fr}
-  .summary{grid-template-columns:repeat(4,1fr)}
+  .top{position:static}
+  .iconbtn,.tabs,.fab,.sheet,.sheet-bg,.screen,.status{display:none!important}
+  .alert{border:2px solid currentColor;border-radius:8px;background:#fff!important;color:#000!important}
   .print-only{display:block}
-  .ptable{width:100%;border-collapse:collapse;font-size:10px}
+  .ptable{width:100%;border-collapse:collapse;font-size:10px;margin-bottom:10px}
   .ptable th,.ptable td{border:1px solid #bbb;padding:4px 6px;text-align:left}
   .ptable td.n{text-align:right}
   .ptable tfoot td{font-weight:700;background:#eef}
+  .print-only h2{font-size:14px;margin:10px 0 6px}
+  .print-only p{font-size:11px;margin:2px 0}
 }
 </style>
 </head>
@@ -194,85 +247,134 @@ details.notes p{font-size:14px;color:var(--muted);line-height:1.55;margin:8px 0 
 
 <header class="top">
   <div class="bar">
-    <div class="brand"><i></i>CONTROLE DE MASSA</div>
-    <button class="iconbtn" id="menuBtn" aria-label="Abrir menu" aria-haspopup="dialog">⋯</button>
+    <div class="brand"><i></i><b id="brandTitle">CONTROLE DE MASSA</b></div>
+    <button class="iconbtn" id="menuBtn" aria-label="Abrir menu" aria-haspopup="dialog">⋯<span class="dot"></span></button>
   </div>
-  <section id="massAlert" class="alert" data-state="invalid" role="status" aria-live="polite" aria-atomic="true">
-    <div class="in">
-      <div class="ico" id="massAlertIcon" aria-hidden="true">!</div>
-      <div class="txt">
-        <div class="kind" id="massAlertKind">Verificar</div>
-        <div class="amount" id="massAlertTitle">Complete os dados</div>
-      </div>
-      <div class="pct" id="massAlertPct"></div>
-    </div>
-    <p id="massAlertDetail" hidden></p>
-  </section>
+  <button id="massAlert" class="alert" data-state="invalid" aria-live="polite" aria-atomic="true" title="Abrir acompanhamento">
+    <span class="in">
+      <span class="ico" id="alertIcon" aria-hidden="true">!</span>
+      <span class="txt"><span class="kind" id="alertKind">Verificar</span><span class="amount" id="alertAmount" style="display:block">Complete os dados</span></span>
+      <span class="side" id="alertSide"></span>
+    </span>
+  </button>
 </header>
 
 <main>
   <p id="status" class="status" role="status" aria-live="polite"></p>
 
-  <section class="section">
-    <h2>Dados do apontamento</h2>
-    <p class="hint">Dados de exemplo transcritos da planilha. Salve o apontamento em arquivo antes de sair.</p>
-    <div class="fields">
-      <div class="field full"><label for="job">Obra / frente de serviço</label><input id="job" placeholder="Ex.: BR-277 · 26/09 · faixa 1" autocomplete="off"></div>
-      <div class="field"><label for="produced">Massa usinada</label><div class="unit" data-unit="t"><input id="produced" type="number" inputmode="decimal" min="0" step="0.01" value="631.76" required></div><small>Total da usina</small></div>
-      <div class="field"><label for="density">Densidade</label><div class="unit" data-unit="t/m³"><input id="density" type="number" inputmode="decimal" min="0.001" step="0.001" value="2.528" required></div><small>Todos os panos</small></div>
-      <div class="field full"><label for="tolerance">Tolerância para “equilibrado”</label><div class="unit" data-unit="%"><input id="tolerance" type="number" inputmode="decimal" min="0" max="50" step="0.1" value="0" required></div><small>Com 0 %, qualquer diferença acima de 0,01 t aparece como sobra ou falta. Ex.: 1 % considera equilibrado até 1 % da usinada.</small></div>
+  <!-- ================= PAINEL 1: FRESAGEM ================= -->
+  <section class="screen" id="panel-fres" data-panel="fres">
+    <div class="panel-title"><h1>Controle de fresagem</h1><span>Painel 1 de 3</span></div>
+
+    <section class="section">
+      <h2>Dados da obra</h2>
+      <div class="fields wide">
+        <div class="field full-sm"><label for="job">Obra / frente de serviço</label><input id="job" placeholder="Ex.: BR-277 · 26/09 · faixa 1" autocomplete="off"></div>
+        <div class="field"><label for="density">Densidade do CBUQ</label><div class="unit" data-unit="t/m³"><input id="density" type="number" inputmode="decimal" min="0.001" step="0.001" required></div><small>Usada nos 3 painéis</small></div>
+      </div>
+    </section>
+
+    <section class="summary" aria-label="Resumo da fresagem">
+      <div class="kpi"><div class="l">Segmentos</div><div class="v" id="fCount"></div></div>
+      <div class="kpi"><div class="l">Extensão fresada</div><div class="v" id="fLen"></div></div>
+      <div class="kpi"><div class="l">Volume fresado</div><div class="v" id="fVol"></div></div>
+      <div class="kpi dark"><div class="l">Massa equivalente</div><div class="v" id="fMass"></div><div class="s">volume × densidade</div></div>
+    </section>
+
+    <section class="section">
+      <h2>Segmentos fresados <span class="count" id="fCount2"></span></h2>
+      <p class="hint">Estaca final automática: inicial + comprimento (crescente) ou − comprimento (decrescente). “Sequencial” começa na estaca final do segmento anterior. Todo segmento criado aqui vai automaticamente para o RDO da aplicação.</p>
+      <div class="list" id="fresList"></div>
+      <button class="addinline" id="addInline">+ Adicionar segmento</button>
+    </section>
+
+    <section class="section">
+      <h2>Resumo dos segmentos</h2>
+      <p class="hint">Toneladas de CBUQ equivalentes ao volume fresado em cada segmento.</p>
+      <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>#</th><th>Estacas</th><th class="n">Ext. (m)</th><th class="n">Vol. (m³)</th><th class="n">Massa (t)</th></tr></thead><tbody id="fSumRows"></tbody><tfoot><tr><td colspan="2">Total</td><td class="n" id="fSumLen"></td><td class="n" id="fSumVol"></td><td class="n" id="fSumMass"></td></tr></tfoot></table></div>
+      <div class="bigtotal"><span>Total de massa “fresada”</span><b id="fSumBig"></b></div>
+    </section>
+  </section>
+
+  <!-- ================= PAINEL 2: RDO ================= -->
+  <section class="screen" id="panel-rdo" data-panel="rdo" hidden>
+    <div class="panel-title"><h1>RDO da aplicação</h1><span>Painel 2 de 3</span></div>
+    <section class="section">
+      <p class="hint" style="margin:0">Os segmentos chegam da fresagem. Edite aqui o que foi realmente aplicado — a fresagem não muda. Quando um valor ficar diferente, o valor da fresagem aparece em <span style="color:#6e5aa8;font-weight:700">roxo</span> logo abaixo. Marque <b>Concluído</b> quando o segmento for fechado.</p>
+    </section>
+    <section class="summary" aria-label="Resumo do RDO">
+      <div class="kpi"><div class="l">Concluídos</div><div class="v" id="rDone"></div></div>
+      <div class="kpi"><div class="l">Editados no RDO</div><div class="v" id="rEdited"></div></div>
+      <div class="kpi dark"><div class="l">Massa RDO (todos)</div><div class="v" id="rMass"></div><div class="s" id="rMassOrig"></div></div>
+      <div class="kpi"><div class="l">Massa concluída</div><div class="v" id="rMassDone"></div></div>
+    </section>
+    <div class="list" id="rdoList"></div>
+  </section>
+
+  <!-- ================= PAINEL 3: ACOMPANHAMENTO ================= -->
+  <section class="screen" id="panel-acomp" data-panel="acomp" hidden>
+    <div class="panel-title"><h1>Acompanhamento da aplicação</h1><span>Painel 3 de 3</span></div>
+
+    <section class="section">
+      <h2>CBUQ recebido da usina</h2>
+      <div class="fields">
+        <div class="field full"><label for="received">Massa recebida até agora</label><div class="truckrow"><div class="unit" data-unit="t"><input id="received" type="number" inputmode="decimal" min="0" step="0.01" required></div><button class="truckbtn" id="addTruck">+1 caminhão</button></div><small id="truckHint"></small></div>
+        <div class="field"><label for="truck">Carga por caminhão</label><div class="unit" data-unit="t"><input id="truck" type="number" inputmode="decimal" min="0.01" step="0.01" required></div></div>
+        <div class="field"><label for="tolerance">Tolerância</label><div class="unit" data-unit="%"><input id="tolerance" type="number" inputmode="decimal" min="0" max="50" step="0.1" required></div><small>Até esse % da recebida = equilibrado</small></div>
+      </div>
+    </section>
+
+    <section class="decision" id="decision" data-state="invalid"></section>
+
+    <section class="summary five" aria-label="Situação da massa">
+      <div class="kpi"><div class="l">Recebida</div><div class="v" id="aRec"></div></div>
+      <div class="kpi dark"><div class="l">Aplicada (concluídos)</div><div class="v" id="aApp"></div><div class="s" id="aAppS"></div></div>
+      <div class="kpi"><div class="l">Restante disponível</div><div class="v" id="aRest"></div><div class="s">recebida − aplicada</div></div>
+      <div class="kpi"><div class="l">Necessário p/ pendentes</div><div class="v" id="aNeed"></div><div class="s" id="aNeedS"></div></div>
+      <div class="kpi state" id="aSaldoCard"><div class="l" id="aSaldoL">Saldo previsto</div><div class="v" id="aSaldo"></div><div class="s">restante − necessário</div></div>
+    </section>
+
+    <div class="grid2">
+      <section class="section">
+        <h2>Balanço da massa</h2>
+        <div class="progress" id="aBar"></div>
+        <div class="legend"><span style="--c:var(--ok)">Aplicada</span><span style="--c:#9fb4c2">Pendente</span><span style="--c:var(--amber)">Sobra</span><span style="--c:var(--bad)">Falta</span></div>
+        <div class="flow" style="margin-top:10px">
+          <div><span>Estimativa pela fresagem (todos)</span><b id="aEstF"></b></div>
+          <div><span>Previsão com RDO (aplicada + pendentes)</span><b id="aEstR"></b></div>
+          <div class="sub" id="aEstDiff"></div>
+          <div><span>Recebida da usina</span><b id="aRec2"></b></div>
+          <div class="eq"><span id="aFinalL">Sobra / falta ao fechar tudo</span><b id="aFinal"></b></div>
+        </div>
+      </section>
+      <section class="section">
+        <h2>Segmentos <span class="count" id="aCount"></span></h2>
+        <p class="hint">Marque os segmentos finalizados. A massa usada é a do RDO.</p>
+        <div id="aList"></div>
+      </section>
     </div>
+
+    <section class="section">
+      <details class="notes">
+        <summary>Como os cálculos são feitos</summary>
+        <p><b>Massa de um segmento</b> = comprimento × largura × espessura × densidade.<br><b>Aplicada</b> = soma da massa RDO dos segmentos concluídos.<br><b>Restante</b> = recebida − aplicada.<br><b>Necessário</b> = soma da massa RDO dos segmentos não concluídos.<br><b>Saldo</b> = restante − necessário. Negativo: falta CBUQ (acionar a usina). Positivo: sobra (dá para fresar mais).<br><b>Metros a fresar</b> = sobra ÷ (densidade × largura × espessura).</p>
+      </details>
+    </section>
   </section>
 
-  <section class="summary" aria-label="Resumo">
-    <div class="kpi"><div class="l">Massa usinada</div><div class="v" id="totalProduced"></div></div>
-    <div class="kpi dark"><div class="l">Massa aplicada</div><div class="v" id="totalApplied"></div></div>
-    <div class="kpi state" id="balanceCard"><div class="l" id="balanceLabel">Saldo</div><div class="v" id="totalBalance"></div></div>
-    <div class="kpi state" id="percentCard"><div class="l">Diferença</div><div class="v" id="percentage"></div><div class="l" id="percentDescription" style="font-weight:500;margin-top:2px"></div></div>
-  </section>
+  <!-- ================= RELATÓRIO (impressão) ================= -->
+  <section class="print-only" id="printReport"></section>
 
-  <section class="section compare">
-    <h2>Comparativo</h2>
-    <div class="row"><span>Usinada</span><strong id="producedBarLabel"></strong></div>
-    <div class="track"><div id="producedBar" class="fill"></div></div>
-    <div class="row"><span>Aplicada</span><strong id="appliedBarLabel"></strong></div>
-    <div class="track"><div id="appliedBar" class="fill applied"></div></div>
-    <p class="conclusion" id="conclusion"></p>
-  </section>
-
-  <section class="section panos-section">
-    <h2>Panos aplicados <span class="count" id="count"></span></h2>
-    <p class="hint">A estaca final é calculada: inicial + comprimento (crescente) ou − comprimento (decrescente). Ative “Sequencial” para começar na estaca final do pano anterior.</p>
-    <div class="panos" id="rows"></div>
-    <div class="totals">
-      <div>Extensão<b id="lengthTotal"></b></div>
-      <div>Volume<b id="volumeTotal"></b></div>
-      <div>Massa<b id="massTotal"></b></div>
-    </div>
-    <button class="addinline" id="addInline">+ Adicionar pano</button>
-  </section>
-
-  <section class="section print-only">
-    <h2>Panos aplicados</h2>
-    <table class="ptable"><thead><tr><th>#</th><th>Seq.</th><th>Estaca inicial</th><th>Estaca final</th><th>Sentido</th><th>Faixa</th><th>Compr. (m)</th><th>Larg. (m)</th><th>Esp. (m)</th><th>Volume (m³)</th><th>Massa (t)</th></tr></thead><tbody id="printRows"></tbody><tfoot><tr><td colspan="6">Total</td><td class="n" id="pLen"></td><td></td><td></td><td class="n" id="pVol"></td><td class="n" id="pMass"></td></tr></tfoot></table>
-  </section>
-
-  <section class="section">
-    <details class="notes">
-      <summary>Critérios do cálculo</summary>
-      <p><strong>Volume</strong> = comprimento × largura × espessura.<br><strong>Massa aplicada</strong> = volume × densidade.<br><strong>Saldo</strong> = usinada − aplicada.<br><strong>Diferença (%)</strong> = saldo ÷ usinada × 100.</p>
-      <p>A espessura é informada em metros (8 cm = 0,080 m). Saldo positivo indica <b>sobra</b> de massa; negativo indica <b>falta</b>. O saldo é calculado, não uma medição física. Os totais usam precisão completa; arredonda-se só na exibição.</p>
-    </details>
-  </section>
-  <div class="foot">Unidades: metros, m³ e toneladas · Use “Abrir apontamento” no menu para continuar um arquivo salvo.</div>
+  <div class="foot screen">Os dados ficam salvos neste aparelho. Use o menu ⋯ para salvar em arquivo ou abrir outro apontamento.</div>
 </main>
 
-<nav class="dock" aria-label="Ações">
+<button class="fab" id="fab">+ Segmento</button>
+
+<nav class="tabs" role="tablist" aria-label="Painéis">
   <div class="in">
-    <button class="btn" id="save"><span class="dot"></span>Salvar</button>
-    <button class="btn primary" id="add">+ Adicionar pano</button>
-    <label class="btn wide-only" for="import">Abrir</label>
-    <button class="btn wide-only" id="print">Imprimir</button>
+    <button class="tab" role="tab" data-tab="fres" aria-selected="true"><span class="ti">⛏</span>Fresagem</button>
+    <button class="tab" role="tab" data-tab="rdo" aria-selected="false"><span class="ti">📋</span>RDO aplicação</button>
+    <button class="tab" role="tab" data-tab="acomp" aria-selected="false"><span class="ti">📈</span>Acompanhamento<span class="badge" id="tabBadge"></span></button>
   </div>
 </nav>
 
@@ -280,18 +382,35 @@ details.notes p{font-size:14px;color:var(--muted);line-height:1.55;margin:8px 0 
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Menu">
   <div class="grab"></div>
   <h3>Apontamento</h3>
-  <label class="btn" for="import"><span class="e">📂</span>Abrir apontamento (.json)</label>
-  <button class="btn" id="saveMenu"><span class="e">💾</span>Salvar apontamento</button>
-  <button class="btn" id="printMenu"><span class="e">🖨️</span>Imprimir / PDF</button>
+  <label class="btn" for="import">📂 Abrir arquivo (.json)</label>
+  <button class="btn" id="saveMenu">💾 Salvar em arquivo</button>
+  <button class="btn" id="printMenu">🖨️ Imprimir / PDF</button>
+  <button class="btn danger" id="newMenu">🗒️ Novo apontamento (limpar)</button>
   <button class="btn dark" id="closeMenu">Fechar</button>
 </div>
 <input id="import" type="file" accept=".json,application/json" hidden>
 
 <script>
-const initial=[['230+600','230+830',230,3.72,.08],['230+830','230+860',30,3.75,.1],['230+860','230+878',18,3.85,.08],['230+878','230+937',59,3.72,.06],['230+937','230+987',50,3.7,.1],['231+000','231+120',120,3.7,.1],['231+340','231+600',260,3.55,.08],['231+600','231+630',30,3.53,.06],['231+630','231+660',30,3.55,.075]];
-let rows=initial.map(r=>({start:r[0],end:r[1],direction:'Crescente',lane:1,length:r[2],width:r[3],thickness:r[4],sequential:false})),dirty=false,lastState='';
-const $=id=>document.getElementById(id),fmt=(n,d=2)=>n.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d}),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* ======================= Estado ======================= */
+const STORE='controle-massa-v2';
+const example=[['230+600',230,3.72,.08],['230+830',30,3.75,.1],['230+860',18,3.85,.08],['230+878',59,3.72,.06],['230+937',50,3.7,.1],['231+000',120,3.7,.1],['231+340',260,3.55,.08],['231+600',30,3.53,.06],['231+630',30,3.55,.075]];
+const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4);
+function exampleState(){
+  const fres=example.map(r=>({id:uid(),start:r[0],end:'',direction:'Crescente',lane:1,length:r[1],width:r[2],thickness:r[3],sequential:false}));
+  const rdo={};fres.forEach((s,i)=>rdo[s.id]={over:{},done:i<6,obs:''});
+  return {version:2,job:'',density:2.528,received:631.76,truck:14,tolerance:0,planWidth:3.55,planThickness:0.05,fres,rdo};
+}
+function emptyState(){return {version:2,job:'',density:2.528,received:0,truck:14,tolerance:0,planWidth:3.5,planThickness:0.05,fres:[],rdo:{}}}
+let S,dirty=false,tab='fres',lastState='';
 
+const $=id=>document.getElementById(id);
+const fmt=(n,d=2)=>Number(n).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fmtN=n=>Number(n).toLocaleString('pt-BR',{maximumFractionDigits:3});
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pos=n=>Number.isFinite(n)&&n>0;
+const KEYS=['start','direction','lane','length','width','thickness'];
+
+/* ======================= Estacas ======================= */
 function stationEnd(start,length,direction){
  const match=String(start).trim().match(/^(\d+)\+(\d{1,3}(?:[.,]\d+)?)$/);
  if(!match||!Number.isFinite(length)||length<=0)return '';
@@ -303,123 +422,255 @@ function stationEnd(start,length,direction){
  const parts=(rounded-km*1000).toFixed(6).replace(/\.?0+$/,'').split('.');
  return km+'+'+parts[0].padStart(3,'0')+(parts[1]?','+parts[1]:'');
 }
-function syncStation(i){
- const r=rows[i];if(i===0)r.sequential=false;
- if(r.sequential&&i>0)r.start=rows[i-1].end;
- r.end=stationEnd(r.start,r.length,r.direction);
- const start=document.querySelector(`[data-i="${i}"][data-k="start"]`),end=document.querySelector(`[data-i="${i}"][data-k="end"]`);
- if(start){start.value=r.start;start.readOnly=!!r.sequential;start.setCustomValidity(r.end?'':'Informe a estaca no formato 230+830 e um comprimento positivo que não resulte em estaca negativa.');}
- if(end)end.value=r.end;
+function chainFres(){S.fres.forEach((s,i)=>{if(i===0)s.sequential=false;if(s.sequential&&i>0)s.start=S.fres[i-1].end;s.end=stationEnd(s.start,s.length,s.direction)})}
+
+/* ======================= RDO (valores efetivos) ======================= */
+function rdoRec(id){return S.rdo[id]??=({over:{},done:false,obs:''})}
+function rv(s,k){const o=rdoRec(s.id).over;return Object.prototype.hasOwnProperty.call(o,k)?o[k]:s[k]}
+function rEnd(s){return stationEnd(rv(s,'start'),rv(s,'length'),rv(s,'direction'))}
+function same(a,b){return typeof a==='number'||typeof b==='number'?Math.abs(Number(a)-Number(b))<1e-9:String(a).trim()===String(b).trim()}
+function editedKeys(s){const o=rdoRec(s.id).over;return Object.keys(o).filter(k=>!same(o[k],s[k]))}
+const vol=(l,w,e)=>l*w*e;
+function fresVol(s){return vol(s.length,s.width,s.thickness)}
+function rdoVol(s){return vol(rv(s,'length'),rv(s,'width'),rv(s,'thickness'))}
+function segValid(o,end){return !!end&&pos(o.length)&&pos(o.width)&&pos(o.thickness)&&Number.isInteger(o.lane)&&o.lane>0}
+function fresOk(s){return segValid(s,s.end)}
+function rdoOk(s){return segValid({length:rv(s,'length'),width:rv(s,'width'),thickness:rv(s,'thickness'),lane:rv(s,'lane')},rEnd(s))}
+
+/* ======================= Cálculos ======================= */
+function calc(){
+ const d=S.density,dOk=pos(d);
+ const fresAllOk=S.fres.every(fresOk),rdoAllOk=S.fres.every(rdoOk);
+ const fVol=S.fres.reduce((a,s)=>a+fresVol(s),0),fMass=fVol*d,fLen=S.fres.reduce((a,s)=>a+s.length,0);
+ let applied=0,pending=0,rMass=0,done=0,edited=0;
+ S.fres.forEach(s=>{const m=rdoVol(s)*d;rMass+=m;if(rdoRec(s.id).done){applied+=m;done++}else pending+=m;if(editedKeys(s).length)edited++});
+ const rec=S.received,recOk=Number.isFinite(rec)&&rec>=0,tol=Number.isFinite(S.tolerance)&&S.tolerance>=0?S.tolerance:0;
+ const ok=dOk&&rdoAllOk&&recOk&&S.fres.length>0;
+ const remaining=rec-applied,saldo=remaining-pending,forecast=applied+pending;
+ const limit=Math.max(0.005,rec*tol/100);
+ const state=!ok?'invalid':Math.abs(saldo)<=limit?'balanced':saldo>0?'surplus':'shortage';
+ const trucks=pos(S.truck)&&saldo<0?Math.ceil(-saldo/S.truck-1e-9):null;
+ const planOk=pos(S.planWidth)&&pos(S.planThickness);
+ const meters=planOk&&dOk&&saldo>0?saldo/(d*S.planWidth*S.planThickness):null;
+ return {d,dOk,fresAllOk,rdoAllOk,fVol,fMass,fLen,applied,pending,rMass,done,edited,rec,ok,remaining,saldo,forecast,state,trucks,meters,planOk,pendingCount:S.fres.length-done};
 }
-function field(r,i,k,label,unit,opts={}){
- const step=({lane:'1',length:'1',width:'0.01',thickness:'0.001'})[k];
- const num=!!step,id=`f${i}${k}`;
- const inp=`<input id="${id}" data-i="${i}" data-k="${k}" ${num?`type="number" inputmode="${k==='lane'?'numeric':'decimal'}" min="${step}" step="${step}" required`:'type="text" autocomplete="off" autocapitalize="off" spellcheck="false"'} ${k==='end'?'readonly tabindex="-1" title="Calculada pela estaca inicial, comprimento e sentido"':''} ${k==='start'?'required placeholder="230+830" inputmode="text"':''} value="${esc(r[k])}">`;
- return `<div class="field ${opts.full?'full':''}"><label for="${id}">${label}</label>${unit?`<div class="unit" data-unit="${unit}">${inp}</div>`:inp}${opts.hint!==undefined?`<small id="h${i}${k}">${opts.hint}</small>`:''}</div>`;
+
+/* ======================= Render: Fresagem ======================= */
+function fField(s,i,k,label,unit){
+ const step=({lane:'1',length:'1',width:'0.01',thickness:'0.001'})[k],num=!!step,id=`f-${s.id}-${k}`;
+ const inp=`<input id="${id}" data-i="${i}" data-k="${k}" ${num?`type="number" inputmode="${k==='lane'?'numeric':'decimal'}" min="${step}" step="${step}" required`:'type="text" autocomplete="off" autocapitalize="off" spellcheck="false"'} ${k==='end'?'readonly tabindex="-1"':''} ${k==='start'?'required placeholder="230+830"':''} value="${esc(s[k])}">`;
+ return `<div class="field"><label for="${id}">${label}</label>${unit?`<div class="unit" data-unit="${unit}">${inp}</div>`:inp}${k==='thickness'?`<small id="fh-${s.id}"></small>`:''}</div>`;
 }
-function panoHtml(r,i){
- return `<article class="pano" aria-label="Pano ${i+1}">
-  <div class="pano-head">
-   <div class="pano-num">Pano ${i+1}<em>${i===0?'primeiro':''}</em></div>
-   <label class="switch"><input type="checkbox" role="switch" data-i="${i}" data-k="sequential" aria-label="Pano ${i+1} sequencial ao anterior" ${i===0?'disabled':''} ${r.sequential?'checked':''}>Sequencial</label>
-   <button class="del" data-remove="${i}" aria-label="Excluir pano ${i+1}">🗑</button>
-  </div>
-  <div class="pano-body">
-   ${field(r,i,'start','Estaca inicial')}
-   ${field(r,i,'end','Estaca final')}
-   <div class="field full"><label>Sentido</label><div class="seg" role="radiogroup" aria-label="Sentido, pano ${i+1}">${['Crescente','Decrescente'].map(v=>`<label><input type="radio" name="dir${i}" data-i="${i}" data-k="direction" value="${v}" ${r.direction===v?'checked':''}>${v==='Crescente'?'↑ ':'↓ '}${v}</label>`).join('')}</div></div>
-   ${field(r,i,'length','Comprimento','m')}
-   ${field(r,i,'lane','Faixa','')}
-   ${field(r,i,'width','Largura','m')}
-   ${field(r,i,'thickness','Espessura','m',{hint:''})}
-   <div class="pano-result"><div>Volume<b id="v${i}"></b></div><div>Massa aplicada<b id="m${i}"></b></div></div>
-  </div>
- </article>`;
+function renderFres(){
+ chainFres();
+ $('fresList').innerHTML=S.fres.length?S.fres.map((s,i)=>`<article class="seg" data-id="${s.id}">
+  <div class="seg-head"><div class="seg-num">Segmento ${i+1}</div>
+   <label class="switch"><input type="checkbox" role="switch" data-i="${i}" data-k="sequential" ${i===0?'disabled':''} ${s.sequential?'checked':''}>Sequencial</label>
+   <button class="sq del" data-remove="${i}" aria-label="Excluir segmento ${i+1}">🗑</button></div>
+  <div class="seg-body">
+   ${fField(s,i,'start','Estaca inicial')}${fField(s,i,'end','Estaca final')}
+   <div class="field full"><span class="lbl">Sentido</span><div class="segctl">${['Crescente','Decrescente'].map(v=>`<label><input type="radio" name="fd-${s.id}" data-i="${i}" data-k="direction" value="${v}" ${s.direction===v?'checked':''}>${v==='Crescente'?'↑':'↓'} ${v}</label>`).join('')}</div></div>
+   ${fField(s,i,'length','Comprimento','m')}${fField(s,i,'lane','Faixa','')}${fField(s,i,'width','Largura','m')}${fField(s,i,'thickness','Espessura','m')}
+   <div class="result"><div>Volume fresado<b id="fv-${s.id}"></b></div><div>Massa equivalente<b id="fm-${s.id}"></b></div></div>
+  </div></article>`).join(''):'<div class="empty">Nenhum segmento. Toque em “+ Segmento” para começar.</div>';
+ syncFresInputs();
 }
-function render(){
- if(rows.length)rows[0].sequential=false;
- $('rows').innerHTML=rows.map(panoHtml).join('');
- rows.forEach((_,i)=>syncStation(i));calculate();
+function syncFresInputs(){
+ chainFres();
+ S.fres.forEach((s,i)=>{
+  const st=document.querySelector(`[data-i="${i}"][data-k="start"]`),en=document.querySelector(`[data-i="${i}"][data-k="end"]`);
+  if(st){if(document.activeElement!==st)st.value=s.start;st.readOnly=!!s.sequential;st.setCustomValidity(s.end?'':'Estaca no formato 230+830 e comprimento positivo.')}
+  if(en)en.value=s.end;
+ });
 }
-function valid(){return rows.every(r=>!!r.end)&&[...document.querySelectorAll('input[required]')].every(e=>e.checkValidity()&&e.value!=='')}
-function totals(){const density=Number($('density').value),produced=Number($('produced').value),tolerance=Number($('tolerance').value)||0,volume=rows.reduce((s,r)=>s+r.length*r.width*r.thickness,0),applied=volume*density;return {density,produced,tolerance,volume,applied,balance:produced-applied,percentage:produced>0?(produced-applied)/produced*100:null}}
-function massState(t,ok){
- if(!ok)return 'invalid';
- const limit=Math.max(0.005,t.produced*t.tolerance/100);
- if(Math.abs(t.balance)<=limit)return 'balanced';
- return t.balance>0?'surplus':'shortage';
+
+/* ======================= Render: RDO ======================= */
+function showVal(k,v){return k==='length'||k==='width'?fmtN(v)+' m':k==='thickness'?fmtN(v)+' m ('+fmt(v*100,1)+' cm)':k==='lane'?String(v):String(v||'—')}
+function rField(s,k,label,unit){
+ const v=rv(s,k),step=({lane:'1',length:'1',width:'0.01',thickness:'0.001'})[k],num=!!step,id=`r-${s.id}-${k}`,diff=k==='end'?!same(rEnd(s),s.end):editedKeys(s).includes(k);
+ const val=k==='end'?rEnd(s):v;
+ const inp=`<input id="${id}" data-id="${s.id}" data-k="${k}" ${num?`type="number" inputmode="${k==='lane'?'numeric':'decimal'}" min="${step}" step="${step}" required`:'type="text" autocomplete="off" autocapitalize="off" spellcheck="false"'} ${k==='end'?'readonly tabindex="-1"':''} ${k==='start'?'required placeholder="230+830"':''} value="${esc(val)}">`;
+ return `<div class="field ${diff?'edited':''}" id="rf-${s.id}-${k}"><label for="${id}">${label}</label>${unit?`<div class="unit" data-unit="${unit}">${inp}</div>`:inp}<small class="orig" id="ro-${s.id}-${k}" ${diff?'':'hidden'}>Fresagem: ${esc(showVal(k,k==='end'?s.end:s[k]))}</small></div>`;
 }
-function updateMassAlert(t,ok){
- const state=massState(t,ok),a=$('massAlert');
- const pct=ok&&t.percentage!==null?(t.percentage>0?'+':t.percentage<0?'−':'')+fmt(Math.abs(t.percentage),1)+'%':'';
- const conf={
-  invalid:['!','Verificar','Complete os dados','Corrija os campos destacados para calcular a sobra ou falta de massa.'],
-  balanced:['✓','Massa equilibrada',(t.balance>=0?'+':'−')+fmt(Math.abs(t.balance))+' <small>t</small>',`Diferença dentro da tolerância de ${fmt(t.tolerance,1)}%.`],
-  surplus:['▲','Sobrando massa','+'+fmt(t.balance)+' <small>t</small>','A massa usinada é maior que a aplicada. Confira o saldo ao concluir o serviço.'],
-  shortage:['▼','Faltando massa','−'+fmt(-t.balance)+' <small>t</small>','A massa aplicada calculada supera a usinada. Confira o total recebido e as medições dos panos.']
- }[state];
- a.dataset.state=state;$('massAlertIcon').textContent=conf[0];$('massAlertKind').textContent=conf[1];$('massAlertTitle').innerHTML=conf[2];$('massAlertDetail').textContent=conf[3];
- $('massAlertPct').innerHTML=pct?`${pct}<small>da usinada</small>`:'';
- a.setAttribute('aria-label',`${conf[1]}. ${conf[3]}`);
- if(lastState&&state!==lastState&&a.classList){a.classList.remove('flash');void a.offsetWidth;a.classList.add('flash');if(state==='shortage'&&navigator.vibrate)navigator.vibrate(120)}
- lastState=state;
- ['balanceCard','percentCard'].forEach(id=>$(id).dataset.state=state);
+function renderRdo(){
+ $('rdoList').innerHTML=S.fres.length?S.fres.map((s,i)=>{const r=rdoRec(s.id),ed=editedKeys(s).length;return `<article class="seg ${r.done?'done':''} ${ed?'is-edited':''}" id="rc-${s.id}">
+  <div class="seg-head"><div class="seg-num">Segmento ${i+1}<em>${esc(rv(s,'start'))} → ${esc(rEnd(s)||'?')}</em></div>
+   <span class="tag" id="rt-${s.id}" ${ed?'':'hidden'}>editado</span>
+   <button class="sq" data-reset="${s.id}" id="rr-${s.id}" aria-label="Restaurar valores da fresagem" title="Restaurar valores da fresagem" ${ed?'':'hidden'}>↺</button>
+   <label class="switch green"><input type="checkbox" role="switch" data-id="${s.id}" data-k="done" ${r.done?'checked':''}>Concluído</label></div>
+  <div class="seg-body">
+   ${rField(s,'start','Estaca inicial')}${rField(s,'end','Estaca final')}
+   <div class="field full ${editedKeys(s).includes('direction')?'edited':''}" id="rf-${s.id}-direction"><span class="lbl">Sentido</span><div class="segctl">${['Crescente','Decrescente'].map(v=>`<label><input type="radio" name="rd-${s.id}" data-id="${s.id}" data-k="direction" value="${v}" ${rv(s,'direction')===v?'checked':''}>${v==='Crescente'?'↑':'↓'} ${v}</label>`).join('')}</div><small class="orig" id="ro-${s.id}-direction" ${editedKeys(s).includes('direction')?'':'hidden'}>Fresagem: ${s.direction}</small></div>
+   ${rField(s,'length','Comprimento','m')}${rField(s,'lane','Faixa','')}${rField(s,'width','Largura','m')}${rField(s,'thickness','Espessura','m')}
+   <div class="field full"><label for="r-${s.id}-obs">Observação</label><textarea id="r-${s.id}-obs" data-id="${s.id}" data-k="obs" placeholder="Opcional">${esc(r.obs)}</textarea></div>
+   <div class="result"><div>Volume aplicado<b id="rv-${s.id}"></b></div><div>Massa aplicada<b id="rm-${s.id}"></b><small class="orig" id="rmo-${s.id}" hidden></small></div></div>
+  </div></article>`}).join(''):'<div class="empty">Nenhum segmento ainda. Crie os segmentos no painel Fresagem.</div>';
 }
-function calculate(){
- const ok=valid(),t=totals(),display=n=>ok?fmt(n):'—';
- rows.forEach((r,i)=>{const v=r.length*r.width*r.thickness;$('v'+i).innerHTML=display(v)+' m³';$('m'+i).innerHTML=display(v*t.density)+' t';const h=document.getElementById?.('h'+i+'thickness');if(h)h.textContent=Number.isFinite(r.thickness)&&r.thickness>0?'= '+fmt(r.thickness*100,1)+' cm':'Em metros (8 cm = 0,080)'});
- $('totalProduced').innerHTML=display(t.produced)+' <span>t</span>';
- $('totalApplied').innerHTML=display(t.applied)+' <span>t</span>';
- $('totalBalance').innerHTML=(ok&&t.balance>0?'+':'')+display(t.balance)+' <span>t</span>';
- $('balanceLabel').textContent=!ok?'Saldo':t.balance<0?'Falta de massa':'Sobra de massa';
- $('percentage').innerHTML=(ok&&t.percentage!==null?fmt(t.percentage):'—')+' <span>%</span>';
- $('percentDescription').textContent=t.produced===0?'Sem base (usinada = 0)':'sobre a usinada';
- $('lengthTotal').textContent=display(rows.reduce((s,r)=>s+r.length,0))+' m';
- $('volumeTotal').textContent=display(t.volume)+' m³';
- $('massTotal').textContent=display(t.applied)+' t';
- $('count').textContent=`(${rows.length})`;
- $('producedBarLabel').textContent=display(t.produced)+' t';$('appliedBarLabel').textContent=display(t.applied)+' t';
- const max=Math.max(t.produced,t.applied,1);$('producedBar').style.width=ok?t.produced/max*100+'%':'0%';$('appliedBar').style.width=ok?t.applied/max*100+'%':'0%';
- $('appliedBar').classList?.toggle('over',ok&&t.balance<0);
- $('conclusion').textContent=!ok?'Corrija os campos destacados para concluir o comparativo.':t.balance<0?`A massa aplicada supera a usinada em ${fmt(-t.balance)} t. Confira as medições e o total da usina.`:Math.abs(t.balance)<.005?'Massas usinada e aplicada coincidem na precisão exibida.':`Saldo calculado de ${fmt(t.balance)} t entre a usina e a aplicação.`;
- updateMassAlert(t,ok);
- $('printRows').innerHTML=rows.map((r,i)=>{const v=r.length*r.width*r.thickness;return `<tr><td>${i+1}</td><td>${r.sequential?'Sim':''}</td><td>${esc(r.start)}</td><td>${esc(r.end)}</td><td>${r.direction}</td><td>${r.lane}</td><td class="n">${fmt(r.length||0)}</td><td class="n">${fmt(r.width||0)}</td><td class="n">${fmt(r.thickness||0,3)}</td><td class="n">${display(v)}</td><td class="n">${display(v*t.density)}</td></tr>`}).join('');
- $('pLen').textContent=display(rows.reduce((s,r)=>s+r.length,0));$('pVol').textContent=display(t.volume);$('pMass').textContent=display(t.applied);
+function updateRdoCard(s){
+ const ed=editedKeys(s);
+ ['start','direction','lane','length','width','thickness','end'].forEach(k=>{
+  const f=$(`rf-${s.id}-${k}`),o=$(`ro-${s.id}-${k}`);if(!f||!o)return;
+  const diff=k==='end'?!same(rEnd(s),s.end):ed.includes(k);
+  f.classList.toggle('edited',diff);o.hidden=!diff;
+ });
+ const e=$(`r-${s.id}-end`);if(e)e.value=rEnd(s);
+ const st=$(`r-${s.id}-start`);if(st)st.setCustomValidity(rEnd(s)?'':'Estaca no formato 230+830 e comprimento positivo.');
+ const c=$(`rc-${s.id}`);if(c){c.classList.toggle('is-edited',!!ed.length);c.classList.toggle('done',!!rdoRec(s.id).done);c.querySelector('.seg-num em').textContent=`${rv(s,'start')} → ${rEnd(s)||'?'}`}
+ $(`rt-${s.id}`).hidden=!ed.length;$(`rr-${s.id}`).hidden=!ed.length;
+}
+
+/* ======================= Atualização geral ======================= */
+function update(){
+ const t=calc(),D=n=>t.dOk?fmt(n):'—',idx=s=>S.fres.indexOf(s)+1;
+ $('brandTitle').textContent=S.job?S.job:'CONTROLE DE MASSA';
+ // Painel 1
+ S.fres.forEach(s=>{const v=fresVol(s),ok=fresOk(s);$('fv-'+s.id)&&($('fv-'+s.id).textContent=ok?fmt(v)+' m³':'—');$('fm-'+s.id)&&($('fm-'+s.id).textContent=ok&&t.dOk?fmt(v*t.d)+' t':'—');const h=$('fh-'+s.id);if(h)h.textContent=pos(s.thickness)?'= '+fmt(s.thickness*100,1)+' cm':'Em metros (8 cm = 0,080)'});
+ $('fCount').textContent=S.fres.length;$('fCount2').textContent=`(${S.fres.length})`;
+ $('fLen').innerHTML=fmt(t.fLen)+' <span>m</span>';$('fVol').innerHTML=fmt(t.fVol)+' <span>m³</span>';$('fMass').innerHTML=(t.fresAllOk?D(t.fMass):'—')+' <span>t</span>';
+ $('fSumRows').innerHTML=S.fres.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.start)} → ${esc(s.end||'?')}<small>${s.direction} · faixa ${s.lane} · ${fmtN(s.width)} × ${fmtN(s.thickness)} m</small></td><td class="n">${fmt(s.length,0)}</td><td class="n">${fresOk(s)?fmt(fresVol(s)):'—'}</td><td class="n"><b>${fresOk(s)?D(fresVol(s)*t.d):'—'}</b></td></tr>`).join('')||'<tr><td colspan="5" style="color:#5a6c79">Sem segmentos</td></tr>';
+ $('fSumLen').textContent=fmt(t.fLen,0);$('fSumVol').textContent=fmt(t.fVol);$('fSumMass').textContent=t.fresAllOk?D(t.fMass):'—';$('fSumBig').textContent=(t.fresAllOk?D(t.fMass):'—')+' t';
+ // Painel 2
+ S.fres.forEach(s=>{if(!$('rv-'+s.id))return;const ok=rdoOk(s),v=rdoVol(s),m=v*t.d,fm=fresVol(s)*t.d;$('rv-'+s.id).textContent=ok?fmt(v)+' m³':'—';$('rm-'+s.id).textContent=ok&&t.dOk?fmt(m)+' t':'—';const o=$('rmo-'+s.id),diff=ok&&Math.abs(m-fm)>=0.005;o.hidden=!diff;if(diff)o.textContent=`Fresagem: ${fmt(fm)} t (${m-fm>0?'+':'−'}${fmt(Math.abs(m-fm))})`});
+ $('rDone').innerHTML=`${t.done}<span> / ${S.fres.length}</span>`;$('rEdited').textContent=t.edited;
+ $('rMass').innerHTML=(t.rdoAllOk?D(t.rMass):'—')+' <span>t</span>';$('rMassOrig').textContent=t.fresAllOk&&t.rdoAllOk&&Math.abs(t.rMass-t.fMass)>=0.005?`Fresagem: ${fmt(t.fMass)} t`:'igual à fresagem';
+ $('rMassDone').innerHTML=D(t.applied)+' <span>t</span>';
+ // Painel 3
+ renderAcomp(t);
+ updateAlert(t);
+ $('tabBadge').classList.toggle('on',t.state==='shortage');
+ renderPrint(t);
  return t;
 }
-function setDirty(v){dirty=v;$('save').classList?.toggle('pending',v)}
-function changed(){setDirty(true);$('status').textContent='Alterações pendentes de salvar em arquivo.';calculate()}
+function renderAcomp(t){
+ const D=n=>t.ok?fmt(n):'—';
+ $('aRec').innerHTML=D(t.rec)+' <span>t</span>';$('aApp').innerHTML=D(t.applied)+' <span>t</span>';$('aAppS').textContent=`${t.done} de ${S.fres.length} segmentos`;
+ $('aRest').innerHTML=D(t.remaining)+' <span>t</span>';$('aNeed').innerHTML=D(t.pending)+' <span>t</span>';$('aNeedS').textContent=`${t.pendingCount} segmento(s) pendente(s)`;
+ $('aSaldo').innerHTML=(t.ok&&t.saldo>0?'+':'')+D(t.saldo)+' <span>t</span>';$('aSaldoCard').dataset.state=t.state;
+ $('aSaldoL').textContent=t.state==='shortage'?'Falta CBUQ':t.state==='surplus'?'Sobra prevista':'Saldo previsto';
+ $('truckHint').textContent=pos(S.truck)&&pos(S.received)?`≈ ${fmt(S.received/S.truck,1)} caminhões de ${fmt(S.truck)} t`:'';
+ $('addTruck').textContent=pos(S.truck)?`+1 caminhão (${fmtN(S.truck)} t)`:'+1 caminhão';
+ $('aEstF').textContent=t.fresAllOk&&t.dOk?fmt(t.fMass)+' t':'—';$('aEstR').textContent=D(t.forecast)+' t';
+ const df=t.forecast-t.fMass;$('aEstDiff').textContent=t.ok&&t.fresAllOk?(Math.abs(df)<0.005?'RDO igual à fresagem.':`O RDO ${df>0?'aumentou':'reduziu'} a previsão em ${fmt(Math.abs(df))} t em relação à fresagem.`):'';
+ $('aRec2').textContent=D(t.rec)+' t';
+ $('aFinalL').textContent=t.state==='shortage'?'Falta ao fechar tudo':t.state==='surplus'?'Sobra ao fechar tudo':'Saldo ao fechar tudo';
+ $('aFinal').textContent=(t.ok&&t.saldo>0?'+':'')+D(t.saldo)+' t';$('aFinal').style.color=t.state==='shortage'?'var(--bad)':t.state==='surplus'?'var(--warn)':t.state==='balanced'?'var(--ok)':'';
+ // barra
+ const total=Math.max(t.rec,t.forecast,1e-9);
+ $('aBar').innerHTML=t.ok?`<i class="p-done" style="width:${t.applied/total*100}%"></i><i class="p-pend" style="width:${Math.min(t.pending,Math.max(t.remaining,0))/total*100}%"></i>${t.saldo>0?`<i class="p-rest" style="width:${t.saldo/total*100}%"></i>`:`<i class="p-over" style="width:${-t.saldo/total*100}%"></i>`}`:'';
+ // lista
+ $('aCount').textContent=`(${t.done}/${S.fres.length} concluídos)`;
+ $('aList').innerHTML=S.fres.map((s,i)=>{const r=rdoRec(s.id),m=rdoVol(s)*t.d;return `<div class="statusrow"><div class="info"><b>Segmento ${i+1}</b><small>${esc(rv(s,'start'))} → ${esc(rEnd(s)||'?')} · ${fmtN(rv(s,'length'))} m</small></div><div class="m">${rdoOk(s)&&t.dOk?fmt(m):'—'} t<small>${r.done?'aplicado':'a aplicar'}</small></div><label class="switch green" aria-label="Segmento ${i+1} concluído"><input type="checkbox" role="switch" data-id="${s.id}" data-k="done" ${r.done?'checked':''}></label></div>`}).join('')||'<div class="empty">Sem segmentos.</div>';
+ // decisão
+ const dec=$('decision');dec.dataset.state=t.state;
+ let h='';
+ if(t.state==='invalid')h=`<h2>Complete os dados</h2><p>${!S.fres.length?'Cadastre os segmentos no painel Fresagem.':'Confira densidade, massa recebida e os campos destacados nos painéis Fresagem e RDO.'}</p>`;
+ else if(t.state==='shortage'&&t.pendingCount>0)h=`<h2>🚨 Acionar a usina imediatamente</h2><div class="big">Faltam ${fmt(-t.saldo)} t</div><p>O CBUQ restante (${fmt(t.remaining)} t) não fecha os ${t.pendingCount} segmento(s) pendente(s), que precisam de ${fmt(t.pending)} t.${t.trucks?` Solicite <b>${t.trucks} caminhão(ões)</b> de ${fmt(S.truck)} t.`:''}</p><button class="callbtn" id="copyCall">📋 Copiar pedido para a usina</button>`;
+ else if(t.state==='shortage')h=`<h2>Aplicado acima do recebido</h2><div class="big">${fmt(-t.saldo)} t a mais</div><p>Todos os segmentos estão concluídos e a massa aplicada calculada supera a recebida. Confira as medições do RDO e os tickets da usina.</p>`;
+ else if(t.state==='surplus')h=`<h2>Sobra de CBUQ — precisa fresar mais</h2><div class="big">+${fmt(t.saldo)} t</div><p>Depois de fechar ${t.pendingCount?`os ${t.pendingCount} segmento(s) pendente(s)`:'todos os segmentos'}, ainda sobram ${fmt(t.saldo)} t. Para aproveitar essa massa, frese mais:</p>
+  <div class="calc"><div class="field"><label for="planWidth">Largura</label><div class="unit" data-unit="m"><input id="planWidth" data-plan="planWidth" type="number" inputmode="decimal" min="0.01" step="0.01" value="${S.planWidth}"></div></div><div class="field"><label for="planThickness">Espessura</label><div class="unit" data-unit="m"><input id="planThickness" data-plan="planThickness" type="number" inputmode="decimal" min="0.001" step="0.001" value="${S.planThickness}"></div><small>${pos(S.planThickness)?'= '+fmt(S.planThickness*100,1)+' cm':''}</small></div></div>
+  <div class="meters">Fresar mais <b id="metersOut">${t.meters!==null?fmt(t.meters,0):'—'}</b> m<br><small id="metersSub">${t.meters!==null?`${fmt(t.saldo)} t ÷ (${fmtN(t.d)} × ${fmtN(S.planWidth)} × ${fmtN(S.planThickness)})`:'Informe largura e espessura.'}</small></div>`;
+ else h=`<h2>✓ Massa suficiente</h2><div class="big">${t.saldo>=0?'+':'−'}${fmt(Math.abs(t.saldo))} t</div><p>O CBUQ restante fecha os segmentos pendentes, dentro da tolerância. Não é preciso fresar mais nem pedir caminhão.</p>`;
+ const act=document.activeElement,focusId=act&&dec.contains(act)?act.id:null,caret=focusId?act.selectionStart:null;
+ if(!focusId||dec.dataset.lastHtmlState!==t.state){dec.innerHTML=h;dec.dataset.lastHtmlState=t.state;if(focusId&&$(focusId)){$(focusId).focus();try{$(focusId).setSelectionRange(caret,caret)}catch{}}}
+ else{const mo=$('metersOut'),ms=$('metersSub');if(mo)mo.textContent=t.meters!==null?fmt(t.meters,0):'—';if(ms)ms.textContent=t.meters!==null?`${fmt(t.saldo)} t ÷ (${fmtN(t.d)} × ${fmtN(S.planWidth)} × ${fmtN(S.planThickness)})`:'Informe largura e espessura.';const big=dec.querySelector('.big');if(big)big.textContent='+'+fmt(t.saldo)+' t'}
+}
+function updateAlert(t){
+ const a=$('massAlert');let ico='!',kind='Verificar',amt='Complete os dados',side='';
+ if(t.state==='shortage'&&t.pendingCount>0){ico='!';kind='Falta CBUQ · acionar usina';amt='−'+fmt(-t.saldo)+' <small>t</small>';side=t.trucks?`${t.trucks}<small>caminhão(ões)</small>`:''}
+ else if(t.state==='shortage'){ico='!';kind='Aplicado acima do recebido';amt='−'+fmt(-t.saldo)+' <small>t</small>'}
+ else if(t.state==='surplus'){ico='▲';kind='Sobra de CBUQ · fresar mais';amt='+'+fmt(t.saldo)+' <small>t</small>';side=t.meters!==null?`${fmt(t.meters,0)} m<small>a fresar</small>`:''}
+ else if(t.state==='balanced'){ico='✓';kind='Massa suficiente';amt=(t.saldo>=0?'+':'−')+fmt(Math.abs(t.saldo))+' <small>t</small>';side=`${t.pendingCount}<small>pendente(s)</small>`}
+ a.dataset.state=t.state;$('alertIcon').textContent=ico;$('alertKind').textContent=kind;$('alertAmount').innerHTML=amt;$('alertSide').innerHTML=side;
+ a.classList.toggle('urgent',t.state==='shortage'&&t.pendingCount>0);
+ a.setAttribute('aria-label',kind+'. '+$('alertAmount').textContent);
+ if(lastState&&t.state!==lastState){a.classList.remove('flash');void a.offsetWidth;a.classList.add('flash');if(t.state==='shortage'&&navigator.vibrate)navigator.vibrate([150,80,150])}
+ lastState=t.state;
+}
+function renderPrint(t){
+ const D=n=>fmt(n);
+ $('printReport').innerHTML=`<h2>${esc(S.job||'Controle de massa')} — relatório</h2>
+ <p>Densidade ${fmtN(S.density)} t/m³ · Recebida ${D(S.received)} t · Aplicada (concluídos) ${D(t.applied)} t · Necessário p/ pendentes ${D(t.pending)} t · <b>Saldo ${t.saldo>0?'+':''}${D(t.saldo)} t</b></p>
+ <table class="ptable"><thead><tr><th>#</th><th>Fresagem: estacas</th><th>Compr.</th><th>Larg.</th><th>Esp.</th><th>Massa fres. (t)</th><th>RDO: estacas</th><th>Compr.</th><th>Larg.</th><th>Esp.</th><th>Massa RDO (t)</th><th>Status</th><th>Obs.</th></tr></thead><tbody>
+ ${S.fres.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.start)} → ${esc(s.end)}</td><td class="n">${fmtN(s.length)}</td><td class="n">${fmtN(s.width)}</td><td class="n">${fmtN(s.thickness)}</td><td class="n">${D(fresVol(s)*t.d)}</td><td>${esc(rv(s,'start'))} → ${esc(rEnd(s))}</td><td class="n">${fmtN(rv(s,'length'))}</td><td class="n">${fmtN(rv(s,'width'))}</td><td class="n">${fmtN(rv(s,'thickness'))}</td><td class="n">${D(rdoVol(s)*t.d)}</td><td>${rdoRec(s.id).done?'Concluído':'Pendente'}</td><td>${esc(rdoRec(s.id).obs)}</td></tr>`).join('')}
+ </tbody><tfoot><tr><td colspan="5">Total</td><td class="n">${D(t.fMass)}</td><td colspan="4"></td><td class="n">${D(t.rMass)}</td><td colspan="2"></td></tr></tfoot></table>`;
+}
 
-$('rows').addEventListener('input',e=>{const {i,k}=e.target.dataset;if(k&&k!=='end'&&k!=='sequential'&&!(k==='start'&&rows[+i].sequential)){rows[+i][k]=e.target.type==='number'?Number(e.target.value):e.target.value;if(['start','length','direction'].includes(k))rows.forEach((_,j)=>syncStation(j));changed()}});
-$('rows').addEventListener('change',e=>{const {i,k}=e.target.dataset;if(k==='sequential'&&+i>0){rows[+i].sequential=e.target.checked;rows.forEach((_,j)=>syncStation(j));changed()}});
-$('rows').addEventListener('click',e=>{const b=e.target.closest('[data-remove]');if(b&&confirm(`Excluir o pano ${+b.dataset.remove+1}?`)){rows.splice(+b.dataset.remove,1);render();changed()}});
-['density','produced','tolerance','job'].forEach(id=>$(id).addEventListener('input',changed));
+/* ======================= Persistência ======================= */
+let saveTimer;
+function persist(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>{try{localStorage.setItem(STORE,JSON.stringify(S))}catch{}},250)}
+function flush(){clearTimeout(saveTimer);try{localStorage.setItem(STORE,JSON.stringify(S))}catch{}}
+addEventListener('pagehide',flush);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flush()});
+function setDirty(v){dirty=v;$('menuBtn').classList.toggle('pending',v)}
+function changed(){setDirty(true);persist();update()}
+function normalize(d){
+ if(!d||typeof d!=='object')throw Error('Arquivo inválido.');
+ const segOk=r=>r&&typeof r.start==='string'&&['Crescente','Decrescente'].includes(r.direction)&&Number.isInteger(r.lane)&&r.lane>0&&['length','width','thickness'].every(k=>Number.isFinite(r[k])&&r[k]>0);
+ if(d.version===1){ // formato antigo: rows + produced
+  if(!Array.isArray(d.rows)||!d.rows.every(segOk)||!Number.isFinite(d.density)||!Number.isFinite(d.produced))throw Error('Formato de apontamento inválido.');
+  const fres=d.rows.map(r=>({id:uid(),start:r.start,end:'',direction:r.direction,lane:r.lane,length:r.length,width:r.width,thickness:r.thickness,sequential:r.sequential===true}));
+  const rdo={};fres.forEach(s=>rdo[s.id]={over:{},done:false,obs:''});
+  return {...emptyState(),job:typeof d.job==='string'?d.job:'',density:d.density,received:d.produced,tolerance:Number.isFinite(d.tolerance)?d.tolerance:0,fres,rdo};
+ }
+ if(d.version!==2||!Array.isArray(d.fres)||d.fres.length>2000||!d.fres.every(s=>segOk(s)&&typeof s.id==='string')||!Number.isFinite(d.density)||d.density<=0)throw Error('Formato de apontamento inválido.');
+ const out={...emptyState(),...d,fres:d.fres.map(s=>({id:s.id,start:s.start,end:'',direction:s.direction,lane:s.lane,length:s.length,width:s.width,thickness:s.thickness,sequential:s.sequential===true})),rdo:{}};
+ ['received','truck','tolerance','planWidth','planThickness'].forEach(k=>{if(!Number.isFinite(out[k]))out[k]=emptyState()[k]});
+ if(typeof out.job!=='string')out.job='';
+ out.fres.forEach(s=>{const r=d.rdo&&d.rdo[s.id];const over={};if(r&&r.over&&typeof r.over==='object')KEYS.forEach(k=>{if(k in r.over){const v=r.over[k];if(k==='start'&&typeof v==='string')over[k]=v;else if(k==='direction'&&['Crescente','Decrescente'].includes(v))over[k]=v;else if(k==='lane'&&Number.isInteger(v)&&v>0)over[k]=v;else if(['length','width','thickness'].includes(k)&&Number.isFinite(v))over[k]=v}});out.rdo[s.id]={over,done:!!(r&&r.done),obs:r&&typeof r.obs==='string'?r.obs.slice(0,1000):''}});
+ return out;
+}
+function load(){try{const raw=localStorage.getItem(STORE);if(raw)return normalize(JSON.parse(raw))}catch{}return exampleState()}
 
-function addPano(){
- const prev=rows[rows.length-1];
- rows.push({start:'',end:'',direction:prev?prev.direction:'Crescente',lane:prev?prev.lane:1,length:1,width:prev?prev.width:3.5,thickness:prev?prev.thickness:.08,sequential:!!prev});
- render();changed();
- const card=$('rows').lastElementChild;card.scrollIntoView({behavior:'smooth',block:'center'});
+/* ======================= Entradas ======================= */
+function fillStatic(){$('job').value=S.job;$('density').value=S.density;$('received').value=S.received;$('truck').value=S.truck;$('tolerance').value=S.tolerance}
+function renderAll(){fillStatic();renderFres();renderRdo();update()}
+[['job','job',false],['density','density',true],['received','received',true],['truck','truck',true],['tolerance','tolerance',true]].forEach(([id,k,num])=>$(id).addEventListener('input',e=>{S[k]=num?(e.target.value===''?NaN:Number(e.target.value)):e.target.value;changed()}));
+
+// Fresagem
+$('fresList').addEventListener('input',e=>{const {i,k}=e.target.dataset;if(!k||k==='end'||k==='sequential')return;const s=S.fres[+i];if(k==='start'&&s.sequential)return;s[k]=e.target.type==='number'?(e.target.value===''?NaN:Number(e.target.value)):e.target.value;syncFresInputs();changed();renderRdoIfHidden()});
+$('fresList').addEventListener('change',e=>{const {i,k}=e.target.dataset;if(k==='sequential'&&+i>0){S.fres[+i].sequential=e.target.checked;syncFresInputs();changed();renderRdoIfHidden()}});
+$('fresList').addEventListener('click',e=>{const b=e.target.closest('[data-remove]');if(b&&confirm(`Excluir o segmento ${+b.dataset.remove+1}? Ele também sai do RDO.`)){const [s]=S.fres.splice(+b.dataset.remove,1);delete S.rdo[s.id];renderFres();renderRdo();changed()}});
+function renderRdoIfHidden(){if(tab!=='rdo')renderRdo()}
+
+// RDO
+function findSeg(id){return S.fres.find(s=>s.id===id)}
+$('rdoList').addEventListener('input',e=>{const {id,k}=e.target.dataset;if(!id||!k||k==='end'||k==='done')return;const s=findSeg(id),r=rdoRec(id);if(!s)return;
+ if(k==='obs'){r.obs=e.target.value;changed();return}
+ const v=e.target.type==='number'?(e.target.value===''?NaN:Number(e.target.value)):e.target.value;
+ if(same(v,s[k]))delete r.over[k];else r.over[k]=v;
+ updateRdoCard(s);changed()});
+function toggleDone(e){const {id,k}=e.target.dataset;if(k!=='done'||!id)return;rdoRec(id).done=e.target.checked;const s=findSeg(id);if(s&&$('rc-'+id))updateRdoCard(s);document.querySelectorAll(`input[data-id="${id}"][data-k="done"]`).forEach(x=>x.checked=e.target.checked);changed()}
+$('rdoList').addEventListener('change',toggleDone);$('aList').addEventListener('change',toggleDone);
+$('rdoList').addEventListener('click',e=>{const b=e.target.closest('[data-reset]');if(!b)return;const s=findSeg(b.dataset.reset);if(s&&confirm('Voltar este segmento para os valores da fresagem?')){rdoRec(s.id).over={};renderRdo();changed()}});
+
+// Acompanhamento
+$('decision').addEventListener('input',e=>{const k=e.target.dataset.plan;if(!k)return;S[k]=e.target.value===''?NaN:Number(e.target.value);changed()});
+$('decision').addEventListener('click',async e=>{if(e.target.id!=='copyCall')return;const t=calc();const msg=`${S.job?S.job+' — ':''}Pedido urgente de CBUQ: faltam ${fmt(-t.saldo)} t para fechar ${t.pendingCount} segmento(s).${t.trucks?` Enviar ${t.trucks} caminhão(ões) de ${fmt(S.truck)} t.`:''}`;try{if(navigator.share){await navigator.share({text:msg});return}await navigator.clipboard.writeText(msg);$('status').textContent='Pedido copiado: '+msg}catch{ $('status').textContent=msg }});
+$('addTruck').onclick=()=>{if(!pos(S.truck))return;S.received=Math.round(((Number.isFinite(S.received)?S.received:0)+S.truck)*100)/100;$('received').value=S.received;changed();$('status').textContent=`+${fmt(S.truck)} t adicionadas à massa recebida.`};
+
+function addSeg(){
+ const prev=S.fres[S.fres.length-1];
+ const s={id:uid(),start:'',end:'',direction:prev?prev.direction:'Crescente',lane:prev?prev.lane:1,length:1,width:prev?prev.width:3.5,thickness:prev?prev.thickness:.08,sequential:!!prev};
+ S.fres.push(s);rdoRec(s.id);renderFres();renderRdo();changed();
+ const card=$('fresList').lastElementChild;card.scrollIntoView({behavior:'smooth',block:'center'});
  const target=card.querySelector(prev?'[data-k="length"]':'[data-k="start"]');setTimeout(()=>{target.focus();target.select?.()},350);
 }
-$('add').onclick=addPano;$('addInline').onclick=addPano;
+$('addInline').onclick=addSeg;$('fab').onclick=addSeg;
 
-function save(){closeMenu();if(!valid()){document.querySelector('input:invalid')?.reportValidity();$('status').textContent='Corrija os valores antes de salvar.';return}const data={version:1,job:$('job').value,density:Number($('density').value),produced:Number($('produced').value),tolerance:Number($('tolerance').value),rows};const name='apontamento-massa'+($('job').value?'-'+$('job').value.replace(/[^\w-]+/g,'_').slice(0,40):'')+'.json';const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setDirty(false);$('status').textContent='Arquivo gerado. Guarde-o para reabrir e continuar o apontamento.'}
-$('save').onclick=save;$('saveMenu').onclick=save;
+/* ======================= Abas e menu ======================= */
+function setTab(t){tab=t;document.querySelectorAll('.screen[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==t);document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));$('fab').hidden=t!=='fres';if(t==='rdo')renderRdo();update();window.scrollTo({top:0});try{localStorage.setItem(STORE+'-tab',t)}catch{}}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+$('massAlert').onclick=()=>setTab('acomp');
+function openMenu(){$('sheet').classList.add('open');$('sheetBg').classList.add('open')}
+function closeMenu(){$('sheet').classList.remove('open');$('sheetBg').classList.remove('open')}
+$('menuBtn').onclick=openMenu;$('closeMenu').onclick=closeMenu;$('sheetBg').onclick=closeMenu;document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
+$('saveMenu').onclick=()=>{closeMenu();const data=JSON.parse(JSON.stringify(S));data.version=2;const name='apontamento-massa'+(S.job?'-'+S.job.replace(/[^\w-]+/g,'_').slice(0,40):'')+'.json';const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setDirty(false);$('status').textContent='Arquivo gerado. Guarde-o para reabrir em outro aparelho.'};
+$('printMenu').onclick=()=>{closeMenu();update();setTimeout(()=>window.print(),250)};
+$('newMenu').onclick=()=>{closeMenu();if(!confirm('Começar um apontamento vazio? Salve em arquivo antes se quiser guardar o atual.'))return;S=emptyState();renderAll();changed();setTab('fres')};
+$('import').onchange=async e=>{closeMenu();const f=e.target.files[0];if(!f)return;try{if(f.size>3000000)throw Error('Arquivo muito grande.');const d=normalize(JSON.parse(await f.text()));if(dirty&&!confirm('Substituir o apontamento atual pelo arquivo?'))return;S=d;renderAll();persist();setDirty(false);$('status').textContent='Apontamento carregado.'}catch(err){$('status').textContent='Não foi possível abrir: '+err.message}finally{e.target.value=''}};
 
-$('import').onchange=async e=>{closeMenu();const file=e.target.files[0];if(!file)return;try{if(file.size>2000000)throw Error('Arquivo muito grande.');const d=JSON.parse(await file.text());if(d.version!==1||typeof d.job!=='string'||!Number.isFinite(d.density)||d.density<=0||!Number.isFinite(d.produced)||d.produced<0||(d.tolerance!==undefined&&!(Number.isFinite(d.tolerance)&&d.tolerance>=0&&d.tolerance<=50))||!Array.isArray(d.rows)||d.rows.length>2000||!d.rows.every(r=>r&&(r.sequential===undefined||typeof r.sequential==='boolean')&&typeof r.start==='string'&&typeof r.end==='string'&&['Crescente','Decrescente'].includes(r.direction)&&Number.isInteger(r.lane)&&r.lane>0&&['length','width','thickness'].every(k=>Number.isFinite(r[k])&&r[k]>0)))throw Error('Formato de apontamento inválido.');if(dirty&&!confirm('Substituir as alterações não salvas pelo arquivo?'))return;rows=d.rows.map(r=>({...r,sequential:r.sequential===true}));$('job').value=d.job;$('density').value=d.density;$('produced').value=d.produced;$('tolerance').value=d.tolerance??0;render();setDirty(false);$('status').textContent='Apontamento carregado.'}catch(err){$('status').textContent='Não foi possível abrir: '+err.message}finally{e.target.value=''}};
-
-function doPrint(){closeMenu();if(valid())setTimeout(()=>window.print(),250);else $('status').textContent='Corrija os valores antes de imprimir.'}
-$('print').onclick=doPrint;$('printMenu').onclick=doPrint;
-
-function openMenu(){$('sheet').classList.add('open');$('sheetBg').classList.add('open');$('saveMenu').focus?.()}
-function closeMenu(){$('sheet').classList?.remove('open');$('sheetBg').classList?.remove('open')}
-$('menuBtn').onclick=openMenu;$('closeMenu').onclick=closeMenu;$('sheetBg').onclick=closeMenu;
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
-
-window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
-render();
-if(document.modelContext?.registerTool){try{Promise.resolve(document.modelContext.registerTool({name:'read_mass_comparison',description:'Lê os totais calculados do apontamento visível, sem alterar dados.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true},execute(input){if(!input||Object.keys(input).length)throw Error('Nenhum parâmetro é aceito.');if(!valid())throw Error('Há valores inválidos no apontamento.');return {...totals(),state:massState(totals(),true),segments:rows.length}}})).catch(()=>{})}catch{}}
+/* ======================= Início ======================= */
+S=load();renderAll();
+try{const t=localStorage.getItem(STORE+'-tab');if(['fres','rdo','acomp'].includes(t))setTab(t);else setTab('fres')}catch{setTab('fres')}
 </script>
 </body>
 </html>
