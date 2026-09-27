@@ -131,6 +131,16 @@ main{max-width:1100px;margin:auto;padding:14px 12px 8px}
 .addinline{width:100%;min-height:52px;margin-top:12px;border:2px dashed #9fb4c2;background:#f7fafc;border-radius:12px;font-weight:700;color:#23445a;font-size:16px}
 .empty{padding:20px;text-align:center;color:var(--muted);font-size:14px;border:2px dashed #cfdae2;border-radius:12px}
 
+/* Resumo RDO */
+.srow.changed{background:var(--edit-bg);border:1px solid #d9cff7;border-left:5px solid var(--edit);border-radius:12px;padding:12px 10px;margin:6px 0}
+.srow.changed .sn{background:var(--edit);color:#fff}
+.diffs{grid-column:1/-1;display:grid;gap:5px;font-size:12.5px;color:#43357a;background:#fff;border:1px dashed #d4c8f5;border-radius:10px;padding:8px 10px}
+.diffs div{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;font-variant-numeric:tabular-nums}
+.diffs div b{color:#2b2255}
+.srow .obs{display:block;font-size:12px;color:#5a4a1a;margin-top:2px}
+.printbtn{justify-content:center;margin:4px 0 14px;background:#fff}
+.edref{background:#f3f7fa;border-radius:10px;padding:8px 10px;font-size:12.5px;color:var(--muted);margin:0 0 12px}
+.edref b{color:var(--ink)}
 /* Cartões RDO */
 .list{display:grid;gap:12px}
 .seg{border:1px solid #cad7e0;border-radius:var(--radius);background:#fff;overflow:hidden}
@@ -267,19 +277,39 @@ details.notes p{font-size:14px;color:var(--muted);line-height:1.55;margin:8px 0 
 }
 
 @media print{
-  @page{size:landscape;margin:10mm}
-  body{padding:0;background:#fff}
-  .top{position:static}
-  .iconbtn,.tabs,.fab,.sheet,.sheet-bg,.screen,.status{display:none!important}
-  .alert{border:2px solid currentColor;border-radius:8px;background:#fff!important;color:#000!important}
+  @page{size:A4 portrait;margin:12mm 11mm}
+  html,body{background:#fff!important}
+  body{padding:0;font-size:10.5px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .top,.tabs,.fab,.sheet,.sheet-bg,.screen,.status{display:none!important}
+  main{padding:0;max-width:none}
   .print-only{display:block}
-  .ptable{width:100%;border-collapse:collapse;font-size:10px;margin-bottom:10px}
-  .ptable th,.ptable td{border:1px solid #bbb;padding:4px 6px;text-align:left}
-  .ptable td.n{text-align:right}
-  .ptable tfoot td{font-weight:700;background:#eef}
-  .print-only h2{font-size:14px;margin:10px 0 6px}
-  .print-only p{font-size:11px;margin:2px 0}
 }
+.rep{color:#111;font-family:Arial,Helvetica,sans-serif}
+.rep-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;border-bottom:2px solid #17394a;padding-bottom:8px;margin-bottom:10px}
+.rep-head h1{font-size:17px;margin:0 0 2px;color:#17394a}
+.rep-head .sub{font-size:10px;color:#555;margin:0}
+.rep-meta{border-collapse:collapse;font-size:10px;min-width:48%}
+.rep-meta th{text-align:left;color:#555;font-weight:600;padding:2px 8px 2px 0;white-space:nowrap}
+.rep-meta td{padding:2px 0;border-bottom:1px solid #ddd;min-width:160px}
+.rep h2{font-size:12px;margin:12px 0 5px;color:#17394a;text-transform:uppercase;letter-spacing:.4px}
+.rep-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:6px 0}
+.rep-kpis div{border:1px solid #cfd8de;border-radius:6px;padding:6px 8px;font-size:9.5px;color:#555}
+.rep-kpis b{display:block;font-size:13px;color:#111;margin-top:2px}
+.rep-kpis .hl{background:#17394a;color:#cfe;border-color:#17394a}
+.rep-kpis .hl b{color:#fff}
+.ptable{width:100%;border-collapse:collapse;font-size:9.5px;margin-bottom:6px}
+.ptable th{background:#e8eef2;font-size:8.5px;text-transform:uppercase;letter-spacing:.2px}
+.ptable th,.ptable td{border:1px solid #bfc9d0;padding:3px 5px;text-align:left;vertical-align:top}
+.ptable td.n,.ptable th.n{text-align:right;white-space:nowrap}
+.ptable tfoot td{font-weight:700;background:#eef3f6}
+.ptable tr{break-inside:avoid}
+.rep-result{border:2px solid #17394a;border-radius:8px;padding:8px 10px;margin-top:8px;font-size:11px}
+.rep-result.shortage{border-color:#b42323}
+.rep-result.surplus{border-color:#c88509}
+.rep-result .big{font-size:18px;font-weight:800;margin:2px 0}
+.rep-sign{display:flex;justify-content:space-between;gap:30px;margin-top:34px;font-size:10px;color:#333}
+.rep-sign div{flex:1;border-top:1px solid #333;padding-top:4px;text-align:center}
+.rep-foot{margin-top:10px;font-size:8.5px;color:#777;text-align:right}
 </style>
 </head>
 <body>
@@ -308,8 +338,10 @@ details.notes p{font-size:14px;color:var(--muted);line-height:1.55;margin:8px 0 
     <section class="section">
       <h2>Dados da obra</h2>
       <div class="fields wide">
-        <div class="field full-sm"><label for="job">Obra / frente de serviço</label><input id="job" placeholder="Ex.: BR-277 · 26/09 · faixa 1" autocomplete="off"></div>
-        <div class="field"><label for="density">Densidade do CBUQ</label><div class="unit" data-unit="t/m³"><input id="density" type="number" inputmode="decimal" min="0.001" step="0.001" required></div><small>Usada nos 3 painéis</small></div>
+        <div class="field full-sm"><label for="job">Obra / trecho</label><input id="job" placeholder="Ex.: BR-277 · km 230 · faixa 1" autocomplete="off"></div>
+        <div class="field"><label for="repDate">Data</label><input id="repDate" type="date"></div>
+        <div class="field"><label for="resp">Responsável</label><input id="resp" placeholder="Nome do responsável" autocomplete="off"></div>
+        <div class="field"><label for="density">Densidade do CBUQ</label><div class="unit" data-unit="t/m³"><input id="density" type="number" inputmode="decimal" min="0.001" step="0.001" required></div><small>Usada nos cálculos de massa</small></div>
         <div class="field"><label for="usinado">Massa total usinada do dia</label><div class="unit" data-unit="t"><input id="usinado" type="number" inputmode="decimal" min="0" step="0.01" required></div><small>Total da usina no dia</small></div>
       </div>
     </section>
@@ -329,13 +361,14 @@ details.notes p{font-size:14px;color:var(--muted);line-height:1.55;margin:8px 0 
       <div class="bigtotal"><span>Total de massa “fresada”</span><b id="fSumBig"></b></div>
       <button class="addinline" id="addInline">+ Adicionar segmento</button>
     </section>
+    <button class="btn printbtn" data-print="fres">🖨️ Imprimir relatório de Fresagem</button>
   </section>
 
   <!-- ================= PAINEL 2: RDO ================= -->
   <section class="screen" id="panel-rdo" data-panel="rdo" hidden>
     <div class="panel-title"><h1>RDO da aplicação</h1><span>Painel 2 de 3</span></div>
     <section class="section">
-      <p class="hint" style="margin:0">Os segmentos chegam da fresagem. Edite nos lançamentos abaixo o que foi realmente aplicado — a fresagem não muda. Diferenças aparecem como <span class="dif plus">▲ +</span> (a mais) ou <span class="dif minus">▼ −</span> (a menos) em relação à fresagem.</p>
+      <p class="hint" style="margin:0">Os apontamentos chegam da fresagem. Toque em <b>Editar</b> para lançar o que foi realmente aplicado — a fresagem não muda. Apontamentos alterados ficam em <span style="color:#5b43b0;font-weight:700">roxo</span>, com a diferença <span class="dif plus">▲ +</span> (a mais) ou <span class="dif minus">▼ −</span> (a menos).</p>
     </section>
 
     <section class="section">
@@ -344,18 +377,19 @@ details.notes p{font-size:14px;color:var(--muted);line-height:1.55;margin:8px 0 
     </section>
 
     <section class="section">
-      <h2>Diferenças RDO × fresagem <span class="count" id="rEdited"></span></h2>
-      <div class="dlist" id="rDiffs"></div>
+      <h2>Resumo dos apontamentos <span class="count" id="rCount2"></span></h2>
+      <div class="srows" id="rdoRows"></div>
+      <div class="stotal"><div>Extensão<b id="rSumLen"></b></div><div>Volume<b id="rSumVol"></b></div><div>Massa<b id="rSumMass"></b></div></div>
+      <div class="bigtotal"><span>Total de massa aplicada (RDO)</span><b id="rSumBig"></b></div>
     </section>
 
     <section class="section">
-      <h2>Resumo da fresagem <span class="count">(referência)</span></h2>
-      <div class="srows" id="rRefRows"></div>
-      <div class="stotal"><div>Extensão<b id="rRefLen"></b></div><div>Volume<b id="rRefVol"></b></div><div>Massa<b id="rRefMass"></b></div></div>
+      <details class="applied"><summary>Resumo da fresagem (referência)</summary>
+        <div class="srows" id="rRefRows"></div>
+        <div class="stotal"><div>Extensão<b id="rRefLen"></b></div><div>Volume<b id="rRefVol"></b></div><div>Massa<b id="rRefMass"></b></div></div>
+      </details>
     </section>
-
-    <div class="panel-title" style="margin-top:18px"><h1 style="font-size:18px">Lançamentos do RDO</h1><span id="rCountTxt"></span></div>
-    <div class="list" id="rdoList"></div>
+    <button class="btn printbtn" data-print="rdo">🖨️ Imprimir relatório do RDO</button>
   </section>
 
   <!-- ================= PAINEL 3: ACOMPANHAMENTO ================= -->
@@ -403,6 +437,7 @@ details.notes p{font-size:14px;color:var(--muted);line-height:1.55;margin:8px 0 
         <p><b>Massa disponível</b> = total usinado − total acumulado até o último caminhão + sobra desse caminhão (0 se foi aplicado por inteiro).<br><b>Massa necessária</b> = soma da massa (pela fresagem) dos segmentos A APLICAR, incluindo os extras.<br><b>Saldo</b> = disponível − necessária. Negativo: falta CBUQ (acionar a usina). Positivo: sobra.<br><b>Metros a fresar</b> = saldo ÷ (espessura × largura × densidade).</p>
       </details>
     </section>
+    <button class="btn printbtn" data-print="acomp">🖨️ Imprimir relatório de Acompanhamento</button>
   </section>
 
   <section class="print-only" id="printReport"></section>
@@ -425,7 +460,7 @@ details.notes p{font-size:14px;color:var(--muted);line-height:1.55;margin:8px 0 
   <h3>Apontamento</h3>
   <label class="btn" for="import">📂 Abrir arquivo (.json)</label>
   <button class="btn" id="saveMenu">💾 Salvar em arquivo</button>
-  <button class="btn" id="printMenu">🖨️ Imprimir / PDF</button>
+  <button class="btn" id="printMenu">🖨️ Imprimir relatório deste painel</button>
   <button class="btn danger" id="newMenu">🗒️ Novo apontamento (limpar)</button>
   <button class="btn dark" id="closeMenu">Fechar</button>
 </div>
@@ -435,6 +470,7 @@ details.notes p{font-size:14px;color:var(--muted);line-height:1.55;margin:8px 0 
   <div class="eh"><h3 id="edTitle">Editar segmento</h3><button class="sq" id="edX" aria-label="Fechar">✕</button></div>
   <div class="eb">
     <div class="fields">
+      <div class="full edref" id="edRef" hidden></div>
       <div class="field full" id="edSeqWrap"><label class="switch"><input type="checkbox" role="switch" id="edSeq">Sequencial ao segmento anterior</label></div>
       <div class="field"><label for="edStart">Estaca inicial</label><input id="edStart" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="230+830" required></div>
       <div class="field"><label for="edEnd">Estaca final</label><input id="edEnd" type="text" readonly tabindex="-1"></div>
@@ -443,7 +479,9 @@ details.notes p{font-size:14px;color:var(--muted);line-height:1.55;margin:8px 0 
       <div class="field"><label for="edLane">Faixa</label><input id="edLane" type="number" inputmode="numeric" min="1" step="1" required></div>
       <div class="field"><label for="edWidth">Largura</label><div class="unit" data-unit="m"><input id="edWidth" type="number" inputmode="decimal" min="0.01" step="0.01" required></div></div>
       <div class="field"><label for="edThick">Espessura</label><div class="unit" data-unit="m"><input id="edThick" type="number" inputmode="decimal" min="0.001" step="0.001" required></div><small id="edThickH"></small></div>
+      <div class="field full" id="edObsWrap" hidden><label for="edObs">Observação</label><textarea id="edObs" placeholder="Opcional" maxlength="1000"></textarea></div>
       <div class="result"><div>Volume<b id="edVol"></b></div><div>Massa<b id="edMass"></b></div></div>
+      <div class="diffs" id="edDiff" hidden></div>
     </div>
     <p class="err" id="edErr"></p>
   </div>
@@ -456,7 +494,7 @@ details.notes p{font-size:14px;color:var(--muted);line-height:1.55;margin:8px 0 
 const STORE='controle-massa-v2';
 const example=[['230+600',230,3.72,.08],['230+830',30,3.75,.1],['230+860',18,3.85,.08],['230+878',59,3.72,.06],['230+937',50,3.7,.1],['231+000',120,3.7,.1],['231+340',260,3.55,.08],['231+600',30,3.53,.06],['231+630',30,3.55,.075]];
 const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4);
-function emptyState(){return {version:3,job:'',density:2.528,usinado:0,plate:'',accum:0,trucksTotal:NaN,truckNo:NaN,truckFull:true,truckLeft:0,tolerance:0,planWidth:3.5,planThickness:0.05,fres:[],rdo:{},applied:{},extras:[]}}
+function emptyState(){return {version:3,job:'',date:'',resp:'',density:2.528,usinado:0,plate:'',accum:0,trucksTotal:NaN,truckNo:NaN,truckFull:true,truckLeft:0,tolerance:0,planWidth:3.5,planThickness:0.05,fres:[],rdo:{},applied:{},extras:[]}}
 function exampleState(){
   const s=emptyState();
   s.fres=example.map(r=>({id:uid(),start:r[0],end:'',direction:'Crescente',lane:1,length:r[1],width:r[2],thickness:r[3],sequential:false}));
@@ -562,42 +600,24 @@ function keyDelta(s,k){ // RDO − fresagem
  return null;
 }
 const LABEL={start:'Estaca inicial',end:'Estaca final',direction:'Sentido',lane:'Faixa',length:'Comprimento',width:'Largura',thickness:'Espessura'};
-function rField(s,k,label,unit){
- const v=rv(s,k),step=({lane:'1',length:'1',width:'0.01',thickness:'0.001'})[k],num=!!step,id=`r-${s.id}-${k}`;
- const val=k==='end'?rEnd(s):v;
- const inp=`<input id="${id}" data-id="${s.id}" data-k="${k}" ${num?`type="number" inputmode="${k==='lane'?'numeric':'decimal'}" min="${step}" step="${step}" required`:'type="text" autocomplete="off" autocapitalize="off" spellcheck="false"'} ${k==='end'?'readonly tabindex="-1"':''} ${k==='start'?'required placeholder="230+830"':''} value="${esc(val)}">`;
- return `<div class="field" id="rf-${s.id}-${k}"><label for="${id}">${label}</label>${unit?`<div class="unit" data-unit="${unit}">${inp}</div>`:inp}<small class="orig" id="ro-${s.id}-${k}" hidden></small></div>`;
+const ORDER=['start','end','direction','length','lane','width','thickness'];
+function rdoDiffKeys(s){const k=editedKeys(s);if(!same(rEnd(s),s.end)&&!k.includes('end'))k.push('end');return k.sort((a,b)=>ORDER.indexOf(a)-ORDER.indexOf(b))}
+const rEff=s=>({start:rv(s,'start'),end:rEnd(s),direction:rv(s,'direction'),lane:rv(s,'lane'),length:rv(s,'length'),width:rv(s,'width'),thickness:rv(s,'thickness')});
+function diffLines(s,e){ // e = valores RDO (efetivos ou rascunho)
+ const out=[];
+ ORDER.forEach(k=>{const f=k==='end'?s.end:s[k],r=e[k];if(same(r,f))return;
+  let dl=null;if(k==='start'||k==='end'){const a=stationMeters(r),b=stationMeters(f);if(a!==null&&b!==null)dl=difChip(a-b,'m',0)}
+  else if(k==='thickness')dl=difChip((r-f)*100,'cm',1);else if(k==='length'){const x=r-f;dl=difChip(x,'m',Number.isInteger(x)?0:2)}else if(k==='width')dl=difChip(r-f,'m',2);else if(k==='lane')dl=difChip(r-f,'',0);
+  out.push(`<div><b>${LABEL[k]}:</b> Fresagem ${esc(showVal(k,f))} → RDO ${esc(showVal(k,r))} ${dl||''}</div>`)});
+ const fm=segVol(s)*S.density,rm=vol(e.length,e.width,e.thickness)*S.density;
+ if(out.length&&Number.isFinite(rm)&&Math.abs(rm-fm)>=0.005)out.push(`<div><b>Massa:</b> Fresagem ${fmt(fm)} t → RDO ${fmt(rm)} t ${difChip(rm-fm,'t')}</div>`);
+ return out;
 }
-function renderRdoCards(){
- chainFres();
- $('rCountTxt').textContent=`${S.fres.length} segmento(s)`;
- $('rdoList').innerHTML=S.fres.length?S.fres.map((s,i)=>`<article class="seg" id="rc-${s.id}">
-  <div class="seg-head"><div class="seg-num">Segmento ${i+1}<em></em></div>
-   <span class="tag" id="rt-${s.id}" hidden>editado</span>
-   <button class="sq" data-reset="${s.id}" id="rr-${s.id}" aria-label="Restaurar valores da fresagem" title="Restaurar valores da fresagem" hidden>↺</button></div>
-  <div class="seg-body">
-   ${rField(s,'start','Estaca inicial')}${rField(s,'end','Estaca final')}
-   <div class="field full" id="rf-${s.id}-direction"><span class="lbl">Sentido</span><div class="segctl">${['Crescente','Decrescente'].map(v=>`<label><input type="radio" name="rd-${s.id}" data-id="${s.id}" data-k="direction" value="${v}" ${rv(s,'direction')===v?'checked':''}>${v==='Crescente'?'↑':'↓'} ${v}</label>`).join('')}</div><small class="orig" id="ro-${s.id}-direction" hidden></small></div>
-   ${rField(s,'length','Comprimento','m')}${rField(s,'lane','Faixa','')}${rField(s,'width','Largura','m')}${rField(s,'thickness','Espessura','m')}
-   <div class="field full"><label for="r-${s.id}-obs">Observação</label><textarea id="r-${s.id}-obs" data-id="${s.id}" data-k="obs" placeholder="Opcional">${esc(rdoRec(s.id).obs)}</textarea></div>
-   <div class="result"><div>Volume aplicado<b id="rv-${s.id}"></b></div><div>Massa aplicada<b id="rm-${s.id}"></b><small class="orig" id="rmo-${s.id}" hidden></small></div></div>
-  </div></article>`).join(''):'<div class="empty">Nenhum segmento ainda. Crie os segmentos no painel Fresagem.</div>';
- S.fres.forEach(updateRdoCard);
-}
-function updateRdoCard(s){
- const ed=editedKeys(s);
- ['start','direction','lane','length','width','thickness','end'].forEach(k=>{
-  const f=$(`rf-${s.id}-${k}`),o=$(`ro-${s.id}-${k}`);if(!f||!o)return;
-  const diff=k==='end'?!same(rEnd(s),s.end):ed.includes(k);
-  f.classList.toggle('edited',diff);o.hidden=!diff;
-  if(diff){const dl=keyDelta(s,k);o.innerHTML=`Fresagem: ${esc(showVal(k,k==='end'?s.end:s[k]))} ${dl?difChip(dl.d,dl.u,dl.dec):''}`}
- });
- const e=$(`r-${s.id}-end`);if(e)e.value=rEnd(s);
- const st=$(`r-${s.id}-start`);if(st)st.setCustomValidity(rEnd(s)?'':'Estaca no formato 230+830 e comprimento positivo.');
- const c=$(`rc-${s.id}`);if(c){c.classList.toggle('is-edited',!!ed.length);c.querySelector('.seg-num em').textContent=`${rv(s,'start')} → ${rEnd(s)||'?'}`}
- const rt=$(`rt-${s.id}`),rr=$(`rr-${s.id}`);if(rt)rt.hidden=!ed.length;if(rr)rr.hidden=!ed.length;
- const ok=rdoOk(s),v=rdoVol(s),m=v*S.density,fm=segVol(s)*S.density;
- if($('rv-'+s.id)){$('rv-'+s.id).textContent=ok?fmt(v)+' m³':'—';$('rm-'+s.id).textContent=ok&&pos(S.density)?fmt(m)+' t':'—';const o=$('rmo-'+s.id),diff=ok&&Math.abs(m-fm)>=0.005;o.hidden=!diff;if(diff)o.innerHTML=`Fresagem: ${fmt(fm)} t ${difChip(m-fm,'t')}`}
+function rRow(s,i){
+ const e=rEff(s),ok=rdoOk(s),v=rdoVol(s),m=v*S.density,dl=diffLines(s,e),obs=rdoRec(s.id).obs;
+ return `<div class="srow${dl.length?' changed':''}" id="rr-${s.id}"><div class="sn">${i+1}</div><div class="si"><b>${esc(e.start)} → ${esc(e.end||'?')}</b><small>${esc(segDesc(e))}</small>${obs?`<span class="obs">📝 ${esc(obs)}</span>`:''}</div><div class="sm"><b>${ok&&pos(S.density)?fmt(m):'—'} t</b><small>${ok?fmt(v):'—'} m³</small></div>
+ ${dl.length?`<div class="diffs">${dl.join('')}</div>`:''}
+ <div class="sa">${dl.length?`<button class="act" data-reset="${s.id}">↺ Restaurar</button>`:''}<button class="act" data-edit="rdo:${s.id}">✏️ Editar</button></div></div>`;
 }
 function renderRdoSummary(t){
  const D=n=>t.dOk?fmt(n):'—',uVol=t.dOk?t.U/t.d:NaN,okAll=t.uOk&&t.rdoAllOk&&t.dOk;
@@ -607,15 +627,11 @@ function renderRdoSummary(t){
   <div class="r tot"><span>Diferença<br><small style="font-weight:500;color:var(--muted)">usinado − aplicado</small></span><b>${okAll?difChip(t.U-t.rMass,'t',2,true):'—'}</b><i>${okAll?difChip(uVol-t.rVol,'m³'):'—'}</i></div>
   <div class="r"><span style="color:var(--muted)">Referência: fresagem</span><i>${t.fresAllOk?D(t.fMass):'—'} t</i><i>${t.fresAllOk?fmt(t.fVol):'—'} m³</i></div>
   <div class="r"><span style="color:var(--muted)">RDO − fresagem</span><i>${t.fresAllOk&&t.rdoAllOk?difChip(t.rMass-t.fMass,'t'):'—'}</i><i>${t.fresAllOk&&t.rdoAllOk?difChip(t.rVol-t.fVol,'m³'):'—'}</i></div>`;
- $('rEdited').textContent=`(${t.edited} segmento${t.edited===1?'':'s'})`;
- const order=['start','end','direction','length','lane','width','thickness'];
- const cards=S.fres.map((s,i)=>{const keys=editedKeys(s);if(!same(rEnd(s),s.end)&&!keys.includes('end'))keys.push('end');if(!keys.length)return '';
-  keys.sort((a,b)=>order.indexOf(a)-order.indexOf(b));
-  const lines=keys.map(k=>{const fv=k==='end'?s.end:s[k],rvv=k==='end'?rEnd(s):rv(s,k),dl=keyDelta(s,k);return `<div class="dline"><span class="k">${LABEL[k]}</span>${dl?difChip(dl.d,dl.u,dl.dec):'<span class="dif eq">alterado</span>'}<div class="vals">Fresagem <b>${esc(showVal(k,fv))}</b> → RDO <b>${esc(showVal(k,rvv))}</b></div></div>`}).join('');
-  const fm=segVol(s)*S.density,rm=rdoVol(s)*S.density,massLine=rdoOk(s)&&segOk(s)&&Math.abs(rm-fm)>=0.005?`<div class="dline"><span class="k">Massa</span>${difChip(rm-fm,'t')}<div class="vals">Fresagem <b>${fmt(fm)} t</b> → RDO <b>${fmt(rm)} t</b> · volume ${difChip(rdoVol(s)-segVol(s),'m³')}</div></div>`:'';
-  return `<div class="dcard"><h3>Segmento ${i+1}<small>${esc(s.start)} → ${esc(s.end)}</small></h3>${lines}${massLine}</div>`}).join('');
- $('rDiffs').innerHTML=cards||'<div class="empty">Nenhuma diferença: o RDO está igual à fresagem.</div>';
- $('rRefRows').innerHTML=S.fres.length?S.fres.map((s,i)=>sRow(s,i+1,{edited:editedKeys(s).length>0})).join(''):'<div class="empty">Sem segmentos na fresagem.</div>';
+ $('rCount2').textContent=`(${S.fres.length}${t.edited?` · ${t.edited} alterado${t.edited===1?'':'s'}`:''})`;
+ $('rdoRows').innerHTML=S.fres.length?S.fres.map((s,i)=>rRow(s,i)).join(''):'<div class="empty">Nenhum apontamento ainda. Crie os segmentos no painel Fresagem.</div>';
+ const rLen=S.fres.reduce((a,s)=>a+rv(s,'length'),0);
+ $('rSumLen').textContent=fmt(rLen,0)+' m';$('rSumVol').textContent=(t.rdoAllOk?fmt(t.rVol):'—')+' m³';$('rSumMass').textContent=(t.rdoAllOk?D(t.rMass):'—')+' t';$('rSumBig').textContent=(t.rdoAllOk?D(t.rMass):'—')+' t';
+ $('rRefRows').innerHTML=S.fres.length?S.fres.map((s,i)=>sRow(s,i+1,{edited:rdoDiffKeys(s).length>0})).join(''):'<div class="empty">Sem segmentos na fresagem.</div>';
  $('rRefLen').textContent=fmt(t.fLen,0)+' m';$('rRefVol').textContent=fmt(t.fVol)+' m³';$('rRefMass').textContent=(t.fresAllOk?D(t.fMass):'—')+' t';
 }
 
@@ -673,54 +689,94 @@ function updateAlert(t){
  if(lastState&&lastState.split(':')[0]===tab&&key!==lastState){a.classList.remove('flash');void a.offsetWidth;a.classList.add('flash');if(st==='shortage'&&navigator.vibrate)navigator.vibrate([150,80,150])}
  lastState=key;$('tabBadge').classList.toggle('on',t.panel.acomp.state==='shortage');
 }
-function renderPrint(t){
- const D=n=>fmt(n);
- $('printReport').innerHTML=`<h2>${esc(S.job||'Controle de massa')} — relatório</h2>
- <p>Densidade ${fmtN(S.density)} t/m³ · Usinado do dia ${D(S.usinado)} t · Último caminhão ${esc(S.plate||'—')} · Acumulado ${D(S.accum)} t · Sobra do caminhão ${D(t.left)} t</p>
- <p><b>Disponível ${D(t.disp)} t · Necessário (A APLICAR) ${D(t.need)} t · Saldo ${t.saldo>0?'+':''}${D(t.saldo)} t</b>${t.meters!==null?` · fresar mais ${fmt(t.meters,0)} m (${fmtN(S.planWidth)} × ${fmtN(S.planThickness)} m)`:''} · RDO aplicado ${D(t.rMass)} t (usinado − RDO: ${D(t.U-t.rMass)} t)</p>
- <table class="ptable"><thead><tr><th>#</th><th>Fresagem: estacas</th><th>Compr.</th><th>Larg.</th><th>Esp.</th><th>Massa fres. (t)</th><th>RDO: estacas</th><th>Compr.</th><th>Larg.</th><th>Esp.</th><th>Massa RDO (t)</th><th>Dif. (t)</th><th>Acomp.</th><th>Obs.</th></tr></thead><tbody>
- ${S.fres.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.start)} → ${esc(s.end)}</td><td class="n">${fmtN(s.length)}</td><td class="n">${fmtN(s.width)}</td><td class="n">${fmtN(s.thickness)}</td><td class="n">${D(segVol(s)*t.d)}</td><td>${esc(rv(s,'start'))} → ${esc(rEnd(s))}</td><td class="n">${fmtN(rv(s,'length'))}</td><td class="n">${fmtN(rv(s,'width'))}</td><td class="n">${fmtN(rv(s,'thickness'))}</td><td class="n">${D(rdoVol(s)*t.d)}</td><td class="n">${D((rdoVol(s)-segVol(s))*t.d)}</td><td>${S.applied[s.id]?'Aplicado':'A aplicar'}</td><td>${esc(rdoRec(s.id).obs)}</td></tr>`).join('')}
- ${S.extras.map((s,i)=>`<tr><td>E${i+1}</td><td>${esc(s.start)} → ${esc(s.end)} (extra)</td><td class="n">${fmtN(s.length)}</td><td class="n">${fmtN(s.width)}</td><td class="n">${fmtN(s.thickness)}</td><td class="n">${D(segVol(s)*t.d)}</td><td colspan="6"></td><td>${S.applied[s.id]?'Aplicado':'A aplicar'}</td><td></td></tr>`).join('')}
- </tbody><tfoot><tr><td colspan="5">Total fresagem / RDO</td><td class="n">${D(t.fMass)}</td><td colspan="4"></td><td class="n">${D(t.rMass)}</td><td class="n">${D(t.rMass-t.fMass)}</td><td colspan="2"></td></tr></tfoot></table>`;
+/* ======================= Relatórios (um por painel) ======================= */
+function repDate(){const d=S.date&&/^\d{4}-\d{2}-\d{2}$/.test(S.date)?S.date:new Date().toISOString().slice(0,10);const [y,m,dd]=d.split('-');return `${dd}/${m}/${y}`}
+function repHead(title,sub){return `<div class="rep-head"><div><h1>${title}</h1><p class="sub">${sub}</p></div><table class="rep-meta"><tr><th>Data</th><td>${repDate()}</td></tr><tr><th>Obra / trecho</th><td>${esc(S.job||'—')}</td></tr><tr><th>Responsável</th><td>${esc(S.resp||'—')}</td></tr></table></div>`}
+function repFoot(){const now=new Date();return `<div class="rep-sign"><div>${esc(S.resp||'Responsável')}</div><div>Visto / fiscalização</div></div><div class="rep-foot">Gerado em ${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})} · Controle de massa</div>`}
+function segTable(rows,opts={}){ // rows: [{n,e,obs,tipo}]
+ const d=S.density;let L=0,A=0,V=0,M=0;
+ const body=rows.map(r=>{const e=r.e,ok=segValid(e,e.end),a=e.length*e.width,v=vol(e.length,e.width,e.thickness),m=v*d;L+=e.length;A+=a;V+=v;M+=m;
+  return `<tr><td>${r.n}</td>${opts.tipo?`<td>${r.tipo}</td>`:''}<td>${esc(e.start)}</td><td>${esc(e.end||'—')}</td><td>${e.direction}</td><td class="n">${e.lane}</td><td class="n">${fmtN(e.length)}</td><td class="n">${fmt(e.width)}</td><td class="n">${fmt(e.thickness*100,1)}</td><td class="n">${ok?fmt(a):'—'}</td><td class="n">${ok?fmt(v):'—'}</td><td class="n">${ok?fmt(m):'—'}</td>${opts.obs?`<td>${esc(r.obs||'')}</td>`:''}</tr>`}).join('')||`<tr><td colspan="${11+(opts.tipo?1:0)+(opts.obs?1:0)}">Sem segmentos.</td></tr>`;
+ const pre=5+(opts.tipo?1:0);
+ return {html:`<table class="ptable"><thead><tr><th>#</th>${opts.tipo?'<th>Tipo</th>':''}<th>Estaca inicial</th><th>Estaca final</th><th>Sentido</th><th class="n">Faixa</th><th class="n">Compr. (m)</th><th class="n">Larg. (m)</th><th class="n">Esp. (cm)</th><th class="n">Área (m²)</th><th class="n">Volume (m³)</th><th class="n">Massa (t)</th>${opts.obs?'<th>Obs.</th>':''}</tr></thead><tbody>${body}</tbody><tfoot><tr><td colspan="${pre}">Total</td><td class="n">${fmtN(L)}</td><td></td><td></td><td class="n">${fmt(A)}</td><td class="n">${fmt(V)}</td><td class="n">${fmt(M)}</td>${opts.obs?'<td></td>':''}</tr></tfoot></table>`,L,A,V,M};
 }
+function buildReport(kind){
+ const t=calc(),d=S.density;
+ if(kind==='fres'){
+  const T=segTable(S.fres.map((s,i)=>({n:i+1,e:s})));
+  return `<div class="rep">${repHead('Relatório de Fresagem','Controle de fresagem · massa equivalente de CBUQ')}
+  <div class="rep-kpis"><div class="hl">Massa usinada do dia<b>${fmt(S.usinado||0)} t</b></div><div>Densidade<b>${fmtN(d)} t/m³</b></div><div>Segmentos<b>${S.fres.length}</b></div><div>Extensão fresada<b>${fmtN(T.L)} m</b></div></div>
+  <h2>Segmentos fresados</h2>${T.html}
+  <h2>Totais</h2><div class="rep-kpis"><div>Área fresada<b>${fmt(T.A)} m²</b></div><div>Volume fresado<b>${fmt(T.V)} m³</b></div><div class="hl">Massa fresada<b>${fmt(T.M)} t</b></div><div>Massa = volume × densidade<b style="font-size:10px">${fmt(T.V)} × ${fmtN(d)}</b></div></div>
+  ${repFoot()}</div>`;
+ }
+ if(kind==='rdo'){
+  const T=segTable(S.fres.map((s,i)=>({n:i+1,e:rEff(s),obs:rdoRec(s.id).obs})),{obs:true});
+  return `<div class="rep">${repHead('Relatório de RDO da Aplicação','Apontamentos de aplicação de CBUQ')}
+  <div class="rep-kpis"><div>Apontamentos<b>${S.fres.length}</b></div><div>Densidade<b>${fmtN(d)} t/m³</b></div><div>Extensão aplicada<b>${fmtN(T.L)} m</b></div><div class="hl">Massa aplicada<b>${fmt(T.M)} t</b></div></div>
+  <h2>Apontamentos do RDO</h2>${T.html}
+  <h2>Totais</h2><div class="rep-kpis"><div>Área aplicada<b>${fmt(T.A)} m²</b></div><div>Volume aplicado<b>${fmt(T.V)} m³</b></div><div class="hl">Massa aplicada<b>${fmt(T.M)} t</b></div><div>Massa = volume × densidade<b style="font-size:10px">${fmt(T.V)} × ${fmtN(d)}</b></div></div>
+  ${repFoot()}</div>`;
+ }
+ // acompanhamento
+ const pend=[...t.pendFres.map(s=>({n:S.fres.indexOf(s)+1,e:s,tipo:'Fresado'})),...t.pendExtra.map(s=>({n:'E'+(S.extras.indexOf(s)+1),e:s,tipo:'Extra'}))];
+ const T=segTable(pend,{tipo:true});
+ const st=t.state,sig=(t.saldo>0?'+':t.saldo<0?'−':'')+fmt(Math.abs(t.saldo))+' t';
+ const res=st==='shortage'?`<div class="big">Falta de massa: ${fmt(-t.saldo)} t</div><div>A massa disponível não fecha os segmentos a aplicar — acionar a usina.</div>`:st==='surplus'?`<div class="big">Sobra de massa: +${fmt(t.saldo)} t</div><div>Metros adicionais a fresar: <b>${t.meters!==null?fmt(t.meters,0)+' m':'—'}</b>${t.meters!==null?` (largura ${fmtN(S.planWidth)} m × espessura ${fmt(S.planThickness*100,1)} cm × densidade ${fmtN(d)} t/m³)`:''}</div>`:st==='balanced'?`<div class="big">Saldo: ${sig}</div><div>Massa suficiente, dentro da tolerância.</div>`:'<div>Dados incompletos para o saldo.</div>';
+ return `<div class="rep">${repHead('Relatório de Acompanhamento da Aplicação','Massa disponível, segmentos a aplicar e saldo de CBUQ')}
+ <h2>Último caminhão aplicado</h2>
+ <table class="ptable"><thead><tr><th class="n">Nº</th><th>Placa</th><th class="n">Acumulado até ele (t)</th><th>Aplicado por inteiro</th><th class="n">Sobra (t)</th><th class="n">Caminhões usinados</th><th class="n">Restantes a aplicar</th></tr></thead><tbody><tr><td class="n">${Number.isFinite(S.truckNo)?S.truckNo+'º':'—'}</td><td>${esc(S.plate||'—')}</td><td class="n">${fmt(S.accum||0)}</td><td>${S.truckFull?'Sim':'Não'}</td><td class="n">${fmt(t.left)}</td><td class="n">${Number.isFinite(S.trucksTotal)?S.trucksTotal:'—'}</td><td class="n">${t.trucksLeft!==null?t.trucksLeft:'—'}</td></tr></tbody></table>
+ <div class="rep-kpis"><div>Total usinado<b>${fmt(t.U||0)} t</b></div><div>− Acumulado<b>${fmt(S.accum||0)} t</b></div><div>+ Sobra do caminhão<b>${fmt(t.left)} t</b></div><div class="hl">Massa disponível<b>${fmt(t.disp)} t</b></div></div>
+ <h2>Segmentos a aplicar (inclui extras)</h2>${T.html}
+ <h2>Saldo de massa</h2>
+ <div class="rep-kpis"><div>Massa disponível<b>${fmt(t.disp)} t</b></div><div>− Necessária (a aplicar)<b>${fmt(t.need)} t</b></div><div class="hl">Saldo<b>${sig}</b></div><div>Segmentos a aplicar<b>${t.pendingCount}</b></div></div>
+ <div class="rep-result ${st}">${res}</div>
+ ${repFoot()}</div>`;
+}
+function printReport(kind){closeMenu();$('printReport').innerHTML=buildReport(kind||tab);setTimeout(()=>window.print(),200)}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-print]');if(b)printReport(b.dataset.print)});
 
 /* ======================= Atualização geral ======================= */
 function update(){
  const t=calc();
  $('brandTitle').textContent=S.job?S.job:'CONTROLE DE MASSA';
  renderFres(t);
- S.fres.forEach(updateRdoCard);renderRdoSummary(t);
- renderAcomp(t);updateAlert(t);renderPrint(t);
+ renderRdoSummary(t);
+ renderAcomp(t);updateAlert(t);
  return t;
 }
 
 /* ======================= Editor de segmento ======================= */
 let ED=null;
 function openEditor(kind,id){
- const list=kind==='fres'?S.fres:S.extras,idx=id?list.findIndex(s=>s.id===id):-1,cur=idx>=0?list[idx]:null;
- const prev=kind==='fres'?(idx>=0?S.fres[idx-1]:S.fres[S.fres.length-1]):null;
- const last=list[list.length-1];
- const draft=cur?{...cur}:{id:uid(),start:'',end:'',direction:last?last.direction:'Crescente',lane:last?last.lane:1,length:NaN,width:last?last.width:3.5,thickness:last?last.thickness:.08,sequential:kind==='fres'&&!!prev};
- ED={kind,id:cur?cur.id:null,draft,prev};
+ let list,idx,cur,prev=null,draft;
+ if(kind==='rdo'){list=S.fres;idx=list.findIndex(x=>x.id===id);cur=list[idx];if(!cur)return;draft={...rEff(cur),id:cur.id,obs:rdoRec(cur.id).obs||''}}
+ else{list=kind==='fres'?S.fres:S.extras;idx=id?list.findIndex(x=>x.id===id):-1;cur=idx>=0?list[idx]:null;
+  prev=kind==='fres'?(idx>=0?S.fres[idx-1]:S.fres[S.fres.length-1]):null;const last=list[list.length-1];
+  draft=cur?{...cur}:{id:uid(),start:'',end:'',direction:last?last.direction:'Crescente',lane:last?last.lane:1,length:NaN,width:last?last.width:3.5,thickness:last?last.thickness:.08,sequential:kind==='fres'&&!!prev}}
+ ED={kind,id:cur?cur.id:null,draft,prev,src:cur};
  const n=idx>=0?idx+1:list.length+1;
- $('edTitle').textContent=(cur?'Editar ':'Novo ')+(kind==='extra'?`segmento extra E${n}`:`segmento ${n}`);
+ $('edTitle').textContent=kind==='rdo'?`Editar apontamento ${n} (RDO)`:(cur?'Editar ':'Novo ')+(kind==='extra'?`segmento extra E${n}`:`segmento ${n}`);
  $('edSeqWrap').hidden=kind!=='fres'||!prev;$('edSeq').disabled=!prev;$('edSeq').checked=!!draft.sequential&&!!prev;
+ $('edObsWrap').hidden=kind!=='rdo';$('edObs').value=draft.obs||'';
+ $('edRef').hidden=kind!=='rdo';if(kind==='rdo')$('edRef').innerHTML=`Fresagem: <b>${esc(cur.start)} → ${esc(cur.end)}</b> · ${esc(segDesc(cur))}`;
  $('edStart').value=draft.start;$('edLength').value=Number.isFinite(draft.length)?draft.length:'';$('edLane').value=draft.lane;$('edWidth').value=draft.width;$('edThick').value=draft.thickness;
  document.querySelectorAll('input[name="edDir"]').forEach(r=>r.checked=r.value===draft.direction);
  $('edErr').textContent='';edSync();
  closeMenu();$('editor').classList.add('open');$('sheetBg').classList.add('open');document.body.classList.add('lock');
- setTimeout(()=>{const f=$('edSeq').checked?$('edLength'):$('edStart');f.focus();f.select?.()},260);
+ setTimeout(()=>{const f=$('edSeq').checked||kind==='rdo'?$('edLength'):$('edStart');f.focus();f.select?.()},260);
 }
 function edSync(){
  if(!ED)return;const d=ED.draft,num=id=>$(id).value===''?NaN:Number($(id).value);
  d.sequential=ED.kind==='fres'&&!!ED.prev&&$('edSeq').checked;
- d.length=num('edLength');d.lane=num('edLane');d.width=num('edWidth');d.thickness=num('edThick');
+ d.length=num('edLength');d.lane=num('edLane');d.width=num('edWidth');d.thickness=num('edThick');d.obs=$('edObs').value;
  d.direction=document.querySelector('input[name="edDir"]:checked')?.value||'Crescente';
  if(d.sequential){d.start=ED.prev.end;$('edStart').value=d.start}else d.start=$('edStart').value.trim();
  $('edStart').readOnly=d.sequential;
  d.end=stationEnd(d.start,d.length,d.direction);$('edEnd').value=d.end;
  $('edThickH').textContent=pos(d.thickness)?'= '+fmt(d.thickness*100,1)+' cm':'Em metros (8 cm = 0,080)';
  const ok=segOk(d),v=segVol(d);$('edVol').textContent=ok?fmt(v)+' m³':'—';$('edMass').textContent=ok&&pos(S.density)?fmt(v*S.density)+' t':'—';
+ const dd=$('edDiff');if(ED.kind==='rdo'){const dl=diffLines(ED.src,d);dd.hidden=!dl.length;dd.innerHTML=dl.join('')}else dd.hidden=true;
 }
 function closeEditor(){ED=null;$('editor').classList.remove('open');$('sheetBg').classList.remove('open');document.body.classList.remove('lock')}
 function saveEditor(){
@@ -729,22 +785,22 @@ function saveEditor(){
  if(!pos(d.length))errs.push('comprimento');if(!(Number.isInteger(d.lane)&&d.lane>0))errs.push('faixa (número inteiro)');if(!pos(d.width))errs.push('largura');if(!pos(d.thickness))errs.push('espessura');
  if(!errs.length&&!d.end)errs.push('estaca final ficaria negativa — confira o sentido');
  if(errs.length){$('edErr').textContent='Confira: '+errs.join(', ')+'.';return}
- const kind=ED.kind,list=kind==='fres'?S.fres:S.extras,{id:_,...vals}=d,editing=!!ED.id;
+ if(ED.kind==='rdo'){const src=ED.src,r=rdoRec(src.id);r.over={};KEYS.forEach(k=>{if(!same(d[k],src[k]))r.over[k]=d[k]});r.obs=(d.obs||'').slice(0,1000);closeEditor();changed();$('status').textContent=r.over&&Object.keys(r.over).length?'Apontamento do RDO atualizado.':'Apontamento igual à fresagem.';return}
+ const kind=ED.kind,list=kind==='fres'?S.fres:S.extras,{id:_,obs:__,...vals}=d,editing=!!ED.id;
  if(editing)Object.assign(list.find(s=>s.id===ED.id),vals);else{list.push({...d});if(kind==='fres')rdoRec(d.id)}
  closeEditor();
- if(kind==='fres')renderRdoCards();
  changed();$('status').textContent=editing?'Segmento atualizado.':'Segmento adicionado.';
 }
 ['edStart','edLength','edLane','edWidth','edThick'].forEach(id=>$(id).addEventListener('input',edSync));
 document.querySelectorAll('input[name="edDir"]').forEach(r=>r.addEventListener('change',edSync));
-$('edSeq').addEventListener('change',edSync);
+$('edSeq').addEventListener('change',edSync);$('edObs').addEventListener('input',edSync);
 $('edSave').onclick=saveEditor;$('edCancel').onclick=closeEditor;$('edX').onclick=closeEditor;
 
 function delSeg(kind,id){
  const list=kind==='fres'?S.fres:S.extras,i=list.findIndex(s=>s.id===id);if(i<0)return;
  const name=kind==='fres'?`o segmento ${i+1} (${list[i].start} → ${list[i].end})`:`o segmento extra E${i+1}`;
  if(!confirm(`Excluir ${name}?${kind==='fres'?' Ele também sai do RDO da aplicação.':''}`))return;
- list.splice(i,1);delete S.applied[id];if(kind==='fres'){delete S.rdo[id];chainFres();renderRdoCards()}
+ list.splice(i,1);delete S.applied[id];if(kind==='fres'){delete S.rdo[id];chainFres()}
  changed();$('status').textContent='Segmento excluído.';
 }
 document.addEventListener('click',e=>{
@@ -776,7 +832,7 @@ function normalize(d){
  const num=(k,def)=>Number.isFinite(d[k])?d[k]:def;
  out.usinado=d.version===2?num('received',0):num('usinado',0);
  ['accum','truckLeft','tolerance','planWidth','planThickness','trucksTotal','truckNo'].forEach(k=>out[k]=num(k,out[k]));
- out.plate=typeof d.plate==='string'?d.plate.slice(0,10):'';out.truckFull=d.truckFull!==false;
+ out.plate=typeof d.plate==='string'?d.plate.slice(0,10):'';out.date=typeof d.date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d.date)?d.date:'';out.resp=typeof d.resp==='string'?d.resp.slice(0,120):'';out.truckFull=d.truckFull!==false;
  out.extras=Array.isArray(d.extras)?d.extras.filter(okSeg).map(clean):[];
  const ids=new Set([...out.fres,...out.extras].map(s=>s.id));
  out.fres.forEach(s=>{const r=d.rdo&&d.rdo[s.id];const over={};if(r&&r.over&&typeof r.over==='object')KEYS.forEach(k=>{if(k in r.over){const v=r.over[k];if(k==='start'&&typeof v==='string')over[k]=v;else if(k==='direction'&&['Crescente','Decrescente'].includes(v))over[k]=v;else if(k==='lane'&&Number.isInteger(v)&&v>0)over[k]=v;else if(['length','width','thickness'].includes(k)&&Number.isFinite(v))over[k]=v}});out.rdo[s.id]={over,obs:r&&typeof r.obs==='string'?r.obs.slice(0,1000):''};
@@ -787,9 +843,9 @@ function normalize(d){
 function load(){try{const raw=localStorage.getItem(STORE);if(raw)return normalize(JSON.parse(raw))}catch{}return exampleState()}
 
 /* ======================= Entradas ======================= */
-function fillStatic(){$('job').value=S.job;$('density').value=S.density;$('usinado').value=S.usinado;$('plate').value=S.plate;$('trucksTotal').value=Number.isFinite(S.trucksTotal)?S.trucksTotal:'';$('truckNo').value=Number.isFinite(S.truckNo)?S.truckNo:'';$('accum').value=S.accum;$('truckLeft').value=S.truckLeft;$('tolerance').value=S.tolerance}
-function renderAll(){fillStatic();renderRdoCards();update()}
-[['job','job',0],['density','density',1],['usinado','usinado',1],['trucksTotal','trucksTotal',1],['truckNo','truckNo',1],['plate','plate',0],['accum','accum',1],['truckLeft','truckLeft',1],['tolerance','tolerance',1]].forEach(([id,k,num])=>$(id).addEventListener('input',e=>{
+function fillStatic(){$('job').value=S.job;$('repDate').value=S.date||'';$('resp').value=S.resp||'';$('density').value=S.density;$('usinado').value=S.usinado;$('plate').value=S.plate;$('trucksTotal').value=Number.isFinite(S.trucksTotal)?S.trucksTotal:'';$('truckNo').value=Number.isFinite(S.truckNo)?S.truckNo:'';$('accum').value=S.accum;$('truckLeft').value=S.truckLeft;$('tolerance').value=S.tolerance}
+function renderAll(){fillStatic();update()}
+[['job','job',0],['repDate','date',0],['resp','resp',0],['density','density',1],['usinado','usinado',1],['trucksTotal','trucksTotal',1],['truckNo','truckNo',1],['plate','plate',0],['accum','accum',1],['truckLeft','truckLeft',1],['tolerance','tolerance',1]].forEach(([id,k,num])=>$(id).addEventListener('input',e=>{
  if(k==='plate'){const p=e.target.selectionStart;S.plate=e.target.value.toUpperCase();if(e.target.value!==S.plate){e.target.value=S.plate;try{e.target.setSelectionRange(p,p)}catch{}}}
  else S[k]=num?(e.target.value===''?NaN:Number(e.target.value)):e.target.value;
  changed()}));
@@ -797,11 +853,7 @@ document.querySelectorAll('input[name="truckFull"]').forEach(r=>r.addEventListen
 
 // RDO
 const findSeg=id=>S.fres.find(s=>s.id===id);
-$('rdoList').addEventListener('input',e=>{const {id,k}=e.target.dataset;if(!id||!k||k==='end')return;const s=findSeg(id),r=rdoRec(id);if(!s)return;
- if(k==='obs'){r.obs=e.target.value;setDirty(true);persist();return}
- const v=e.target.type==='number'?(e.target.value===''?NaN:Number(e.target.value)):e.target.value;
- if(same(v,s[k]))delete r.over[k];else r.over[k]=v;changed()});
-$('rdoList').addEventListener('click',e=>{const b=e.target.closest('[data-reset]');if(!b)return;const s=findSeg(b.dataset.reset);if(s&&confirm('Voltar este segmento para os valores da fresagem?')){rdoRec(s.id).over={};renderRdoCards();changed()}});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-reset]');if(!b)return;const s=findSeg(b.dataset.reset);if(s&&confirm('Voltar este apontamento para os valores da fresagem?')){rdoRec(s.id).over={};changed();$('status').textContent='Apontamento restaurado.'}});
 
 // Acompanhamento
 $('decision').addEventListener('input',e=>{const k=e.target.dataset.plan;if(!k)return;S[k]=e.target.value===''?NaN:Number(e.target.value);changed()});
@@ -819,7 +871,7 @@ function closeMenu(){$('sheet').classList.remove('open');if(!ED)$('sheetBg').cla
 $('menuBtn').onclick=openMenu;$('closeMenu').onclick=closeMenu;$('sheetBg').onclick=()=>{if(ED)closeEditor();closeMenu()};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(ED)closeEditor();closeMenu()}});
 $('saveMenu').onclick=()=>{closeMenu();const data=JSON.parse(JSON.stringify(S));data.version=3;const name='apontamento-massa'+(S.job?'-'+S.job.replace(/[^\w-]+/g,'_').slice(0,40):'')+'.json';const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setDirty(false);$('status').textContent='Arquivo gerado. Guarde-o para reabrir em outro aparelho.'};
-$('printMenu').onclick=()=>{closeMenu();update();setTimeout(()=>window.print(),250)};
+$('printMenu').onclick=()=>printReport(tab);
 $('newMenu').onclick=()=>{closeMenu();if(!confirm('Começar um apontamento vazio? Salve em arquivo antes se quiser guardar o atual.'))return;S=emptyState();renderAll();changed();setTab('fres')};
 $('import').onchange=async e=>{closeMenu();const f=e.target.files[0];if(!f)return;try{if(f.size>3000000)throw Error('Arquivo muito grande.');const d=normalize(JSON.parse(await f.text()));if(dirty&&!confirm('Substituir o apontamento atual pelo arquivo?'))return;S=d;renderAll();persist();setDirty(false);$('status').textContent='Apontamento carregado.'}catch(err){$('status').textContent='Não foi possível abrir: '+err.message}finally{e.target.value=''}};
 
