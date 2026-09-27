@@ -30,6 +30,18 @@ No Acompanhamento, o quadro de caminhões mostra o total usinado, o nº e a plac
 
 Cada painel tem o botão **Imprimir relatório** (A4), com cabeçalho (nome, data, obra/trecho, responsável) e somente os dados daquele painel: Fresagem (usinado do dia, segmentos, área/volume/massa), RDO (apontamentos, área/volume/massa aplicada) e Acompanhamento (último caminhão, segmentos a aplicar com extras, saldo e metros a fresar).
 
+## Uso em equipe (nuvem, com login)
+
+Com a configuração do Firebase preenchida em `FIREBASE_CONFIG` (no `index.html`), o app passa a funcionar em equipe:
+
+- Login com e-mail e senha (usuários criados pelo responsável no Console do Firebase; auto-cadastro desativado).
+- Lista de apontamentos compartilhados; todos veem as alterações em tempo real.
+- Cada segmento é salvo separado, com quem lançou, quem alterou o RDO e quem marcou como aplicado (e a hora).
+- Funciona sem sinal: as alterações ficam no aparelho e sobem quando a internet volta (bolinha amarela = sincronizando, verde = sincronizado).
+- Regras de segurança do banco em `firestore.rules`.
+
+Sem configuração (`FIREBASE_CONFIG = null`), o app funciona só no aparelho, como antes.
+
 ## Dados
 
 - Salvos automaticamente no próprio aparelho (navegador).

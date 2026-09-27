@@ -131,6 +131,30 @@ main{max-width:1100px;margin:auto;padding:14px 12px 8px}
 .addinline{width:100%;min-height:52px;margin-top:12px;border:2px dashed #9fb4c2;background:#f7fafc;border-radius:12px;font-weight:700;color:#23445a;font-size:16px}
 .empty{padding:20px;text-align:center;color:var(--muted);font-size:14px;border:2px dashed #cfdae2;border-radius:12px}
 
+/* Nuvem: login, lista, autoria */
+.who{display:flex;align-items:center;gap:6px;font-size:12px;color:#c3d6e0;max-width:40%;min-width:0;margin-left:auto}
+.who #userName{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sync{width:9px;height:9px;border-radius:50%;background:#2fbf71;flex:0 0 9px}
+.sync.pending{background:#f5bb40;animation:pulse2 1s ease-in-out infinite}
+.sync.off{background:#9aa9b4}
+@keyframes pulse2{50%{opacity:.35}}
+.gate{position:fixed;inset:0;z-index:60;background:var(--bg);overflow-y:auto;padding:calc(24px + env(safe-area-inset-top,0px)) 16px calc(24px + var(--safe-b))}
+.gate .box{max-width:440px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px 18px}
+.gate .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;margin:0 0 4px;color:var(--navy)}
+.gate .logo i{width:12px;height:22px;background:var(--amber);border-radius:2px;display:inline-block;transform:skewX(-12deg)}
+.gate p.hint{margin:0 0 16px}
+.gate .field{margin-bottom:12px}
+.gate .btn{justify-content:center}
+.gate .err{color:var(--bad);font-weight:600;font-size:14px;min-height:0;margin:0 0 10px}
+.gate .err:empty{display:none}
+.gate .link{display:block;background:none;border:0;color:#1d5f8f;font-weight:600;font-size:14px;padding:8px 0;text-decoration:underline}
+.plist{display:grid;gap:8px;margin:12px 0}
+.pitem{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid #cfdae2;background:#fff;border-radius:12px;padding:12px;min-height:60px}
+.pitem b{display:block;font-size:15px}
+.pitem small{display:block;color:var(--muted);font-size:12.5px}
+.pitem .go{margin-left:auto;font-size:20px;color:#6a7f8d}
+.pitem.cur{border-color:var(--navy2);box-shadow:0 0 0 2px #17394a22}
+.by{display:block;font-size:11.5px;color:#56708a;margin-top:2px}
 /* Resumo RDO */
 .srow.changed{background:var(--edit-bg);border:1px solid #d9cff7;border-left:5px solid var(--edit);border-radius:12px;padding:12px 10px;margin:6px 0}
 .srow.changed .sn{background:var(--edit);color:#fff}
@@ -317,6 +341,7 @@ details.notes p{font-size:14px;color:var(--muted);line-height:1.55;margin:8px 0 
 <header class="top">
   <div class="bar">
     <div class="brand"><i></i><b id="brandTitle">CONTROLE DE MASSA</b></div>
+    <div class="who" id="who" hidden title="Sincronização"><span class="sync" id="syncDot"></span><span id="userName"></span></div>
     <button class="iconbtn" id="menuBtn" aria-label="Abrir menu" aria-haspopup="dialog">⋯<span class="dot"></span></button>
   </div>
   <button id="massAlert" class="alert" data-state="invalid" aria-live="polite" aria-atomic="true" >
@@ -461,7 +486,9 @@ details.notes p{font-size:14px;color:var(--muted);line-height:1.55;margin:8px 0 
   <label class="btn" for="import">📂 Abrir arquivo (.json)</label>
   <button class="btn" id="saveMenu">💾 Salvar em arquivo</button>
   <button class="btn" id="printMenu">🖨️ Imprimir relatório deste painel</button>
+  <button class="btn" id="switchMenu" hidden>📚 Trocar de apontamento</button>
   <button class="btn danger" id="newMenu">🗒️ Novo apontamento (limpar)</button>
+  <button class="btn" id="logoutMenu" hidden>🚪 Sair da conta</button>
   <button class="btn dark" id="closeMenu">Fechar</button>
 </div>
 
@@ -487,9 +514,46 @@ details.notes p{font-size:14px;color:var(--muted);line-height:1.55;margin:8px 0 
   </div>
   <div class="ef"><button class="btn" id="edCancel">Cancelar</button><button class="btn primary" id="edSave">Salvar</button></div>
 </div>
+<div class="gate" id="gate" hidden>
+  <div class="box" id="gLogin" hidden>
+    <div class="logo"><i></i>CONTROLE DE MASSA</div>
+    <p class="hint">Entre com o e-mail e a senha cadastrados pelo responsável.</p>
+    <div class="field"><label for="lgEmail">E-mail</label><input id="lgEmail" type="email" autocomplete="username" inputmode="email" autocapitalize="off"></div>
+    <div class="field"><label for="lgPass">Senha</label><input id="lgPass" type="password" autocomplete="current-password"></div>
+    <p class="err" id="lgErr"></p>
+    <button class="btn primary" id="lgBtn">Entrar</button>
+    <button class="link" id="lgReset">Esqueci minha senha</button>
+  </div>
+  <div class="box" id="gName" hidden>
+    <div class="logo"><i></i>Seu nome</div>
+    <p class="hint">Esse nome aparece nos lançamentos que você fizer.</p>
+    <div class="field"><label for="nmInput">Nome</label><input id="nmInput" autocomplete="name" maxlength="60"></div>
+    <p class="err" id="nmErr"></p>
+    <button class="btn primary" id="nmBtn">Continuar</button>
+  </div>
+  <div class="box" id="gPick" hidden>
+    <div class="logo"><i></i>Apontamentos</div>
+    <p class="hint" id="pkHello"></p>
+    <div class="plist" id="pkList"></div>
+    <details id="pkNewBox"><summary class="btn primary" style="list-style:none">+ Novo apontamento</summary>
+      <div style="margin-top:12px">
+        <div class="field"><label for="pkJob">Obra / trecho</label><input id="pkJob" placeholder="Ex.: BR-277 · km 230 · faixa 1" autocomplete="off"></div>
+        <div class="field"><label for="pkDate">Data</label><input id="pkDate" type="date"></div>
+        <p class="err" id="pkErr"></p>
+        <button class="btn dark" id="pkCreate">Criar e abrir</button>
+      </div>
+    </details>
+    <button class="link" id="pkBack" hidden>← Voltar ao apontamento aberto</button>
+    <button class="link" id="pkLogout">Sair da conta</button>
+  </div>
+</div>
 <input id="import" type="file" accept=".json,application/json" hidden>
 
 <script>
+/* ======================= Configuração da nuvem =======================
+   Cole aqui a configuração do seu projeto Firebase (Console → Configurações do projeto → Seus apps → Web).
+   Com null, o app funciona só no aparelho (modo local). */
+const FIREBASE_CONFIG=null;
 /* ======================= Estado ======================= */
 const STORE='controle-massa-v2';
 const example=[['230+600',230,3.72,.08],['230+830',30,3.75,.1],['230+860',18,3.85,.08],['230+878',59,3.72,.06],['230+937',50,3.7,.1],['231+000',120,3.7,.1],['231+340',260,3.55,.08],['231+600',30,3.53,.06],['231+630',30,3.55,.075]];
@@ -571,11 +635,16 @@ function calc(){
 
 /* ======================= Resumo (linhas) ======================= */
 function segDesc(s){return `${s.direction==='Decrescente'?'↓':'↑'} ${s.direction} · faixa ${s.lane} · ${fmtN(s.length)} m × ${fmtN(s.width)} m × ${pos(s.thickness)?fmt(s.thickness*100,1)+' cm':'?'}`}
+function byLine(id,what){
+ const m=S.meta&&S.meta[id];if(!m)return '';
+ const b=what==='rdo'?(m.rdoBy?{p:m.rdoBy,t:m.rdoAt,l:'RDO por'}:null):what==='applied'?(S.applied[id]&&m.appliedBy?{p:m.appliedBy,t:m.appliedAt,l:'Aplicado por'}:null):(m.fresBy?{p:m.fresBy,t:m.fresAt,l:m.fresAt&&m.createdAt&&m.fresAt!==m.createdAt?'Alterado por':'Lançado por'}:null);
+ return b&&b.p?`<span class="by">👤 ${b.l} ${esc(b.p.name||'')} · ${fmtWhen(b.t)}</span>`:'';
+}
 function sRow(s,n,opts={}){
  const ok=segOk(s),v=segVol(s),m=v*S.density;
  const chips=[];if(s.sequential)chips.push('<span class="chip">sequencial</span>');if(opts.extra)chips.push('<span class="chip extra">extra</span>');if(opts.edited)chips.push('<span class="chip edit">alterado no RDO</span>');
  const acts=opts.toggle||opts.actions?`<div class="sa">${opts.toggle?`<label class="switch green" style="margin-right:auto"><input type="checkbox" role="switch" data-apply="${s.id}" ${S.applied[s.id]?'checked':''}>Aplicado</label>`:''}${opts.actions?`<button class="act" data-edit="${opts.kind}:${s.id}">✏️ Editar</button><button class="act del" data-del="${opts.kind}:${s.id}">🗑 Excluir</button>`:''}</div>`:'';
- return `<div class="srow"><div class="sn">${n}</div><div class="si"><b>${esc(s.start)} → ${esc(s.end||'?')}</b><small>${esc(segDesc(s))}</small></div><div class="sm"><b>${ok&&pos(S.density)?fmt(m):'—'} t</b><small>${ok?fmt(v):'—'} m³</small></div>${chips.length?`<div class="chips">${chips.join('')}</div>`:''}${acts}</div>`;
+ return `<div class="srow"><div class="sn">${n}</div><div class="si"><b>${esc(s.start)} → ${esc(s.end||'?')}</b><small>${esc(segDesc(s))}</small>${byLine(s.id,opts.toggle?'applied':'fres')}</div><div class="sm"><b>${ok&&pos(S.density)?fmt(m):'—'} t</b><small>${ok?fmt(v):'—'} m³</small></div>${chips.length?`<div class="chips">${chips.join('')}</div>`:''}${acts}</div>`;
 }
 
 /* ======================= Render: Fresagem ======================= */
@@ -615,7 +684,7 @@ function diffLines(s,e){ // e = valores RDO (efetivos ou rascunho)
 }
 function rRow(s,i){
  const e=rEff(s),ok=rdoOk(s),v=rdoVol(s),m=v*S.density,dl=diffLines(s,e),obs=rdoRec(s.id).obs;
- return `<div class="srow${dl.length?' changed':''}" id="rr-${s.id}"><div class="sn">${i+1}</div><div class="si"><b>${esc(e.start)} → ${esc(e.end||'?')}</b><small>${esc(segDesc(e))}</small>${obs?`<span class="obs">📝 ${esc(obs)}</span>`:''}</div><div class="sm"><b>${ok&&pos(S.density)?fmt(m):'—'} t</b><small>${ok?fmt(v):'—'} m³</small></div>
+ return `<div class="srow${dl.length?' changed':''}" id="rr-${s.id}"><div class="sn">${i+1}</div><div class="si"><b>${esc(e.start)} → ${esc(e.end||'?')}</b><small>${esc(segDesc(e))}</small>${obs?`<span class="obs">📝 ${esc(obs)}</span>`:''}${byLine(s.id,'rdo')}</div><div class="sm"><b>${ok&&pos(S.density)?fmt(m):'—'} t</b><small>${ok?fmt(v):'—'} m³</small></div>
  ${dl.length?`<div class="diffs">${dl.join('')}</div>`:''}
  <div class="sa">${dl.length?`<button class="act" data-reset="${s.id}">↺ Restaurar</button>`:''}<button class="act" data-edit="rdo:${s.id}">✏️ Editar</button></div></div>`;
 }
@@ -693,17 +762,18 @@ function updateAlert(t){
 function repDate(){const d=S.date&&/^\d{4}-\d{2}-\d{2}$/.test(S.date)?S.date:new Date().toISOString().slice(0,10);const [y,m,dd]=d.split('-');return `${dd}/${m}/${y}`}
 function repHead(title,sub){return `<div class="rep-head"><div><h1>${title}</h1><p class="sub">${sub}</p></div><table class="rep-meta"><tr><th>Data</th><td>${repDate()}</td></tr><tr><th>Obra / trecho</th><td>${esc(S.job||'—')}</td></tr><tr><th>Responsável</th><td>${esc(S.resp||'—')}</td></tr></table></div>`}
 function repFoot(){const now=new Date();return `<div class="rep-sign"><div>${esc(S.resp||'Responsável')}</div><div>Visto / fiscalização</div></div><div class="rep-foot">Gerado em ${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})} · Controle de massa</div>`}
+function whoName(p){return p&&p.name?p.name:''}
 function segTable(rows,opts={}){ // rows: [{n,e,obs,tipo}]
  const d=S.density;let L=0,A=0,V=0,M=0;
  const body=rows.map(r=>{const e=r.e,ok=segValid(e,e.end),a=e.length*e.width,v=vol(e.length,e.width,e.thickness),m=v*d;L+=e.length;A+=a;V+=v;M+=m;
-  return `<tr><td>${r.n}</td>${opts.tipo?`<td>${r.tipo}</td>`:''}<td>${esc(e.start)}</td><td>${esc(e.end||'—')}</td><td>${e.direction}</td><td class="n">${e.lane}</td><td class="n">${fmtN(e.length)}</td><td class="n">${fmt(e.width)}</td><td class="n">${fmt(e.thickness*100,1)}</td><td class="n">${ok?fmt(a):'—'}</td><td class="n">${ok?fmt(v):'—'}</td><td class="n">${ok?fmt(m):'—'}</td>${opts.obs?`<td>${esc(r.obs||'')}</td>`:''}</tr>`}).join('')||`<tr><td colspan="${11+(opts.tipo?1:0)+(opts.obs?1:0)}">Sem segmentos.</td></tr>`;
+  return `<tr><td>${r.n}</td>${opts.tipo?`<td>${r.tipo}</td>`:''}<td>${esc(e.start)}</td><td>${esc(e.end||'—')}</td><td>${e.direction}</td><td class="n">${e.lane}</td><td class="n">${fmtN(e.length)}</td><td class="n">${fmt(e.width)}</td><td class="n">${fmt(e.thickness*100,1)}</td><td class="n">${ok?fmt(a):'—'}</td><td class="n">${ok?fmt(v):'—'}</td><td class="n">${ok?fmt(m):'—'}</td>${opts.obs?`<td>${esc(r.obs||'')}</td>`:''}${opts.by?`<td>${esc(r.by||'')}</td>`:''}</tr>`}).join('')||`<tr><td colspan="${11+(opts.tipo?1:0)+(opts.obs?1:0)+(opts.by?1:0)}">Sem segmentos.</td></tr>`;
  const pre=5+(opts.tipo?1:0);
- return {html:`<table class="ptable"><thead><tr><th>#</th>${opts.tipo?'<th>Tipo</th>':''}<th>Estaca inicial</th><th>Estaca final</th><th>Sentido</th><th class="n">Faixa</th><th class="n">Compr. (m)</th><th class="n">Larg. (m)</th><th class="n">Esp. (cm)</th><th class="n">Área (m²)</th><th class="n">Volume (m³)</th><th class="n">Massa (t)</th>${opts.obs?'<th>Obs.</th>':''}</tr></thead><tbody>${body}</tbody><tfoot><tr><td colspan="${pre}">Total</td><td class="n">${fmtN(L)}</td><td></td><td></td><td class="n">${fmt(A)}</td><td class="n">${fmt(V)}</td><td class="n">${fmt(M)}</td>${opts.obs?'<td></td>':''}</tr></tfoot></table>`,L,A,V,M};
+ return {html:`<table class="ptable"><thead><tr><th>#</th>${opts.tipo?'<th>Tipo</th>':''}<th>Estaca inicial</th><th>Estaca final</th><th>Sentido</th><th class="n">Faixa</th><th class="n">Compr. (m)</th><th class="n">Larg. (m)</th><th class="n">Esp. (cm)</th><th class="n">Área (m²)</th><th class="n">Volume (m³)</th><th class="n">Massa (t)</th>${opts.obs?'<th>Obs.</th>':''}${opts.by?'<th>Lançado por</th>':''}</tr></thead><tbody>${body}</tbody><tfoot><tr><td colspan="${pre}">Total</td><td class="n">${fmtN(L)}</td><td></td><td></td><td class="n">${fmt(A)}</td><td class="n">${fmt(V)}</td><td class="n">${fmt(M)}</td>${opts.obs?'<td></td>':''}${opts.by?'<td></td>':''}</tr></tfoot></table>`,L,A,V,M};
 }
 function buildReport(kind){
  const t=calc(),d=S.density;
  if(kind==='fres'){
-  const T=segTable(S.fres.map((s,i)=>({n:i+1,e:s})));
+  const hasMeta=!!S.meta;const T=segTable(S.fres.map((s,i)=>({n:i+1,e:s,by:hasMeta?whoName(S.meta[s.id]&&(S.meta[s.id].fresBy||S.meta[s.id].createdBy)):''})),{by:hasMeta});
   return `<div class="rep">${repHead('Relatório de Fresagem','Controle de fresagem · massa equivalente de CBUQ')}
   <div class="rep-kpis"><div class="hl">Massa usinada do dia<b>${fmt(S.usinado||0)} t</b></div><div>Densidade<b>${fmtN(d)} t/m³</b></div><div>Segmentos<b>${S.fres.length}</b></div><div>Extensão fresada<b>${fmtN(T.L)} m</b></div></div>
   <h2>Segmentos fresados</h2>${T.html}
@@ -711,7 +781,7 @@ function buildReport(kind){
   ${repFoot()}</div>`;
  }
  if(kind==='rdo'){
-  const T=segTable(S.fres.map((s,i)=>({n:i+1,e:rEff(s),obs:rdoRec(s.id).obs})),{obs:true});
+  const hasMeta=!!S.meta;const T=segTable(S.fres.map((s,i)=>({n:i+1,e:rEff(s),obs:rdoRec(s.id).obs,by:hasMeta?whoName(S.meta[s.id]&&(S.meta[s.id].rdoBy||S.meta[s.id].createdBy)):''})),{obs:true,by:hasMeta});
   return `<div class="rep">${repHead('Relatório de RDO da Aplicação','Apontamentos de aplicação de CBUQ')}
   <div class="rep-kpis"><div>Apontamentos<b>${S.fres.length}</b></div><div>Densidade<b>${fmtN(d)} t/m³</b></div><div>Extensão aplicada<b>${fmtN(T.L)} m</b></div><div class="hl">Massa aplicada<b>${fmt(T.M)} t</b></div></div>
   <h2>Apontamentos do RDO</h2>${T.html}
@@ -720,7 +790,7 @@ function buildReport(kind){
  }
  // acompanhamento
  const pend=[...t.pendFres.map(s=>({n:S.fres.indexOf(s)+1,e:s,tipo:'Fresado'})),...t.pendExtra.map(s=>({n:'E'+(S.extras.indexOf(s)+1),e:s,tipo:'Extra'}))];
- const T=segTable(pend,{tipo:true});
+ const hasMeta=!!S.meta;pend.forEach(r=>r.by=hasMeta?whoName(S.meta[r.e.id]&&(S.meta[r.e.id].fresBy||S.meta[r.e.id].createdBy)):'');const T=segTable(pend,{tipo:true,by:hasMeta});
  const st=t.state,sig=(t.saldo>0?'+':t.saldo<0?'−':'')+fmt(Math.abs(t.saldo))+' t';
  const res=st==='shortage'?`<div class="big">Falta de massa: ${fmt(-t.saldo)} t</div><div>A massa disponível não fecha os segmentos a aplicar — acionar a usina.</div>`:st==='surplus'?`<div class="big">Sobra de massa: +${fmt(t.saldo)} t</div><div>Metros adicionais a fresar: <b>${t.meters!==null?fmt(t.meters,0)+' m':'—'}</b>${t.meters!==null?` (largura ${fmtN(S.planWidth)} m × espessura ${fmt(S.planThickness*100,1)} cm × densidade ${fmtN(d)} t/m³)`:''}</div>`:st==='balanced'?`<div class="big">Saldo: ${sig}</div><div>Massa suficiente, dentro da tolerância.</div>`:'<div>Dados incompletos para o saldo.</div>';
  return `<div class="rep">${repHead('Relatório de Acompanhamento da Aplicação','Massa disponível, segmentos a aplicar e saldo de CBUQ')}
@@ -785,9 +855,9 @@ function saveEditor(){
  if(!pos(d.length))errs.push('comprimento');if(!(Number.isInteger(d.lane)&&d.lane>0))errs.push('faixa (número inteiro)');if(!pos(d.width))errs.push('largura');if(!pos(d.thickness))errs.push('espessura');
  if(!errs.length&&!d.end)errs.push('estaca final ficaria negativa — confira o sentido');
  if(errs.length){$('edErr').textContent='Confira: '+errs.join(', ')+'.';return}
- if(ED.kind==='rdo'){const src=ED.src,r=rdoRec(src.id);r.over={};KEYS.forEach(k=>{if(!same(d[k],src[k]))r.over[k]=d[k]});r.obs=(d.obs||'').slice(0,1000);closeEditor();changed();$('status').textContent=r.over&&Object.keys(r.over).length?'Apontamento do RDO atualizado.':'Apontamento igual à fresagem.';return}
+ if(ED.kind==='rdo'){const src=findSeg(ED.id);if(!src){$('edErr').textContent='Este segmento foi excluído por outra pessoa.';return}const r=rdoRec(src.id);r.over={};KEYS.forEach(k=>{if(!same(d[k],src[k]))r.over[k]=d[k]});r.obs=(d.obs||'').slice(0,1000);closeEditor();changed();$('status').textContent=r.over&&Object.keys(r.over).length?'Apontamento do RDO atualizado.':'Apontamento igual à fresagem.';return}
  const kind=ED.kind,list=kind==='fres'?S.fres:S.extras,{id:_,obs:__,...vals}=d,editing=!!ED.id;
- if(editing)Object.assign(list.find(s=>s.id===ED.id),vals);else{list.push({...d});if(kind==='fres')rdoRec(d.id)}
+ if(editing){const tgt=list.find(s=>s.id===ED.id);if(!tgt){$('edErr').textContent='Este segmento foi excluído por outra pessoa.';return}Object.assign(tgt,vals)}else{list.push({...d});if(kind==='fres')rdoRec(d.id)}
  closeEditor();
  changed();$('status').textContent=editing?'Segmento atualizado.':'Segmento adicionado.';
 }
@@ -811,10 +881,10 @@ document.addEventListener('change',e=>{const id=e.target.dataset&&e.target.datas
 
 /* ======================= Persistência ======================= */
 let saveTimer;
-function flush(){clearTimeout(saveTimer);try{localStorage.setItem(STORE,JSON.stringify(S))}catch{}}
-function persist(){clearTimeout(saveTimer);saveTimer=setTimeout(flush,250)}
+function flush(){if(CLOUD)return;clearTimeout(saveTimer);try{localStorage.setItem(STORE,JSON.stringify(S))}catch{}}
+function persist(){if(CLOUD){cloudSync();return}clearTimeout(saveTimer);saveTimer=setTimeout(flush,250)}
 addEventListener('pagehide',flush);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flush()});
-function setDirty(v){dirty=v;$('menuBtn').classList.toggle('pending',v)}
+function setDirty(v){dirty=CLOUD?false:v;$('menuBtn').classList.toggle('pending',dirty)}
 function changed(){setDirty(true);persist();update()}
 function normalize(d){
  if(!d||typeof d!=='object')throw Error('Arquivo inválido.');
@@ -843,7 +913,7 @@ function normalize(d){
 function load(){try{const raw=localStorage.getItem(STORE);if(raw)return normalize(JSON.parse(raw))}catch{}return exampleState()}
 
 /* ======================= Entradas ======================= */
-function fillStatic(){$('job').value=S.job;$('repDate').value=S.date||'';$('resp').value=S.resp||'';$('density').value=S.density;$('usinado').value=S.usinado;$('plate').value=S.plate;$('trucksTotal').value=Number.isFinite(S.trucksTotal)?S.trucksTotal:'';$('truckNo').value=Number.isFinite(S.truckNo)?S.truckNo:'';$('accum').value=S.accum;$('truckLeft').value=S.truckLeft;$('tolerance').value=S.tolerance}
+function fillStatic(){const set=(id,v)=>{const el=$(id);if(el!==document.activeElement)el.value=v};const nb=v=>Number.isFinite(v)?v:'';set('job',S.job||'');set('repDate',S.date||'');set('resp',S.resp||'');set('density',nb(S.density));set('usinado',nb(S.usinado));set('plate',S.plate||'');set('trucksTotal',nb(S.trucksTotal));set('truckNo',nb(S.truckNo));set('accum',nb(S.accum));set('truckLeft',nb(S.truckLeft));set('tolerance',nb(S.tolerance))}
 function renderAll(){fillStatic();update()}
 [['job','job',0],['repDate','date',0],['resp','resp',0],['density','density',1],['usinado','usinado',1],['trucksTotal','trucksTotal',1],['truckNo','truckNo',1],['plate','plate',0],['accum','accum',1],['truckLeft','truckLeft',1],['tolerance','tolerance',1]].forEach(([id,k,num])=>$(id).addEventListener('input',e=>{
  if(k==='plate'){const p=e.target.selectionStart;S.plate=e.target.value.toUpperCase();if(e.target.value!==S.plate){e.target.value=S.plate;try{e.target.setSelectionRange(p,p)}catch{}}}
@@ -872,12 +942,163 @@ $('menuBtn').onclick=openMenu;$('closeMenu').onclick=closeMenu;$('sheetBg').oncl
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(ED)closeEditor();closeMenu()}});
 $('saveMenu').onclick=()=>{closeMenu();const data=JSON.parse(JSON.stringify(S));data.version=3;const name='apontamento-massa'+(S.job?'-'+S.job.replace(/[^\w-]+/g,'_').slice(0,40):'')+'.json';const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setDirty(false);$('status').textContent='Arquivo gerado. Guarde-o para reabrir em outro aparelho.'};
 $('printMenu').onclick=()=>printReport(tab);
-$('newMenu').onclick=()=>{closeMenu();if(!confirm('Começar um apontamento vazio? Salve em arquivo antes se quiser guardar o atual.'))return;S=emptyState();renderAll();changed();setTab('fres')};
-$('import').onchange=async e=>{closeMenu();const f=e.target.files[0];if(!f)return;try{if(f.size>3000000)throw Error('Arquivo muito grande.');const d=normalize(JSON.parse(await f.text()));if(dirty&&!confirm('Substituir o apontamento atual pelo arquivo?'))return;S=d;renderAll();persist();setDirty(false);$('status').textContent='Apontamento carregado.'}catch(err){$('status').textContent='Não foi possível abrir: '+err.message}finally{e.target.value=''}};
+$('newMenu').onclick=()=>{closeMenu();if(CLOUD){showPicker();$('pkNewBox').open=true;setTimeout(()=>$('pkJob').focus(),100);return}if(!confirm('Começar um apontamento vazio? Salve em arquivo antes se quiser guardar o atual.'))return;S=emptyState();renderAll();changed();setTab('fres')};
+$('import').onchange=async e=>{closeMenu();const f=e.target.files[0];if(!f)return;try{if(f.size>3000000)throw Error('Arquivo muito grande.');const d=normalize(JSON.parse(await f.text()));if(CLOUD){if(!confirm('Criar um novo apontamento na nuvem com os dados deste arquivo?'))return;const f2={};HF.forEach(k=>f2[k]=d[k]);if(!f2.job)f2.job=f.name.replace(/\.json$/i,'');createApont(f2,d);$('status').textContent='Apontamento importado para a nuvem.';return}if(dirty&&!confirm('Substituir o apontamento atual pelo arquivo?'))return;S=d;renderAll();persist();setDirty(false);$('status').textContent='Apontamento carregado.'}catch(err){$('status').textContent='Não foi possível abrir: '+err.message}finally{e.target.value=''}};
+
+/* ======================= Nuvem (Firebase) ======================= */
+let CLOUD=null,USER=null,AID=null,unwatch=null,unlist=null,lastRemote=null,RH=null,RSEGS=null;
+const HF=['job','date','resp','density','usinado','plate','accum','truckFull','truckLeft','tolerance','planWidth','planThickness','trucksTotal','truckNo'];
+const SEGF=['kind','order','start','direction','lane','length','width','thickness','sequential','applied','rdoOver','rdoObs'];
+const FRESF=['start','direction','lane','length','width','thickness','sequential'];
+const nn=v=>typeof v==='number'&&!Number.isFinite(v)?null:v;           // NaN -> null ao gravar
+const nv=(v,def)=>v===null||v===undefined?def:v;                       // null -> padrão ao ler
+const me=()=>({uid:USER.uid,name:USER.name||USER.email});
+async function makeFirebaseCloud(cfg){
+ const B='https://www.gstatic.com/firebasejs/10.14.1/';
+ const [{initializeApp},A,F]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-auth.js'),import(B+'firebase-firestore.js')]);
+ const app=initializeApp(cfg),auth=A.getAuth(app);
+ let db;try{db=F.initializeFirestore(app,{localCache:F.persistentLocalCache({tabManager:F.persistentMultipleTabManager()})})}catch(e){db=F.getFirestore(app)}
+ const hdr=id=>F.doc(db,'apontamentos',id),seg=(id,sid)=>F.doc(db,'apontamentos',id,'segmentos',sid);
+ const U=u=>u?{uid:u.uid,email:u.email||'',name:u.displayName||''}:null;
+ return {
+  onAuth:cb=>A.onAuthStateChanged(auth,u=>cb(U(u))),
+  login:(e,p)=>A.signInWithEmailAndPassword(auth,e,p),
+  logout:()=>A.signOut(auth),
+  resetPassword:e=>A.sendPasswordResetEmail(auth,e),
+  setName:async n=>{await A.updateProfile(auth.currentUser,{displayName:n});return U(auth.currentUser)},
+  listAponts:cb=>F.onSnapshot(F.query(F.collection(db,'apontamentos'),F.orderBy('updatedAt','desc'),F.limit(60)),q=>cb(q.docs.map(d=>({id:d.id,...d.data()}))),e=>cb(null,e)),
+  newId:()=>F.doc(F.collection(db,'apontamentos')).id,
+  newSegId:id=>F.doc(F.collection(db,'apontamentos',id,'segmentos')).id,
+  setHeader:(id,d)=>F.setDoc(hdr(id),d),
+  updateHeader:(id,f)=>F.updateDoc(hdr(id),f),
+  setSeg:(id,sid,d)=>F.setDoc(seg(id,sid),d),
+  updateSeg:(id,sid,f)=>F.updateDoc(seg(id,sid),f),
+  deleteSeg:(id,sid)=>F.deleteDoc(seg(id,sid)),
+  watchApont:(id,onH,onS)=>{
+   const u1=F.onSnapshot(hdr(id),{includeMetadataChanges:true},d=>onH(d.exists()?d.data():null,{pending:d.metadata.hasPendingWrites,cache:d.metadata.fromCache}),e=>onH(null,{error:e}));
+   const u2=F.onSnapshot(F.collection(db,'apontamentos',id,'segmentos'),{includeMetadataChanges:true},q=>onS(q.docs.map(d=>({id:d.id,data:d.data()})),{pending:q.metadata.hasPendingWrites,cache:q.metadata.fromCache}),e=>onS(null,{error:e}));
+   return ()=>{u1();u2()}},
+ };
+}
+const errMsg=e=>{const c=(e&&e.code)||'';return c.includes('invalid-credential')||c.includes('wrong-password')||c.includes('user-not-found')||c.includes('invalid-email')?'E-mail ou senha incorretos.':c.includes('too-many-requests')?'Muitas tentativas. Aguarde alguns minutos.':c.includes('network')?'Sem conexão com a internet.':c.includes('permission')?'Sem permissão para esta ação.':(e&&e.message)||'Erro inesperado.'};
+function writeErr(e){console.warn(e);$('status').textContent='Não foi possível salvar na nuvem: '+errMsg(e)}
+
+// ---- conversão entre estado local (S) e documentos da nuvem ----
+function toRemote(st){
+ const header={};HF.forEach(k=>header[k]=nn(st[k]));
+ const segs={},ord=st.ord||(st.ord={});
+ const put=(s,kind)=>{if(!Number.isFinite(ord[s.id]))ord[s.id]=Math.max(0,...Object.values(ord).filter(Number.isFinite))+1;
+  const r=st.rdo[s.id]||{over:{},obs:''};
+  segs[s.id]={kind,order:ord[s.id],start:s.start,direction:s.direction,lane:nn(s.lane),length:nn(s.length),width:nn(s.width),thickness:nn(s.thickness),sequential:!!s.sequential,applied:!!st.applied[s.id],rdoOver:kind==='fres'?JSON.parse(JSON.stringify(r.over||{},(k,v)=>nn(v))):{},rdoObs:kind==='fres'?(r.obs||''):''}};
+ st.fres.forEach(s=>put(s,'fres'));st.extras.forEach(s=>put(s,'extra'));
+ return {header,segs};
+}
+function fromRemote(h,docs){
+ const st=emptyState();h=h||{};
+ HF.forEach(k=>{if(k in h){const def=st[k];st[k]=typeof def==='number'?nv(h[k],NaN):typeof def==='boolean'?h[k]!==false:(h[k]??def)}});
+ st.meta={};st.ord={};
+ const segs=(docs||[]).map(x=>({id:x.id,...x.data})).filter(d=>typeof d.start==='string'&&['Crescente','Decrescente'].includes(d.direction));
+ segs.sort((a,b)=>(a.order??0)-(b.order??0)||(a.createdAt??0)-(b.createdAt??0)||(a.id<b.id?-1:1));
+ segs.forEach(d=>{const s={id:d.id,start:d.start,end:'',direction:d.direction,lane:nv(d.lane,NaN),length:nv(d.length,NaN),width:nv(d.width,NaN),thickness:nv(d.thickness,NaN),sequential:d.sequential===true};
+  st.ord[d.id]=d.order;
+  if(d.kind==='extra'){s.sequential=false;st.extras.push(s)}else{st.fres.push(s);const over={};Object.entries(d.rdoOver||{}).forEach(([k,v])=>{if(KEYS.includes(k))over[k]=v===null?NaN:v});st.rdo[s.id]={over,obs:d.rdoObs||''}}
+  if(d.applied)st.applied[s.id]=true;
+  st.meta[s.id]={createdBy:d.createdBy,createdAt:d.createdAt,fresBy:d.fresBy,fresAt:d.fresAt,rdoBy:d.rdoBy,rdoAt:d.rdoAt,appliedBy:d.appliedBy,appliedAt:d.appliedAt}});
+ st.hdrMeta={createdBy:h.createdBy,updatedBy:h.updatedBy,updatedAt:h.updatedAt};
+ return st;
+}
+const J=v=>JSON.stringify(v);
+function cloudSync(){
+ if(!CLOUD||!AID||!lastRemote)return;
+ const cur=toRemote(S),now=Date.now(),who=me();
+ // cabeçalho: só os campos alterados
+ const hf={};HF.forEach(k=>{if(J(cur.header[k])!==J(lastRemote.header[k]))hf[k]=cur.header[k]});
+ if(Object.keys(hf).length){hf.updatedBy=who;hf.updatedAt=now;CLOUD.updateHeader(AID,hf).catch(writeErr)}
+ // segmentos: criar, alterar (campo a campo) e excluir
+ Object.entries(cur.segs).forEach(([sid,d])=>{
+  const old=lastRemote.segs[sid];
+  if(!old){CLOUD.setSeg(AID,sid,{...d,createdBy:who,createdAt:now,fresBy:who,fresAt:now}).catch(writeErr);return}
+  const f={};SEGF.forEach(k=>{if(J(d[k])!==J(old[k]))f[k]=d[k]});
+  if(!Object.keys(f).length)return;
+  if(FRESF.some(k=>k in f)){f.fresBy=who;f.fresAt=now}
+  if('rdoOver' in f||'rdoObs' in f){f.rdoBy=who;f.rdoAt=now}
+  if('applied' in f){f.appliedBy=who;f.appliedAt=now}
+  CLOUD.updateSeg(AID,sid,f).catch(writeErr);
+ });
+ Object.keys(lastRemote.segs).forEach(sid=>{if(!cur.segs[sid])CLOUD.deleteSeg(AID,sid).catch(writeErr)});
+ touchHeader(now,who,hf);
+ lastRemote=cur;
+}
+let touchT=0;
+function touchHeader(now,who,hf){ // marca a hora da última alteração (ordena a lista de apontamentos)
+ if(Object.keys(hf).length||now-touchT<30000)return;touchT=now;CLOUD.updateHeader(AID,{updatedBy:who,updatedAt:now}).catch(()=>{});
+}
+function applyRemote(){
+ if(!RH||!RSEGS)return;
+ S=fromRemote(RH,RSEGS);S.id=AID;
+ lastRemote=toRemote(S);
+ fillStatic();update();hideGate();
+}
+function setSync(pending,cache){const d=$('syncDot');d.classList.toggle('pending',!!pending);d.classList.toggle('off',!pending&&!!cache&&!navigator.onLine);$('who').title=pending?'Salvando… (os dados sobem quando houver sinal)':!navigator.onLine?'Sem sinal — alterações ficam salvas no aparelho':'Sincronizado'}
+function openApont(id){
+ if(unwatch)unwatch();AID=id;RH=null;RSEGS=null;lastRemote=null;
+ try{localStorage.setItem('cm-last-apont',id)}catch{}
+ let hp=false,sp=false,hc=false,sc=false;
+ unwatch=CLOUD.watchApont(id,(h,m)=>{if(m&&m.error){$('status').textContent='Erro ao ler da nuvem: '+errMsg(m.error);return}if(!h){if(!m.cache){showPicker();$('pkErr').textContent='Esse apontamento não existe mais.'}return}RH=h;hp=m.pending;hc=m.cache;setSync(hp||sp,hc||sc);applyRemote()},
+  (docs,m)=>{if(m&&m.error){$('status').textContent='Erro ao ler da nuvem: '+errMsg(m.error);return}RSEGS=docs;sp=m.pending;sc=m.cache;setSync(hp||sp,hc||sc);applyRemote()});
+}
+function showGate(which){$('gate').hidden=false;['gLogin','gName','gPick'].forEach(x=>$(x).hidden=x!==which);document.body.classList.add('lock')}
+function hideGate(){if(!$('gate').hidden){$('gate').hidden=true;document.body.classList.remove('lock')}}
+function fmtWhen(ms){if(!ms)return '';const d=new Date(ms);return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}
+function showPicker(){
+ showGate('gPick');$('pkHello').textContent=`Olá, ${USER.name||USER.email}. Escolha o apontamento ou crie um novo.`;
+ $('pkBack').hidden=!AID||!RH;$('pkDate').value=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);$('pkErr').textContent='';
+ if(unlist)unlist();
+ $('pkList').innerHTML='<div class="empty">Carregando…</div>';
+ unlist=CLOUD.listAponts((list,err)=>{
+  if(!list){$('pkList').innerHTML=`<div class="empty">Não foi possível carregar: ${esc(errMsg(err))}</div>`;return}
+  $('pkList').innerHTML=list.length?list.map(a=>{const dt=a.date&&/^\d{4}-\d{2}-\d{2}$/.test(a.date)?a.date.split('-').reverse().join('/'):'sem data';return `<button class="pitem${a.id===AID?' cur':''}" data-open="${a.id}"><span><b>${esc(a.job||'Sem nome')}</b><small>${dt}${a.resp?' · '+esc(a.resp):''}${a.updatedBy?` · alterado por ${esc(a.updatedBy.name||'')} ${fmtWhen(a.updatedAt)}`:''}</small></span><span class="go">›</span></button>`}).join(''):'<div class="empty">Nenhum apontamento ainda. Crie o primeiro.</div>';
+ });
+}
+function createApont(fields,segsFromFile){
+ const id=CLOUD.newId(),who=me(),now=Date.now(),base=emptyState();
+ const h={};HF.forEach(k=>h[k]=nn(k in fields?fields[k]:base[k]));Object.assign(h,{createdBy:who,createdAt:now,updatedBy:who,updatedAt:now});
+ CLOUD.setHeader(id,h).catch(writeErr);
+ if(segsFromFile){const r=toRemote(segsFromFile);Object.entries(r.segs).forEach(([sid,d])=>CLOUD.setSeg(id,sid,{...d,createdBy:who,createdAt:now,fresBy:who,fresAt:now}).catch(writeErr))}
+ openApont(id);return id;
+}
+function afterLogin(u){
+ USER=u;$('who').hidden=false;$('userName').textContent=u.name||u.email;
+ ['switchMenu','logoutMenu'].forEach(x=>$(x).hidden=false);$('newMenu').textContent='🗒️ Novo apontamento';$('newMenu').classList.remove('danger');
+ if(!u.name){showGate('gName');$('nmInput').value='';setTimeout(()=>$('nmInput').focus(),100);return}
+ let last=null;try{last=localStorage.getItem('cm-last-apont')}catch{}
+ if(last&&!AID){showGate('gPick');$('pkList').innerHTML='<div class="empty">Abrindo o último apontamento…</div>';openApont(last);setTimeout(()=>{if(!RH&&!$('gate').hidden)showPicker()},4000)}
+ else if(!AID)showPicker();
+}
+async function startCloud(impl){
+ CLOUD=impl;showGate('gLogin');$('lgErr').textContent='Conectando…';
+ CLOUD.onAuth(u=>{$('lgErr').textContent='';if(u)afterLogin(u);else{USER=null;AID=null;if(unwatch)unwatch();if(unlist)unlist();$('who').hidden=true;showGate('gLogin')}});
+}
+$('lgBtn').onclick=async()=>{const e=$('lgEmail').value.trim(),p=$('lgPass').value;if(!e||!p){$('lgErr').textContent='Informe e-mail e senha.';return}$('lgErr').textContent='Entrando…';try{await CLOUD.login(e,p)}catch(err){$('lgErr').textContent=errMsg(err)}};
+$('lgPass').addEventListener('keydown',e=>{if(e.key==='Enter')$('lgBtn').click()});
+$('lgReset').onclick=async()=>{const e=$('lgEmail').value.trim();if(!e){$('lgErr').textContent='Digite seu e-mail acima e toque de novo em “Esqueci minha senha”.';return}try{await CLOUD.resetPassword(e);$('lgErr').textContent='Enviamos um e-mail para redefinir a senha.'}catch(err){$('lgErr').textContent=errMsg(err)}};
+$('nmBtn').onclick=async()=>{const n=$('nmInput').value.trim();if(n.length<2){$('nmErr').textContent='Digite seu nome.';return}try{const u=await CLOUD.setName(n);afterLogin({...USER,...u,name:n})}catch(err){$('nmErr').textContent=errMsg(err)}};
+$('pkList').addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b)openApont(b.dataset.open)});
+$('pkCreate').onclick=()=>{const job=$('pkJob').value.trim();if(!job){$('pkErr').textContent='Informe a obra / trecho.';return}const f={job,date:$('pkDate').value,resp:USER.name||''};if(S&&pos(S.density))f.density=S.density;createApont(f);$('pkJob').value='';$('pkNewBox').open=false};
+$('pkBack').onclick=hideGate;
+$('pkLogout').onclick=()=>{if(confirm('Sair da conta neste aparelho?'))CLOUD.logout()};
+$('switchMenu').onclick=()=>{closeMenu();showPicker()};
+$('logoutMenu').onclick=()=>{closeMenu();if(confirm('Sair da conta neste aparelho?'))CLOUD.logout()};
+addEventListener('online',()=>setSync(false,false));addEventListener('offline',()=>setSync(false,true));
 
 /* ======================= Início ======================= */
-S=load();renderAll();
-try{const t=localStorage.getItem(STORE+'-tab');setTab(['fres','rdo','acomp'].includes(t)?t:'fres')}catch{setTab('fres')}
+(async()=>{
+ const impl=window.__cloudImpl||(FIREBASE_CONFIG?await makeFirebaseCloud(FIREBASE_CONFIG).catch(e=>{console.error(e);return null}):null);
+ if(impl){S=emptyState();renderAll();setTab('fres');startCloud(impl);return}
+ if(FIREBASE_CONFIG){$('status').textContent='Não foi possível conectar à nuvem (sem internet?). Abrindo no modo local deste aparelho.'}
+ S=load();renderAll();
+ try{const t=localStorage.getItem(STORE+'-tab');setTab(['fres','rdo','acomp'].includes(t)?t:'fres')}catch{setTab('fres')}
+})();
 </script>
 </body>
 </html>
