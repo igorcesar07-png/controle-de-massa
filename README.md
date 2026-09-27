@@ -4,23 +4,21 @@ Aplicativo web (um único `index.html`, sem instalação) para controlar a fresa
 
 ## Painéis
 
-1. **Controle de fresagem** — cadastro dos segmentos fresados (estaca inicial, sentido, comprimento, faixa, largura, espessura). A estaca final é calculada; “Sequencial” encadeia com o segmento anterior. Mostra a massa de CBUQ equivalente ao volume fresado (volume × densidade) e um resumo com o total de massa “fresada”.
-2. **RDO da aplicação** — recebe automaticamente todos os segmentos da fresagem. Os valores podem ser editados sem alterar a fresagem; quando ficam diferentes, o valor original da fresagem aparece discretamente em roxo abaixo do campo. Cada segmento pode ser marcado como **Concluído**, ter observação e ser restaurado (↺).
-3. **Acompanhamento da aplicação** — massa recebida da usina (com botão “+1 caminhão”), massa já aplicada (segmentos concluídos), restante, necessário para os pendentes e o saldo:
-   - **Falta** → alerta vermelho “acionar a usina imediatamente” com toneladas e número de caminhões, e botão para copiar/compartilhar o pedido.
-   - **Sobra** → quanto ainda precisa fresar, em toneladas e em metros, para a largura e espessura informadas.
+1. **Controle de fresagem** — densidade e **massa total usinada do dia**. A tela mostra só o **resumo dos segmentos**, cada um com **Editar** e **Excluir** (com confirmação). O formulário (estaca inicial, sentido, comprimento, faixa, largura, espessura, sequencial) abre só ao editar ou adicionar; ao salvar, volta ao resumo atualizado. Total de massa "fresada" = volume × densidade.
+2. **RDO da aplicação** — recebe automaticamente os segmentos da fresagem e permite editar o que foi aplicado sem alterar a fresagem.
+   - Quadro **usinado × aplicado no RDO** (t e m³) com a diferença (usinado − aplicado).
+   - Lista de **diferenças RDO × fresagem**: valor da fresagem, valor do RDO e diferença com sinal (▲ + a mais, azul · ▼ − a menos, vermelho), inclusive massa e volume.
+   - Resumo da fresagem como referência e lançamentos editáveis (com ↺ para restaurar).
+3. **Acompanhamento da aplicação** — usa **somente** dados da fresagem (mais segmentos extras cadastrados aqui); nada do RDO.
+   - Total usinado (vem da fresagem), placa do último caminhão aplicado, total acumulado até esse caminhão, se foi aplicado por inteiro e a sobra dele.
+   - **Massa disponível** = total usinado − acumulado até o caminhão + sobra do caminhão.
+   - Lista **A APLICAR** (segmentos fresados não aplicados + extras) com a massa necessária.
+   - **Segmentos extras** (Editar/Excluir) aparecem só aqui e somam na massa necessária.
+   - No final: **saldo** = disponível − necessária. Falta → alerta para acionar a usina. Sobra → metros a mais a fresar = saldo ÷ (espessura × largura × densidade).
 
-Um aviso fixo no topo mostra a situação em todos os painéis.
+Um aviso fixo no topo mostra a situação do acompanhamento em todos os painéis.
 
 ## Dados
 
 - Salvos automaticamente no próprio aparelho (navegador).
-- Menu ⋯: salvar/abrir arquivo `.json` (compatível com arquivos da versão anterior), imprimir relatório, novo apontamento.
-
-## Cálculos
-
-- Massa do segmento = comprimento × largura × espessura × densidade.
-- Aplicada = Σ massa RDO dos concluídos · Necessário = Σ massa RDO dos pendentes.
-- Saldo = (recebida − aplicada) − necessário. Negativo = falta; positivo = sobra.
-- Metros a fresar = sobra ÷ (densidade × largura × espessura).
-- Caminhões = arredondar para cima (falta ÷ carga por caminhão).
+- Menu ⋯: salvar/abrir arquivo `.json` (abre arquivos das versões anteriores), imprimir relatório, novo apontamento.
