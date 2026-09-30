@@ -26,6 +26,26 @@ Amarelo = sobra, vermelho = falta, verde = dentro da tolerância.
 
 No Acompanhamento, o quadro de caminhões mostra o total usinado, o nº e a placa do último aplicado e os restantes a aplicar (total − nº do último, +1 se o último teve sobra).
 
+## Navegação
+
+Menu lateral (☰, canto superior esquerdo) com as páginas: Fresagem, RDO aplicação, Acompanhamento, **Controle de geometria** e **Viagens de fresado**.
+
+## Controle de geometria
+
+- Base geográfica `geo.json`, gerada por `tools/build_geo.py` a partir de `data-src/B2B3_KMZ_Estaca.kmz` (estaca, coordenadas, hodômetro contínuo) e `data-src/R08_unifilar_solucoes_BR277.json` (código da solução por sentido e faixa). O script confere que os dois arquivos batem estaca a estaca e que o hodômetro é contínuo (passo de 20 m).
+- O GPS do celular é projetado sobre a linha das estacas para estimar a estaca (hodômetro). O cálculo roda no aparelho, funcionando sem sinal; os registros vão para o servidor.
+- Precisão pior que 25 m, GPS antigo ou distância maior que 60 m do eixo são sinalizados; sobreposição de panos ou ausência de correspondência exigem escolha manual. Também é possível informar a estaca manualmente.
+- Sentido e faixa são sugeridos pelo pano e precisam ser confirmados.
+- A espessura de projeto não existe no unifilar: vem da legenda por código (FF 0,060 m, FE 0,100 m, FS 0,040 m informados; os demais em branco até serem preenchidos). Sem espessura cadastrada, a leitura é salva sem comparação.
+- Comprimento: medida única por pano, com correções guardadas em histórico. Largura e espessura: várias leituras, cada uma com data/hora, GPS e precisão, estaca, pano, segmento de projeto, solução, sentido, faixa e (espessura) a espessura de projeto usada. Leituras agrupadas por segmento de projeto quando o pano atravessa mais de um.
+
+## Viagens de fresado
+
+- Cartões das 7 placas da frota fixa; toque → Chegada ou Saída.
+- Toque repetido do mesmo evento da mesma placa em menos de 60 s é ignorado; evento igual ao anterior (ex.: duas chegadas seguidas) gera aviso e pede confirmação.
+- Histórico do dia; quem registrou pode corrigir tipo/horário ou cancelar, e cada correção fica guardada.
+- Status de envio: salvo no servidor, envio pendente (sem conexão) ou falhou.
+
 ## Relatórios
 
 Cada painel tem o botão **Imprimir relatório** (A4), com cabeçalho (nome, data, obra/trecho, responsável) e somente os dados daquele painel: Fresagem (usinado do dia, segmentos, área/volume/massa), RDO (apontamentos, área/volume/massa aplicada) e Acompanhamento (último caminhão, segmentos a aplicar com extras, saldo e metros a fresar).

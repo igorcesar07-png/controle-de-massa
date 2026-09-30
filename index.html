@@ -417,12 +417,154 @@ body{color:var(--ink)}
 .rep-kpis .hl{background:var(--graphite);border-color:var(--graphite);color:#ddd}
 .rep-result{border-color:var(--graphite)}
 .rep-result.shortage{border-color:var(--red)}
+
+/* ================= Menu lateral ================= */
+body{padding-bottom:calc(96px + var(--safe-b))}
+.fab{bottom:calc(18px + var(--safe-b))}
+.burger{flex-direction:column;gap:4px;display:flex;align-items:center;justify-content:center;position:relative;flex:0 0 44px}
+.burger span{display:block;width:20px;height:2px;border-radius:2px;background:#fff}
+.bdot{position:absolute;top:6px;right:6px;width:9px;height:9px;border-radius:50%;background:var(--red);display:none;box-shadow:0 0 0 2px var(--black)}
+.bdot.on{display:block}
+.brand{margin-right:auto}
+.drawer-bg{position:fixed;inset:0;z-index:50;background:rgba(12,12,12,.55)}
+.drawer{position:fixed;top:0;bottom:0;left:0;z-index:51;width:min(86vw,320px);background:#fff;transform:translateX(-102%);transition:transform .22s ease;display:flex;flex-direction:column;box-shadow:6px 0 24px rgba(0,0,0,.25);visibility:hidden}
+.drawer.open{transform:none;visibility:visible}
+.drawer-head{background:var(--black);border-bottom:3px solid var(--red);padding:calc(12px + env(safe-area-inset-top,0px)) 14px 12px;display:flex;align-items:center;justify-content:space-between}
+.drawer-head img{height:30px;width:auto}
+.drawer-nav{padding:8px 10px;overflow-y:auto;flex:1}
+.dgroup{font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#7a7d82;margin:14px 8px 6px}
+.nav{display:flex;align-items:center;gap:12px;width:100%;min-height:54px;border:0;background:none;border-radius:12px;padding:0 12px;font-size:16px;font-weight:700;color:var(--ink);text-align:left;position:relative}
+.nav .ni{width:28px;text-align:center;font-size:20px}
+.nav[aria-current="page"]{background:#f1f1f2;box-shadow:inset 4px 0 0 var(--red);color:var(--black)}
+.nbadge{margin-left:auto;width:10px;height:10px;border-radius:50%;background:var(--red);display:none}
+.nbadge.on{display:block}
+.drawer-foot{border-top:1px solid var(--line);padding:12px 18px calc(12px + var(--safe-b));font-size:13px;color:var(--muted)}
+.drawer-foot:empty{display:none}
+
+/* ================= Estados visuais: automático / editável / confirmado ================= */
+.tagauto{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.3px;padding:3px 8px;border-radius:20px;background:#eceef0;color:#55595e;border:1px dashed #a9adb2;vertical-align:middle}
+.tagauto.man{background:#fff4d6;color:#7a4b00;border:1px solid #e6c264}
+.tagauto.ok{background:var(--ok-bg);color:var(--ok);border:1px solid #9fd1b3}
+.tagauto.warn{background:var(--red-bg);color:var(--red-dark);border:1px solid #efbfc1}
+.autobox{background:#f4f5f6;border:1px dashed #b7bbc0;border-radius:12px;padding:12px}
+.okbox{background:#fff;border:1px solid #cfd2d6;border-left:5px solid var(--ok);border-radius:12px;padding:10px 12px}
+.suggest input{border-style:dashed!important;background:#f7f7f8!important;color:#4a4d52!important}
+.inrow{display:flex;gap:8px;align-items:stretch}
+.inrow input{flex:1}
+.inrow .act{min-height:50px}
+
+/* ================= Controle de geometria ================= */
+body.geo-on{padding-bottom:calc(150px + var(--safe-b))}
+.gpsrow .btn{margin:0}
+.gpsrow .btn.on{background:var(--graphite);border-color:var(--graphite)}
+.geomsg{margin-top:10px;font-size:14px;line-height:1.45;color:#3a3a3a;background:#f4f5f6;border-radius:10px;padding:10px 12px}
+.geomsg.warn{background:var(--red-bg);color:#6e1418}
+.geomsg.ok{background:var(--ok-bg);color:#14502f}
+.segctl.three{grid-template-columns:1fr 1fr 1fr}
+.segctl.three label{text-align:center;line-height:1.1;padding:6px 2px}
+.segctl.three small{font-size:10.5px;font-weight:600;opacity:.8}
+.segctl.pending{border-style:dashed}
+.segctl.pending label:has(input:checked){background:#6b6e73}
+.cand{display:grid;gap:8px}
+.cand .pitem{min-height:56px}
+.pitem.sel{border-color:var(--red);box-shadow:0 0 0 2px rgba(209,10,17,.18)}
+.segs{display:grid;gap:6px;margin-top:10px}
+.segi{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid #d6d9dc;border-radius:10px;padding:8px 10px;font-size:13.5px;background:#fff}
+.segi b{font-size:14px}
+.segi.cur{border-color:var(--red);background:var(--red-bg)}
+.segi button{margin-left:auto}
+.leg{display:grid;grid-template-columns:1fr 1.3fr;gap:8px 10px;align-items:center}
+.leg label{font-weight:700;font-size:14px}
+.leg small{grid-column:1/-1;margin-top:-4px;color:var(--muted);font-size:11.5px}
+.rdgs{display:grid;gap:12px}
+.rdg{border:1px solid #d6d9dc;border-radius:14px;padding:12px;display:grid;gap:8px}
+.rdg-h{font-weight:800;font-size:16px;display:flex;align-items:center;gap:8px}
+.rdg .btn{margin:0}
+.rdg-s{font-size:12.5px;color:var(--muted)}
+.stepper{display:grid;grid-template-columns:56px 1fr 56px;gap:8px}
+.stp{min-height:54px;border-radius:12px;border:1px solid #c4c7cb;background:#fff;font-size:26px;font-weight:700;color:var(--ink)}
+.stepper input{text-align:center;font-size:22px!important;font-weight:700;min-height:54px!important;width:100%;border:1px solid #c4c7cb;border-radius:10px;padding:0 44px 0 12px;appearance:none;-webkit-appearance:none}
+.gerr{margin-top:10px}
+.rgroup{border:1px solid #d6d9dc;border-radius:14px;margin-bottom:12px;overflow:hidden}
+.rgroup-h{background:#f1f2f3;padding:10px 12px;border-bottom:1px solid #e1e3e6}
+.rgroup-h b{display:block;font-size:14.5px}
+.rgroup-h small{display:block;font-size:12.5px;color:var(--muted)}
+.rstats{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 12px;border-bottom:1px solid #eceef0;font-size:12.5px;color:var(--muted)}
+.rstats b{display:block;font-size:15px;color:var(--ink)}
+.ritem{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;padding:10px 12px;border-bottom:1px solid #eceef0;align-items:center;border-left:4px solid var(--ok)}
+.ritem:last-child{border-bottom:0}
+.ritem.void{opacity:.55;border-left-color:#b5b8bc}
+.ritem.void .rv{text-decoration:line-through}
+.ritem .rt{font-weight:800;font-size:12px;text-transform:uppercase;color:#55595e}
+.ritem .rv{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
+.ritem small{grid-column:1/-1;font-size:12px;color:var(--muted);line-height:1.4}
+.sync-chip{font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px;white-space:nowrap}
+.sync-chip.ok{background:var(--ok-bg);color:var(--ok)}
+.sync-chip.pend{background:#fff1d1;color:#7a4b00}
+.sync-chip.fail{background:var(--red-bg);color:var(--red-dark)}
+.sync-chip.loc{background:#eceef0;color:#55595e}
+.geobar{position:fixed;left:0;right:0;bottom:0;z-index:29;background:var(--black);color:#fff;border-top:3px solid var(--red);display:grid;grid-template-columns:1.15fr 1fr 1fr .9fr .8fr;gap:2px;padding:8px 6px calc(8px + var(--safe-b))}
+.gb{min-width:0;padding:2px 4px;border-right:1px solid #333}
+.gb:last-child{border-right:0}
+.gb span{display:block;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#a9abae}
+.gb b{display:block;font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.gb em{display:block;font-style:normal;font-size:10px;font-weight:800;min-height:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#a9abae}
+.gb em.man{color:#ffd166}
+.gb em.warn{color:#ff7b80}
+.gb em.ok{color:#6fdc9a}
+@media (min-width:700px){.rdgs{grid-template-columns:1fr 1fr}.geobar{padding-left:max(6px,calc((100vw - 1100px)/2));padding-right:max(6px,calc((100vw - 1100px)/2))}}
+
+/* ================= Viagens de fresado ================= */
+.trucks{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.truck{border:1px solid #cfd2d6;border-radius:16px;background:#fff;padding:14px 12px;text-align:left;min-height:132px;display:flex;flex-direction:column;gap:6px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.truck:active{transform:scale(.98);background:#f7f7f8}
+.truck .nome{font-size:12.5px;color:#3a3a3a;font-weight:600;line-height:1.25}
+.truck .eq{font-size:10.5px;font-weight:800;letter-spacing:.6px;color:#7a7d82;text-transform:uppercase}
+.truck .cnt{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+.truck .cnt span{font-size:11.5px;font-weight:800;padding:3px 7px;border-radius:8px;background:#eceef0;color:#333}
+.truck .last{font-size:11.5px;color:var(--muted)}
+.truck.st-chegada{border-left:5px solid var(--graphite)}
+.truck.st-saida{border-left:5px solid var(--red)}
+.plate{display:inline-block;align-self:flex-start;font-family:"Arial Narrow",Arial,sans-serif;font-weight:800;font-size:21px;letter-spacing:1px;color:#111;background:#fff;border:2px solid #111;border-top:7px solid #1a4fa0;border-radius:6px;padding:1px 8px 2px;line-height:1.15}
+.plate.big{font-size:28px}
+.vs-head{display:flex;align-items:center;gap:12px;margin:4px 0 12px}
+.vs-head b{display:block;font-size:15px}
+.vs-head small{display:block;font-size:12.5px;color:var(--muted)}
+.vs-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.vbtn{min-height:110px;border-radius:16px;border:0;color:#fff;font-size:20px;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.vbtn span{font-size:30px;line-height:1}
+.vbtn.in{background:var(--graphite)}
+.vbtn.out{background:var(--red)}
+.vbtn:disabled{opacity:.5}
+.vbtn.confirm{outline:4px solid #f2b01e;outline-offset:-4px}
+.vwarn{background:#fff4d6;border:1px solid #e6c264;color:#5c3700;border-radius:12px;padding:10px 12px;font-size:14px;font-weight:600;margin:0 0 12px}
+.vitem{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:center;padding:12px 0;border-bottom:1px solid #eceef0}
+.vitem:last-child{border-bottom:0}
+.vitem .vt{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+.vitem .vtp{font-size:12px;font-weight:800;padding:4px 9px;border-radius:20px;color:#fff;background:var(--graphite);white-space:nowrap}
+.vitem .vtp.saida{background:var(--red)}
+.vitem .plate{font-size:16px;border-top-width:5px}
+.vitem small{grid-column:1/-1;font-size:12px;color:var(--muted);line-height:1.45}
+.vitem.cancel{opacity:.55}
+.vitem.cancel .vt{text-decoration:line-through}
+.vitem .act{min-height:36px;padding:0 10px;font-size:13px}
+.fixlog{font-size:11.5px;color:#5a4a1a;background:#fff8e6;border-radius:8px;padding:6px 8px;margin-top:4px}
+.toast{position:fixed;left:12px;right:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:70;max-width:520px;margin:auto;background:#111;color:#fff;border-radius:16px;padding:14px 16px;box-shadow:0 12px 30px rgba(0,0,0,.35);border-left:6px solid var(--ok);font-size:15px;line-height:1.4}
+.toast b{display:block;font-size:19px}
+.toast.pend{border-left-color:#f2b01e}
+.toast.fail,.toast.warn{border-left-color:var(--red)}
+.plate{white-space:nowrap}
+.plate.big{font-size:24px}
+#vSheet .btn,#vFix .btn{justify-content:center}
+.vs-head>div:last-child{min-width:0}
+@media (max-width:420px){.brand b{font-size:11.5px;padding-left:8px}}
 </style>
 </head>
 <body>
 
 <header class="top">
   <div class="bar">
+    <button class="iconbtn burger" id="burger" aria-label="Abrir menu de páginas" aria-controls="drawer" aria-expanded="false"><span></span><span></span><span></span><i class="bdot" id="burgerDot"></i></button>
     <div class="brand"><img class="blogo" src="logo-neovia-white.png" alt="Neovia Engenharia" width="108" height="28"><b id="brandTitle">CONTROLE DE MASSA</b></div>
     <div class="who" id="who" hidden title="Sincronização"><span class="sync" id="syncDot"></span><span id="userName"></span></div>
     <button class="iconbtn" id="menuBtn" aria-label="Abrir menu" aria-haspopup="dialog">⋯<span class="dot"></span></button>
@@ -548,21 +690,134 @@ body{color:var(--ink)}
     <button class="btn printbtn" data-print="acomp">🖨️ Imprimir relatório de Acompanhamento</button>
   </section>
 
+  <!-- ================= CONTROLE DE GEOMETRIA ================= -->
+  <section class="screen" id="panel-geo" data-panel="geo" hidden>
+    <div class="panel-title"><h1>Controle de geometria</h1><span id="geoBase"></span></div>
+
+    <section class="section">
+      <h2>Localização</h2>
+      <div class="gpsrow"><button class="btn primary" id="gpsBtn">📍 Ativar GPS</button></div>
+      <div class="geomsg" id="gpsMsg">GPS desligado. Ative para estimar a estaca, ou informe a estaca manualmente.</div>
+      <div class="field" style="margin-top:12px"><label for="manSt">Estaca manual</label><div class="inrow"><input id="manSt" placeholder="Ex.: 231+340" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text"><button class="act" id="manStBtn">Usar</button></div><small>Use quando o GPS estiver impreciso ou fora do trecho.</small></div>
+    </section>
+
+    <section class="section">
+      <h2>Pano da programação <span class="count" id="panoSrc"></span></h2>
+      <div id="panoBox"></div>
+      <details class="applied" id="panoAllBox"><summary>Escolher outro pano da programação</summary><div class="srows" id="panoAll"></div></details>
+    </section>
+
+    <section class="section">
+      <h2>Sentido e faixa executada <span class="count" id="sfState"></span></h2>
+      <p class="hint">O GPS do celular não identifica a faixa com segurança. Confirme o sentido da pista e a faixa executada.</p>
+      <div class="field"><span class="lbl">Sentido da pista</span><div class="segctl" id="gSent"><label><input type="radio" name="gSent" value="Crescente">↑ Crescente</label><label><input type="radio" name="gSent" value="Decrescente">↓ Decrescente</label></div></div>
+      <div class="field" style="margin-top:12px"><span class="lbl">Faixa executada</span><div class="segctl three" id="gFaixa"><label><input type="radio" name="gFaixa" value="f1">Faixa 1</label><label><input type="radio" name="gFaixa" value="f2">Faixa 2<br><small>adicional</small></label><label><input type="radio" name="gFaixa" value="ac">Acost.</label></div></div>
+      <button class="btn dark" id="sfConfirm" style="margin-top:12px">Confirmar sentido e faixa</button>
+    </section>
+
+    <section class="section">
+      <h2>Solução de projeto</h2>
+      <div id="solBox"></div>
+      <details class="applied" id="legBox"><summary>Espessuras de projeto por solução (legenda)</summary>
+        <p class="hint">O unifilar traz só o código da solução, sem a espessura. Informe aqui a espessura de projeto de cada código (em metros). Códigos sem valor não são comparados.</p>
+        <div id="legList"></div>
+      </details>
+    </section>
+
+    <section class="section">
+      <h2>Comprimento do pano</h2>
+      <div id="lenBox"></div>
+      <div class="field" style="margin-top:10px"><label for="lenIn">Comprimento medido (medida única)</label><div class="inrow"><div class="unit" data-unit="m" style="flex:1"><input id="lenIn" type="number" inputmode="decimal" min="0.01" step="0.01"></div><button class="act" id="lenBtn">Salvar</button></div></div>
+    </section>
+
+    <section class="section">
+      <h2>Nova leitura</h2>
+      <p class="hint">Os valores sugeridos vêm do pano na Fresagem e só viram leitura quando você toca em <b>Registrar</b>.</p>
+      <div class="rdgs">
+        <div class="rdg" id="rdgW">
+          <div class="rdg-h">Largura <span class="tagauto" id="wTag">sugerido</span></div>
+          <div class="stepper"><button class="stp" data-step="w:-1" aria-label="Diminuir 1 cm">−</button><div class="unit" data-unit="m"><input id="wIn" type="number" inputmode="decimal" min="0.01" step="0.01"></div><button class="stp" data-step="w:1" aria-label="Aumentar 1 cm">+</button></div>
+          <small class="rdg-s">Passo de 0,01 m (1 cm)</small>
+          <button class="btn primary" id="wReg">Registrar largura</button>
+        </div>
+        <div class="rdg" id="rdgE">
+          <div class="rdg-h">Espessura <span class="tagauto" id="eTag">sugerido</span></div>
+          <div class="stepper"><button class="stp" data-step="e:-1" aria-label="Diminuir 1 mm">−</button><div class="unit" data-unit="m"><input id="eIn" type="number" inputmode="decimal" min="0.001" step="0.001"></div><button class="stp" data-step="e:1" aria-label="Aumentar 1 mm">+</button></div>
+          <small class="rdg-s" id="eCmp">Passo de 0,001 m (1 mm)</small>
+          <button class="btn primary" id="eReg">Registrar espessura</button>
+        </div>
+      </div>
+      <p class="err gerr" id="geoErr"></p>
+    </section>
+
+    <section class="section">
+      <h2>Leituras do pano <span class="count" id="rdCount"></span></h2>
+      <div id="rdList"></div>
+    </section>
+  </section>
+
+  <!-- ================= VIAGENS DE FRESADO ================= -->
+  <section class="screen" id="panel-viag" data-panel="viag" hidden>
+    <div class="panel-title"><h1>Viagens de fresado</h1><span id="vStore"></span></div>
+    <section class="section vday">
+      <div class="field"><label for="vDay">Dia</label><input id="vDay" type="date"></div>
+      <p class="hint" style="margin:8px 0 0">Toque no caminhão para registrar <b>chegada</b> ou <b>saída</b>.</p>
+    </section>
+    <div class="trucks" id="vTrucks"></div>
+    <section class="section">
+      <h2>Histórico do dia <span class="count" id="vCount"></span></h2>
+      <div id="vHist"></div>
+    </section>
+  </section>
+
   <section class="print-only" id="printReport"></section>
   <div class="foot screen">Os dados ficam salvos neste aparelho. Use o menu ⋯ para salvar em arquivo ou abrir outro apontamento.</div>
 </main>
 
 <button class="fab" id="fab">+ Segmento</button>
 
-<nav class="tabs" role="tablist" aria-label="Painéis">
-  <div class="in">
-    <button class="tab" role="tab" data-tab="fres" aria-selected="true"><span class="ti">⛏</span>Fresagem</button>
-    <button class="tab" role="tab" data-tab="rdo" aria-selected="false"><span class="ti">📋</span>RDO aplicação</button>
-    <button class="tab" role="tab" data-tab="acomp" aria-selected="false"><span class="ti">📈</span>Acompanhamento<span class="badge" id="tabBadge"></span></button>
-  </div>
-</nav>
+<div class="drawer-bg" id="drawerBg" hidden></div>
+<aside class="drawer" id="drawer" aria-label="Páginas" aria-hidden="true">
+  <div class="drawer-head"><img src="logo-neovia-white.png" alt="Neovia Engenharia" width="124" height="32"><button class="iconbtn" id="drawerClose" aria-label="Fechar menu">✕</button></div>
+  <nav class="drawer-nav">
+    <div class="dgroup">Massa</div>
+    <button class="nav" data-nav="fres"><span class="ni">⛏</span>Fresagem</button>
+    <button class="nav" data-nav="rdo"><span class="ni">📋</span>RDO aplicação</button>
+    <button class="nav" data-nav="acomp"><span class="ni">📈</span>Acompanhamento<span class="nbadge" id="tabBadge"></span></button>
+    <div class="dgroup">Campo</div>
+    <button class="nav" data-nav="geo"><span class="ni">📐</span>Controle de geometria</button>
+    <button class="nav" data-nav="viag"><span class="ni">🚚</span>Viagens de fresado</button>
+  </nav>
+  <div class="drawer-foot" id="drawerUser"></div>
+</aside>
 
+<div class="geobar" id="geoBar" hidden>
+  <div class="gb"><span>Estaca</span><b id="gbSt">—</b><em id="gbStT"></em></div>
+  <div class="gb"><span>Pano</span><b id="gbPano">—</b><em id="gbPanoT"></em></div>
+  <div class="gb"><span>Solução</span><b id="gbSol">—</b><em id="gbSolT"></em></div>
+  <div class="gb"><span>Sentido</span><b id="gbSent">—</b><em id="gbSentT"></em></div>
+  <div class="gb"><span>Faixa</span><b id="gbFx">—</b><em id="gbFxT"></em></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="assertive" hidden></div>
 <div class="sheet-bg" id="sheetBg"></div>
+<div class="sheet" id="vSheet" role="dialog" aria-modal="true" aria-labelledby="vsTitle">
+  <div class="grab"></div>
+  <div class="vs-head"><div class="plate big" id="vsTitle">—</div><div><b id="vsDriver"></b><small id="vsLast"></small></div></div>
+  <p class="vwarn" id="vsWarn" hidden></p>
+  <div class="vs-actions"><button class="vbtn in" id="vsIn"><span>⬇</span>Chegada</button><button class="vbtn out" id="vsOut"><span>⬆</span>Saída</button></div>
+  <button class="btn" id="vsClose">Fechar</button>
+</div>
+<div class="sheet" id="vFix" role="dialog" aria-modal="true" aria-labelledby="vfTitle">
+  <div class="grab"></div>
+  <h3 id="vfTitle">Corrigir registro</h3>
+  <div class="field"><span class="lbl">Tipo</span><div class="segctl"><label><input type="radio" name="vfTipo" value="chegada">⬇ Chegada</label><label><input type="radio" name="vfTipo" value="saida">⬆ Saída</label></div></div>
+  <div class="field" style="margin-top:10px"><label for="vfTime">Horário</label><input id="vfTime" type="time" step="60"></div>
+  <div class="field" style="margin-top:10px"><label for="vfWhy">Motivo da correção</label><input id="vfWhy" placeholder="Ex.: toquei no caminhão errado" maxlength="140"></div>
+  <p class="err" id="vfErr"></p>
+  <button class="btn primary" id="vfSave">Salvar correção</button>
+  <button class="btn danger" id="vfCancelRec">Cancelar este registro</button>
+  <button class="btn" id="vfClose">Fechar</button>
+</div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Menu">
   <div class="grab"></div>
   <h3>Apontamento</h3>
@@ -641,7 +896,7 @@ const FIREBASE_CONFIG=null;
 const STORE='controle-massa-v2';
 const example=[['230+600',230,3.72,.08],['230+830',30,3.75,.1],['230+860',18,3.85,.08],['230+878',59,3.72,.06],['230+937',50,3.7,.1],['231+000',120,3.7,.1],['231+340',260,3.55,.08],['231+600',30,3.53,.06],['231+630',30,3.55,.075]];
 const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4);
-function emptyState(){return {version:3,job:'',date:'',resp:'',density:2.528,usinado:0,plate:'',accum:0,trucksTotal:NaN,truckNo:NaN,truckFull:true,truckLeft:0,tolerance:0,planWidth:3.5,planThickness:0.05,fres:[],rdo:{},applied:{},extras:[]}}
+function emptyState(){return {version:3,job:'',date:'',resp:'',density:2.528,usinado:0,plate:'',accum:0,trucksTotal:NaN,truckNo:NaN,truckFull:true,truckLeft:0,tolerance:0,planWidth:3.5,planThickness:0.05,fres:[],rdo:{},applied:{},extras:[],leituras:[]}}
 function exampleState(){
   const s=emptyState();
   s.fres=example.map(r=>({id:uid(),start:r[0],end:'',direction:'Crescente',lane:1,length:r[1],width:r[2],thickness:r[3],sequential:false}));
@@ -839,7 +1094,7 @@ function updateAlert(t){
  a.classList.toggle('urgent',tab==='acomp'&&st==='shortage');a.setAttribute('aria-label',kind+'. '+$('alertAmount').textContent);
  const key=tab+':'+st;
  if(lastState&&lastState.split(':')[0]===tab&&key!==lastState){a.classList.remove('flash');void a.offsetWidth;a.classList.add('flash');if(st==='shortage'&&navigator.vibrate)navigator.vibrate([150,80,150])}
- lastState=key;$('tabBadge').classList.toggle('on',t.panel.acomp.state==='shortage');
+ lastState=key;$('tabBadge').classList.toggle('on',t.panel.acomp.state==='shortage');$('burgerDot').classList.toggle('on',t.panel.acomp.state==='shortage');
 }
 /* ======================= Relatórios (um por painel) ======================= */
 function repDate(){const d=S.date&&/^\d{4}-\d{2}-\d{2}$/.test(S.date)?S.date:new Date().toISOString().slice(0,10);const [y,m,dd]=d.split('-');return `${dd}/${m}/${y}`}
@@ -886,7 +1141,7 @@ function buildReport(kind){
  <div class="rep-result ${st}">${res}</div>
  ${repFoot()}</div>`;
 }
-function printReport(kind){closeMenu();$('printReport').innerHTML=buildReport(kind||tab);setTimeout(()=>window.print(),200)}
+function printReport(kind){closeMenu();if(!['fres','rdo','acomp'].includes(kind||tab)){$('status').textContent='Esta página ainda não tem relatório de impressão.';return}$('printReport').innerHTML=buildReport(kind||tab);setTimeout(()=>window.print(),200)}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-print]');if(b)printReport(b.dataset.print)});
 
 /* ======================= Atualização geral ======================= */
@@ -896,6 +1151,7 @@ function update(){
  renderFres(t);
  renderRdoSummary(t);
  renderAcomp(t);updateAlert(t);
+ if(tab==='geo'&&typeof geoRefresh==='function')geoRefresh();
  return t;
 }
 
@@ -987,6 +1243,7 @@ function normalize(d){
  ['accum','truckLeft','tolerance','planWidth','planThickness','trucksTotal','truckNo'].forEach(k=>out[k]=num(k,out[k]));
  out.plate=typeof d.plate==='string'?d.plate.slice(0,10):'';out.date=typeof d.date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d.date)?d.date:'';out.resp=typeof d.resp==='string'?d.resp.slice(0,120):'';out.truckFull=d.truckFull!==false;
  out.extras=Array.isArray(d.extras)?d.extras.filter(okSeg).map(clean):[];
+ out.leituras=Array.isArray(d.leituras)?d.leituras.filter(r=>r&&typeof r.id==='string'&&typeof r.tipo==='string').slice(0,20000):[];
  const ids=new Set([...out.fres,...out.extras].map(s=>s.id));
  out.fres.forEach(s=>{const r=d.rdo&&d.rdo[s.id];const over={};if(r&&r.over&&typeof r.over==='object')KEYS.forEach(k=>{if(k in r.over){const v=r.over[k];if(k==='start'&&typeof v==='string')over[k]=v;else if(k==='direction'&&['Crescente','Decrescente'].includes(v))over[k]=v;else if(k==='lane'&&Number.isInteger(v)&&v>0)over[k]=v;else if(['length','width','thickness'].includes(k)&&Number.isFinite(v))over[k]=v}});out.rdo[s.id]={over,obs:r&&typeof r.obs==='string'?r.obs.slice(0,1000):''};
   if(d.version===2&&r&&r.done)out.applied[s.id]=true});
@@ -1016,19 +1273,35 @@ $('addInline').onclick=()=>openEditor('fres',null);
 $('fab').onclick=()=>openEditor(tab==='acomp'?'extra':'fres',null);
 
 /* ======================= Abas e menu ======================= */
-function setTab(t){tab=t;document.querySelectorAll('.screen[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==t);document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));$('fab').hidden=t==='rdo';$('fab').textContent=t==='acomp'?'+ Extra':'+ Segmento';updateAlert(calc());window.scrollTo({top:0});try{localStorage.setItem(STORE+'-tab',t)}catch{}}
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+const PAGES=['fres','rdo','acomp','geo','viag'];
+function setTab(t){
+ if(!PAGES.includes(t))t='fres';tab=t;
+ document.querySelectorAll('.screen[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==t);
+ document.querySelectorAll('[data-nav]').forEach(b=>{if(b.dataset.nav===t)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
+ $('fab').hidden=!['fres','acomp'].includes(t);$('fab').textContent=t==='acomp'?'+ Extra':'+ Segmento';
+ $('massAlert').hidden=!['fres','rdo','acomp'].includes(t);
+ $('geoBar').hidden=t!=='geo';document.body.classList.toggle('geo-on',t==='geo');
+ updateAlert(calc());
+ if(t==='geo')geoEnter();if(t==='viag')viagEnter();
+ window.scrollTo({top:0});try{localStorage.setItem(STORE+'-tab',t)}catch{}
+}
+function openDrawer(){$('drawer').classList.add('open');$('drawer').setAttribute('aria-hidden','false');$('drawerBg').hidden=false;$('burger').setAttribute('aria-expanded','true');setTimeout(()=>{const c=document.querySelector('[data-nav][aria-current]');(c||$('drawerClose')).focus()},50)}
+function closeDrawer(){$('drawer').classList.remove('open');$('drawer').setAttribute('aria-hidden','true');$('drawerBg').hidden=true;$('burger').setAttribute('aria-expanded','false')}
+$('burger').onclick=openDrawer;$('drawerClose').onclick=closeDrawer;$('drawerBg').onclick=closeDrawer;
+document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{closeDrawer();setTab(b.dataset.nav)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer()});
 $('massAlert').onclick=()=>{const el=$({fres:'fSumBig',rdo:'rCmp',acomp:'decision'}[tab]);if(el)el.scrollIntoView({behavior:'smooth',block:'center'})};
 function openMenu(){$('sheet').classList.add('open');$('sheetBg').classList.add('open')}
 function closeMenu(){$('sheet').classList.remove('open');if(!ED)$('sheetBg').classList.remove('open')}
 $('menuBtn').onclick=openMenu;$('closeMenu').onclick=closeMenu;$('sheetBg').onclick=()=>{if(ED)closeEditor();closeMenu()};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(ED)closeEditor();closeMenu()}});
-$('saveMenu').onclick=()=>{closeMenu();const data=JSON.parse(JSON.stringify(S));data.version=3;const name='apontamento-massa'+(S.job?'-'+S.job.replace(/[^\w-]+/g,'_').slice(0,40):'')+'.json';const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setDirty(false);$('status').textContent='Arquivo gerado. Guarde-o para reabrir em outro aparelho.'};
+$('saveMenu').onclick=()=>{closeMenu();const data=JSON.parse(JSON.stringify(S));data.version=3;if(CLOUD)data.leituras=readingsAll().map(({_pend,...r})=>r);const name='apontamento-massa'+(S.job?'-'+S.job.replace(/[^\w-]+/g,'_').slice(0,40):'')+'.json';const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setDirty(false);$('status').textContent='Arquivo gerado. Guarde-o para reabrir em outro aparelho.'};
 $('printMenu').onclick=()=>printReport(tab);
 $('newMenu').onclick=()=>{closeMenu();if(CLOUD){showPicker();$('pkNewBox').open=true;setTimeout(()=>$('pkJob').focus(),100);return}if(!confirm('Começar um apontamento vazio? Salve em arquivo antes se quiser guardar o atual.'))return;S=emptyState();renderAll();changed();setTab('fres')};
 $('import').onchange=async e=>{closeMenu();const f=e.target.files[0];if(!f)return;try{if(f.size>3000000)throw Error('Arquivo muito grande.');const d=normalize(JSON.parse(await f.text()));if(CLOUD){if(!confirm('Criar um novo apontamento na nuvem com os dados deste arquivo?'))return;const f2={};HF.forEach(k=>f2[k]=d[k]);if(!f2.job)f2.job=f.name.replace(/\.json$/i,'');createApont(f2,d);$('status').textContent='Apontamento importado para a nuvem.';return}if(dirty&&!confirm('Substituir o apontamento atual pelo arquivo?'))return;S=d;renderAll();persist();setDirty(false);$('status').textContent='Apontamento carregado.'}catch(err){$('status').textContent='Não foi possível abrir: '+err.message}finally{e.target.value=''}};
 
 /* ======================= Nuvem (Firebase) ======================= */
+let unwatchL=null,unwatchLeg=null;
 let CLOUD=null,USER=null,AID=null,unwatch=null,unlist=null,lastRemote=null,RH=null,RSEGS=null;
 const HF=['job','date','resp','density','usinado','plate','accum','truckFull','truckLeft','tolerance','planWidth','planThickness','trucksTotal','truckNo'];
 const SEGF=['kind','order','start','direction','lane','length','width','thickness','sequential','applied','rdoOver','rdoObs'];
@@ -1057,6 +1330,11 @@ async function makeFirebaseCloud(cfg){
   setSeg:(id,sid,d)=>F.setDoc(seg(id,sid),d),
   updateSeg:(id,sid,f)=>F.updateDoc(seg(id,sid),f),
   deleteSeg:(id,sid)=>F.deleteDoc(seg(id,sid)),
+  watchCol:(path,where,cb)=>{const c=F.collection(db,...path),q=where?F.query(c,F.where(where[0],'==',where[1])):c;return F.onSnapshot(q,{includeMetadataChanges:true},x=>cb(x.docs.map(d=>({id:d.id,data:d.data(),pending:d.metadata.hasPendingWrites})),{cache:x.metadata.fromCache}),e=>cb(null,{error:e}))},
+  watchDoc:(path,cb)=>F.onSnapshot(F.doc(db,...path),{includeMetadataChanges:true},d=>cb(d.exists()?d.data():null,{pending:d.metadata.hasPendingWrites}),e=>cb(null,{error:e})),
+  setAt:(path,data)=>F.setDoc(F.doc(db,...path),data),
+  mergeAt:(path,data)=>F.setDoc(F.doc(db,...path),data,{merge:true}),
+  updateAt:(path,f)=>F.updateDoc(F.doc(db,...path),f),
   watchApont:(id,onH,onS)=>{
    const u1=F.onSnapshot(hdr(id),{includeMetadataChanges:true},d=>onH(d.exists()?d.data():null,{pending:d.metadata.hasPendingWrites,cache:d.metadata.fromCache}),e=>onH(null,{error:e}));
    const u2=F.onSnapshot(F.collection(db,'apontamentos',id,'segmentos'),{includeMetadataChanges:true},q=>onS(q.docs.map(d=>({id:d.id,data:d.data()})),{pending:q.metadata.hasPendingWrites,cache:q.metadata.fromCache}),e=>onS(null,{error:e}));
@@ -1127,6 +1405,7 @@ function openApont(id){
  if(unwatch)unwatch();AID=id;RH=null;RSEGS=null;lastRemote=null;
  try{localStorage.setItem('cm-last-apont',id)}catch{}
  let hp=false,sp=false,hc=false,sc=false;
+ if(unwatchL)unwatchL();GEO.rdRemote=[];unwatchL=CLOUD.watchCol(['apontamentos',id,'leituras'],null,(docs,m)=>{if(!docs){GEO.rdErr=errMsg(m&&m.error);return}GEO.rdErr='';GEO.rdRemote=docs.map(d=>({...d.data,id:d.id,_pend:d.pending}));if(tab==='geo')renderGeo()});
  unwatch=CLOUD.watchApont(id,(h,m)=>{if(m&&m.error){$('status').textContent='Erro ao ler da nuvem: '+errMsg(m.error);return}if(!h){if(!m.cache){showPicker();$('pkErr').textContent='Esse apontamento não existe mais.'}return}RH=h;hp=m.pending;hc=m.cache;setSync(hp||sp,hc||sc);applyRemote()},
   (docs,m)=>{if(m&&m.error){$('status').textContent='Erro ao ler da nuvem: '+errMsg(m.error);return}RSEGS=docs;sp=m.pending;sc=m.cache;setSync(hp||sp,hc||sc);applyRemote()});
 }
@@ -1151,7 +1430,9 @@ function createApont(fields,segsFromFile){
  openApont(id);return id;
 }
 function afterLogin(u){
- USER=u;$('who').hidden=false;$('userName').textContent=u.name||u.email;
+ USER=u;$('who').hidden=false;$('userName').textContent=u.name||u.email;$('drawerUser').textContent='Conectado como '+(u.name||u.email);
+ if(!unwatchLeg)unwatchLeg=CLOUD.watchDoc(['config','geometria'],d=>{LEG=Object.assign({},LEG_PADRAO,d&&d.legenda||{});if(tab==='geo')renderGeo()});
+ viagWatch();
  ['switchMenu','logoutMenu'].forEach(x=>$(x).hidden=false);$('newMenu').textContent='🗒️ Novo apontamento';$('newMenu').classList.remove('danger');
  if(!u.name){showGate('gName');$('nmInput').value='';setTimeout(()=>$('nmInput').focus(),100);return}
  let last=null;try{last=localStorage.getItem('cm-last-apont')}catch{}
@@ -1160,7 +1441,7 @@ function afterLogin(u){
 }
 async function startCloud(impl){
  CLOUD=impl;showGate('gLogin');$('lgErr').textContent='Conectando…';
- CLOUD.onAuth(u=>{$('lgErr').textContent='';if(u)afterLogin(u);else{USER=null;AID=null;if(unwatch)unwatch();if(unlist)unlist();$('who').hidden=true;showGate('gLogin')}});
+ CLOUD.onAuth(u=>{$('lgErr').textContent='';if(u)afterLogin(u);else{USER=null;AID=null;if(unwatch)unwatch();if(unlist)unlist();if(unwatchL)unwatchL();if(unwatchLeg){unwatchLeg();unwatchLeg=null}if(VG.unsub){VG.unsub();VG.unsub=null}$('drawerUser').textContent='';$('who').hidden=true;showGate('gLogin')}});
 }
 $('lgBtn').onclick=async()=>{const e=$('lgEmail').value.trim(),p=$('lgPass').value;if(!e||!p){$('lgErr').textContent='Informe e-mail e senha.';return}$('lgErr').textContent='Entrando…';try{await CLOUD.login(e,p)}catch(err){$('lgErr').textContent=errMsg(err)}};
 $('lgPass').addEventListener('keydown',e=>{if(e.key==='Enter')$('lgBtn').click()});
@@ -1174,13 +1455,384 @@ $('switchMenu').onclick=()=>{closeMenu();showPicker()};
 $('logoutMenu').onclick=()=>{closeMenu();if(confirm('Sair da conta neste aparelho?'))CLOUD.logout()};
 addEventListener('online',()=>setSync(false,false));addEventListener('offline',()=>setSync(false,true));
 
+/* ======================= Controle de geometria ======================= */
+const FAIXAS={f1:'Faixa 1',f2:'Faixa 2 (adicional)',ac:'Acostamento'},FAIXA_CURTA={f1:'Faixa 1',f2:'Faixa 2',ac:'Acost.'};
+const LEG_PADRAO={FF:0.06,FE:0.10,FS:0.04};
+const LEG_ORIGEM={FF:'Informado por você: fresagem funcional = 6 cm',FE:'Informado por você: fresagem estrutural = 10 cm',FS:'Informado por você: fresagem superficial = 3 cm, alterada para 4 cm — confirme'};
+const GEO_MAX_ACC=25,GEO_MAX_DIST=60,GEO_MAX_AGE=60000;
+const GEO={data:null,loading:false,err:'',watch:null,pos:null,gpsMsg:'',src:null,manHod:null,manLabel:'',est:null,cands:[],panoId:null,panoManual:false,sent:null,faixa:null,sfConf:false,segSel:null,w:NaN,e:NaN,wT:false,eT:false,lenT:false,rdRemote:[],rdErr:'',local:{},fail:{}};
+let LEG=null;
+function legLoadLocal(){let o={};try{o=JSON.parse(localStorage.getItem('cm-legenda')||'{}')||{}}catch{}LEG=Object.assign({},LEG_PADRAO,o)}
+async function loadGeo(){
+ if(GEO.data||GEO.loading)return;GEO.loading=true;GEO.err='';renderGeo();
+ let d=null;
+ try{const r=await fetch('geo.json',{cache:'no-cache'});if(r.ok){d=await r.json();try{localStorage.setItem('cm-geo-v1',JSON.stringify(d))}catch{}}}catch{}
+ if(!d){try{d=JSON.parse(localStorage.getItem('cm-geo-v1')||'null')}catch{}}
+ GEO.loading=false;
+ if(!d||d.v!==1){GEO.err='Não foi possível carregar a base de estacas. Abra esta página uma vez com internet para guardá-la no aparelho.';renderGeo();return}
+ const km={};d.nome.forEach((n,i)=>{const q=parseSt(n);(km[q.km]=km[q.km]||[]).push({i,off:q.off})});d.km=km;GEO.data=d;geoRefresh();
+}
+function parseSt(l){const m=String(l||'').trim().match(/^(\d+)\s*\+\s*(\d+(?:[.,]\d+)?)$/);return m?{km:+m[1],off:+m[2].replace(',','.')}:null}
+const Hd=i=>GEO.data.h0+i*GEO.data.passo;
+function idxOf(h){const d=GEO.data;return Math.max(0,Math.min(d.n-1,Math.floor((h-d.h0)/d.passo+1e-9)))}
+function hodOf(label){ // estaca (km do marco + metros) -> hodômetro contínuo, pela tabela do KMZ
+ const d=GEO.data,q=parseSt(label);if(!d||!q)return null;const list=d.km[q.km];if(!list)return null;
+ let best=null;for(const e of list)if(e.off<=q.off+1e-9&&(!best||e.off>best.off))best=e;
+ if(!best){if(list[0].off-q.off>40)return null;best=list[0]}
+ const h=Hd(best.i)+(q.off-best.off);if(h<d.h0-d.passo||h>Hd(d.n-1)+d.passo*2)return null;return h;
+}
+function labelOf(h){const d=GEO.data,i=idxOf(h),q=parseSt(d.nome[i]),off=q.off+(h-Hd(i));return `${q.km}+${String(Math.max(0,Math.round(off))).padStart(3,'0')}`}
+function locate(lat,lon){ // projeção do ponto GPS sobre a linha das estacas
+ const d=GEO.data,kx=111320*Math.cos(lat*Math.PI/180),ky=110540;let bi=0,bd=Infinity;
+ for(let i=0;i<d.n;i++){const dx=(d.lon[i]-lon)*kx,dy=(d.lat[i]-lat)*ky,q=dx*dx+dy*dy;if(q<bd){bd=q;bi=i}}
+ let best={h:Hd(bi),dist:Math.sqrt(bd)};
+ for(const j of [bi-1,bi]){if(j<0||j+1>=d.n)continue;const ax=(d.lon[j]-lon)*kx,ay=(d.lat[j]-lat)*ky,vx=(d.lon[j+1]-lon)*kx-ax,vy=(d.lat[j+1]-lat)*ky-ay,L=vx*vx+vy*vy;if(!L)continue;
+  const t=Math.max(0,Math.min(1,-(ax*vx+ay*vy)/L)),dd=Math.hypot(ax+t*vx,ay+t*vy);if(dd<best.dist)best={h:Hd(j)+t*d.passo,dist:dd}}
+ return best;
+}
+function geoEst(){
+ if(!GEO.data)return null;
+ if(GEO.src==='manual'&&GEO.manHod!=null)return {h:GEO.manHod,label:GEO.manLabel,src:'manual',status:'manual'};
+ if(GEO.src==='gps'&&GEO.pos){const L=locate(GEO.pos.lat,GEO.pos.lon),acc=GEO.pos.acc,old=Date.now()-GEO.pos.at>GEO_MAX_AGE;
+  const status=L.dist>GEO_MAX_DIST?'fora':(acc==null||acc>GEO_MAX_ACC||old)?'impreciso':'ok';
+  return {h:L.h,label:labelOf(L.h),src:'gps',acc,dist:L.dist,old,status}}
+ return null;
+}
+function panoRange(s){if(!GEO.data)return null;const h=hodOf(s.start);if(h==null||!pos(s.length))return null;return s.direction==='Decrescente'?[h-s.length,h]:[h,h+s.length]}
+const laneFaixa=l=>l===1?'f1':l===2?'f2':null;
+const colKey=(sent,fx)=>(sent==='Decrescente'?'d':'c')+(fx==='f1'?'1':fx==='f2'?'2':'a');
+const codeName=c=>c<0?null:GEO.data.codigos[c];
+function runAt(h,key){const d=GEO.data,col=d.sol[key],i=idxOf(h),c=col[i];let a=i,b=i;while(a>0&&col[a-1]===c)a--;while(b<d.n-1&&col[b+1]===c)b++;return {ini:Hd(a),fim:Hd(b)+d.passo,code:codeName(c)}}
+function panoSegs(s,key){const r=panoRange(s);if(!r)return null;const d=GEO.data,col=d.sol[key],out=[];let i=idxOf(r[0]);const iEnd=idxOf(Math.max(r[0],r[1]-0.001));
+ while(i<=iEnd){const c=col[i];let j=i;while(j+1<=iEnd&&col[j+1]===c)j++;out.push({ini:Math.max(r[0],Hd(i)),fim:Math.min(r[1],Hd(j)+d.passo),code:codeName(c)});i=j+1}return out}
+const espProj=code=>code&&LEG&&Number.isFinite(LEG[code])?LEG[code]:null;
+function candidates(est){
+ if(!est||est.status==='fora')return [];
+ const tol=est.status==='impreciso'?Math.max(est.acc||0,20):0;
+ return S.fres.filter(s=>{const r=panoRange(s);if(!r)return false;
+  if(GEO.sfConf){if(GEO.sent&&s.direction!==GEO.sent)return false;const f=laneFaixa(s.lane);if(f&&GEO.faixa&&f!==GEO.faixa)return false}
+  return est.h>=r[0]-tol&&est.h<=r[1]+tol});
+}
+function selectPano(id,manual){
+ GEO.panoId=id;GEO.panoManual=!!(manual&&id);GEO.segSel=null;GEO.wT=GEO.eT=GEO.lenT=false;
+ const s=S.fres.find(x=>x.id===id);if(s){if(!GEO.sfConf){GEO.sent=s.direction;GEO.faixa=laneFaixa(s.lane)}GEO.w=s.width;GEO.e=s.thickness}
+}
+function geoSync(){
+ const est=geoEst();GEO.est=est;const c=candidates(est);GEO.cands=c;
+ if(GEO.panoId&&!S.fres.some(x=>x.id===GEO.panoId))selectPano(null,false);
+ if(!GEO.panoManual&&est){
+  if((est.status==='ok'||est.status==='manual')&&c.length===1){if(GEO.panoId!==c[0].id)selectPano(c[0].id,false)}
+  else if(c.length>1)selectPano(null,false);            // sobreposição: exige escolha manual
+  else if(GEO.panoId&&!c.some(x=>x.id===GEO.panoId))selectPano(null,false);
+ }
+}
+function geoRefresh(){if(!GEO.data)return;geoSync();renderGeo()}
+function geoEnter(){if(!LEG&&!CLOUD)legLoadLocal();if(!LEG)LEG=Object.assign({},LEG_PADRAO);loadGeo();renderGeo()}
+function readingCtx(){
+ if(!GEO.data)return {erro:'A base de estacas ainda não foi carregada.'};
+ const s=S.fres.find(x=>x.id===GEO.panoId);if(!s)return {erro:'Selecione o pano da programação.'};
+ if(!GEO.sfConf||!GEO.sent||!GEO.faixa)return {erro:'Confirme o sentido da pista e a faixa executada.'};
+ const key=colKey(GEO.sent,GEO.faixa),segs=panoSegs(s,key);if(!segs)return {erro:'A estaca inicial deste pano não foi encontrada na base do KMZ. Confira a estaca na Fresagem.'};
+ const est=GEO.est,r=panoRange(s);let seg=null,fonte=null,fora=false;
+ if(GEO.segSel!=null&&segs[GEO.segSel]){seg=segs[GEO.segSel];fonte='manual'}
+ else if(est&&est.status!=='fora'){if(est.h>=r[0]-5&&est.h<=r[1]+5){const hh=Math.min(Math.max(est.h,r[0]),r[1]-0.001);seg=segs.find(g=>hh>=g.ini&&hh<g.fim)||null;fonte='posição'
+   if(seg&&est.status==='impreciso'&&segs.length>1){const m=Math.max(est.acc||0,20);if(segs.some(g=>g!==seg&&Math.abs(g.ini-hh)<m||Math.abs(g.fim-hh)<m&&g!==seg)){seg=null;fonte=null}}}
+  else fora=true}
+ if(!seg&&segs.length===1){seg=segs[0];fonte='único'}
+ if(!seg)return {erro:fora?'Sua posição está fora do pano selecionado. Escolha abaixo o segmento de projeto da leitura ou ajuste a estaca.':'Não foi possível definir com segurança o segmento de projeto desta leitura. Escolha o segmento abaixo.',needSeg:true,segs,s};
+ return {ok:true,s,segs,seg,fonte,key,est,fora};
+}
+function readingsAll(){
+ if(CLOUD){const ids=new Set(GEO.rdRemote.map(r=>r.id));return [...GEO.rdRemote,...Object.values(GEO.local).filter(r=>!ids.has(r.id)&&r._aid===AID)]}
+ return S.leituras||[];
+}
+function rdStatus(r){if(!CLOUD)return 'loc';if(GEO.fail[r.id])return 'fail';if(r._pend||!GEO.rdRemote.some(x=>x.id===r.id))return 'pend';return 'ok'}
+const SYNC_TXT={ok:'✓ salvo no servidor',pend:'⏳ envio pendente',fail:'✕ falhou',loc:'neste aparelho'};
+function syncChip(st){return `<span class="sync-chip ${st}">${SYNC_TXT[st]}</span>`}
+function saveReading(rec){
+ rec=JSON.parse(JSON.stringify(rec));
+ if(CLOUD&&AID){GEO.local[rec.id]={...rec,_aid:AID};delete GEO.fail[rec.id];
+  CLOUD.setAt(['apontamentos',AID,'leituras',rec.id],rec).then(()=>{if(tab==='geo')renderGeo()}).catch(e=>{GEO.fail[rec.id]=errMsg(e);if(tab==='geo')renderGeo();toast('✕ Falha ao enviar',`A leitura não foi salva no servidor: ${errMsg(e)}`,'fail')});
+ }else{S.leituras.push(rec);persist()}
+ renderGeo();
+}
+function geoToastSaved(title,detail){toast(title,detail+(CLOUD?(navigator.onLine?' · enviando ao servidor…':' · sem conexão: envio pendente'):' · salvo só neste aparelho (sem servidor configurado)'),CLOUD&&!navigator.onLine?'pend':'')}
+function registerReading(tipo){
+ const c=readingCtx();$('geoErr').textContent='';if(!c.ok){$('geoErr').textContent=c.erro;renderGeo();return}
+ const v=tipo==='largura'?GEO.w:GEO.e,dec=tipo==='largura'?2:3;if(!pos(v)){$('geoErr').textContent=`Informe a ${tipo} em metros.`;return}
+ const est=c.est,now=Date.now(),code=c.seg.code;
+ const rec={id:uid(),tipo,valor:+v.toFixed(dec),unidade:'m',at:now,iso:new Date(now).toISOString(),
+  gps:GEO.src==='gps'&&GEO.pos?{lat:GEO.pos.lat,lon:GEO.pos.lon,precisao_m:GEO.pos.acc,fixAt:GEO.pos.at}:null,
+  estaca:est?est.label:null,hodometro:est?Math.round(est.h*10)/10:null,fonteEstaca:est?est.src:'sem posição',situacaoLocalizacao:est?est.status:'sem posição',distEixo_m:est&&est.dist!=null?Math.round(est.dist):null,
+  panoId:c.s.id,pano:{n:S.fres.indexOf(c.s)+1,start:c.s.start,end:c.s.end,sentido:c.s.direction,faixa:c.s.lane,largura:c.s.width,espessura:c.s.thickness},panoManual:GEO.panoManual,
+  segmento:{ini:labelOf(c.seg.ini),fim:labelOf(c.seg.fim),hodIni:Math.round(c.seg.ini*10)/10,hodFim:Math.round(c.seg.fim*10)/10,definidoPor:c.fonte},
+  solucao:code,sentido:GEO.sent,faixa:GEO.faixa,by:CLOUD&&USER?me():null,anulada:false};
+ if(tipo==='espessura')rec.espProjeto=espProj(code);
+ saveReading(rec);
+ if(tipo==='largura')GEO.wT=true;else GEO.eT=true;
+ geoToastSaved(`✓ ${tipo==='largura'?'Largura':'Espessura'} ${fmt(rec.valor,dec)} m registrada`,`${rec.estaca||'sem estaca'} · ${code||'sem solução'}`);
+}
+function saveLength(){
+ const s=S.fres.find(x=>x.id===GEO.panoId);$('geoErr').textContent='';if(!s){$('geoErr').textContent='Selecione o pano da programação.';return}
+ const v=Number($('lenIn').value);if(!pos(v)){$('geoErr').textContent='Informe o comprimento medido em metros.';return}
+ const prev=currentLen(s.id);if(prev&&Math.abs(prev.valor-v)<1e-9){toast('Comprimento sem alteração',`${fmt(v)} m já registrado`,'');return}
+ const now=Date.now(),rec={id:uid(),tipo:'comprimento',valor:+v.toFixed(2),unidade:'m',at:now,iso:new Date(now).toISOString(),panoId:s.id,pano:{n:S.fres.indexOf(s)+1,start:s.start,end:s.end,sentido:s.direction,faixa:s.lane,comprimentoFresagem:s.length},substitui:prev?prev.id:null,valorAnterior:prev?prev.valor:null,by:CLOUD&&USER?me():null,anulada:false};
+ saveReading(rec);GEO.lenT=false;geoToastSaved(prev?'✓ Comprimento corrigido':'✓ Comprimento registrado',`${fmt(rec.valor)} m · pano ${rec.pano.n}`);
+}
+function currentLen(pid){return readingsAll().filter(r=>r.tipo==='comprimento'&&r.panoId===pid&&!r.anulada).sort((a,b)=>b.at-a.at)[0]||null}
+function voidReading(id){
+ const r=readingsAll().find(x=>x.id===id);if(!r||!confirm('Anular esta leitura? Ela continua no histórico, marcada como anulada, e deixa de entrar nas contas.'))return;
+ const f={anulada:true,anuladaEm:Date.now(),anuladaPor:CLOUD&&USER?me():null};
+ if(CLOUD&&AID){CLOUD.updateAt(['apontamentos',AID,'leituras',id],f).catch(e=>toast('✕ Falha ao anular',errMsg(e),'fail'))}else{Object.assign(r,f);persist()}
+ renderGeo();
+}
+function gpsToggle(){
+ if(GEO.watch!=null){navigator.geolocation.clearWatch(GEO.watch);GEO.watch=null;GEO.pos=null;if(GEO.src==='gps')GEO.src=null;GEO.gpsMsg='';geoRefresh();renderGeo();return}
+ if(!('geolocation' in navigator)){GEO.gpsMsg='Este aparelho ou navegador não fornece localização.';renderGeo();return}
+ GEO.gpsMsg='Aguardando o GPS… (o navegador vai pedir autorização)';if(GEO.src!=='manual')GEO.src='gps';
+ GEO.watch=navigator.geolocation.watchPosition(p=>{GEO.pos={lat:p.coords.latitude,lon:p.coords.longitude,acc:Math.round(p.coords.accuracy),at:p.timestamp||Date.now()};GEO.gpsMsg='';if(GEO.src!=='manual')GEO.src='gps';geoRefresh()},
+  e=>{GEO.gpsMsg=e.code===1?'Permissão de localização negada. Libere a localização deste site nas configurações do navegador e toque de novo em “Ativar GPS”.':e.code===3?'O GPS demorou para responder. Tente em local aberto.':'Não foi possível obter a localização.';if(e.code===1){navigator.geolocation.clearWatch(GEO.watch);GEO.watch=null;if(GEO.src==='gps')GEO.src=null}renderGeo()},
+  {enableHighAccuracy:true,maximumAge:3000,timeout:30000});
+ renderGeo();
+}
+function useManual(){
+ const v=$('manSt').value.trim();$('geoErr').textContent='';
+ if(!v){if(GEO.src==='manual'){GEO.src=GEO.watch!=null?'gps':null;GEO.manHod=null;geoRefresh()}return}
+ if(!GEO.data){$('geoErr').textContent='A base de estacas ainda não foi carregada.';return}
+ const h=hodOf(v);if(h==null){$('geoErr').textContent=`Estaca “${v}” não encontrada na base do KMZ (164+700 a 303+800).`;return}
+ GEO.src='manual';GEO.manHod=h;GEO.manLabel=labelOf(h);GEO.panoManual=false;geoRefresh();
+}
+const f2=(v,d)=>Number.isFinite(v)?v.toFixed(d):'';
+function renderGeo(){
+ if(tab!=='geo')return;
+ const d=GEO.data,est=GEO.est,s=S.fres.find(x=>x.id===GEO.panoId);
+ $('geoBase').textContent=d?`Base: ${d.n} estacas`:GEO.loading?'Carregando base…':'';
+ // localização
+ const gb=$('gpsBtn');gb.textContent=GEO.watch!=null?'📍 GPS ligado — toque para desligar':'📍 Ativar GPS';gb.classList.toggle('on',GEO.watch!=null);
+ let msg='',cls='';
+ if(GEO.err){msg=GEO.err;cls='warn'}
+ else if(!d)msg='Carregando a base de estacas do KMZ…';
+ else if(est&&est.src==='manual'){msg=`Estaca informada manualmente: <b>${esc(est.label)}</b>.`+(GEO.watch!=null?' <button class="link" id="backGps" style="padding:0;display:inline">Voltar ao GPS</button>':'');cls='';}
+ else if(GEO.gpsMsg){msg=GEO.gpsMsg;cls=/negada|Não foi|demorou|não fornece/.test(GEO.gpsMsg)?'warn':''}
+ else if(est){const base=`Estaca estimada <b>${esc(est.label)}</b> · GPS ±${est.acc??'?'} m · ${Math.round(est.dist)} m do eixo do KMZ`;
+  if(est.status==='fora'){msg=`Você está a ${Math.round(est.dist)} m da linha das estacas: <b>sem correspondência no trecho</b>. Informe a estaca manualmente ou escolha o pano.`;cls='warn'}
+  else if(est.status==='impreciso'){msg=base+`<br><b>Posição imprecisa</b>${est.old?' (leitura de GPS antiga)':` (precisão pior que ${GEO_MAX_ACC} m)`}: confirme o pano e o segmento.`;cls='warn'}
+  else {msg=base;cls='ok'}}
+ else msg='GPS desligado. Ative para estimar a estaca, ou informe a estaca manualmente.';
+ $('gpsMsg').innerHTML=msg;$('gpsMsg').className='geomsg '+cls;
+ const bg=$('backGps');if(bg)bg.onclick=()=>{GEO.src='gps';GEO.manHod=null;$('manSt').value='';geoRefresh()};
+ // pano
+ const panoLbl=x=>`Pano ${S.fres.indexOf(x)+1} · ${esc(x.start)} → ${esc(x.end||'?')}`;
+ const panoSub=x=>`${x.direction==='Decrescente'?'↓':'↑'} ${x.direction} · faixa ${x.lane} · ${fmtN(x.length)} m × ${fmtN(x.width)} m × ${pos(x.thickness)?fmt(x.thickness*100,1)+' cm':'?'}${panoRange(x)?'':' · ⚠ estaca inicial fora da base'}`;
+ $('panoSrc').innerHTML=s?`<span class="tagauto ${GEO.panoManual?'man':'ok'}">${GEO.panoManual?'seleção manual':'automático'}</span>`:'';
+ let pb='';
+ if(s)pb+=`<div class="okbox"><b>${panoLbl(s)}</b><small class="by" style="font-size:12.5px">${panoSub(s)}</small>${GEO.panoManual?'':'<small class="by">Identificado pela estaca estimada.</small>'}</div>`;
+ const cand=GEO.cands||[];
+ if(!S.fres.length)pb+='<div class="empty">Não há panos na programação. Cadastre-os na página Fresagem.</div>';
+ else if(!s||(GEO.panoManual&&est&&cand.length&&!cand.some(x=>x.id===s.id))){
+  let why='';
+  if(!est)why='Sem posição: ative o GPS, informe a estaca ou escolha o pano na lista abaixo.';
+  else if(est.status==='fora')why='Posição sem correspondência no trecho. Escolha o pano manualmente.';
+  else if(!cand.length)why=`Nenhum pano da programação contém a estaca ${esc(est.label)}${GEO.sfConf?` no sentido e faixa confirmados`:''}. Escolha manualmente, se for o caso.`;
+  else if(cand.length>1)why=`<b>Sobreposição:</b> ${cand.length} panos contêm a estaca ${esc(est.label)}. Escolha o pano correto${GEO.sfConf?'':' (confirmar sentido e faixa ajuda a filtrar)'}:`;
+  else if(est.status==='impreciso')why='Posição imprecisa. Confirme o pano:';
+  else if(s)why='Sua posição atual corresponde a outro pano:';
+  if(why)pb+=`<p class="geomsg ${est&&est.status!=='ok'&&est.status!=='manual'||cand.length>1?'warn':''}" style="margin-top:${s?10:0}px">${why}</p>`;
+  if(cand.length)pb+=`<div class="cand" style="margin-top:8px">${cand.map(x=>`<button class="pitem${x.id===GEO.panoId?' sel':''}" data-pano="${x.id}"><span><b>${panoLbl(x)}</b><small>${panoSub(x)}</small></span><span class="go">›</span></button>`).join('')}</div>`;
+ }
+ $('panoBox').innerHTML=pb;
+ if($('panoAllBox').open)$('panoAll').innerHTML=S.fres.map(x=>`<button class="pitem${x.id===GEO.panoId?' sel':''}" data-pano="${x.id}" style="margin-bottom:8px"><span><b>${panoLbl(x)}</b><small>${panoSub(x)}</small></span><span class="go">›</span></button>`).join('')||'<div class="empty">Sem panos.</div>';
+ // sentido e faixa
+ document.querySelectorAll('input[name="gSent"]').forEach(r=>r.checked=r.value===GEO.sent);
+ document.querySelectorAll('input[name="gFaixa"]').forEach(r=>r.checked=r.value===GEO.faixa);
+ $('gSent').classList.toggle('pending',!GEO.sfConf);$('gFaixa').classList.toggle('pending',!GEO.sfConf);
+ $('sfState').innerHTML=GEO.sfConf?'<span class="tagauto ok">confirmado</span>':(GEO.sent||GEO.faixa)?'<span class="tagauto">sugerido pelo pano — confirme</span>':'<span class="tagauto warn">informe</span>';
+ $('sfConfirm').hidden=GEO.sfConf;
+ // solução
+ let sb='';const c=readingCtx();
+ if(!d)sb='<div class="empty">Aguardando a base de estacas.</div>';
+ else if(!GEO.sent||!GEO.faixa)sb='<div class="empty">Informe o sentido e a faixa para buscar a solução de projeto.</div>';
+ else{
+  const key=colKey(GEO.sent,GEO.faixa);
+  if(est&&est.status!=='fora'){const run=runAt(est.h,key),ep=espProj(run.code);
+   sb+=`<div class="autobox"><span class="tagauto">automático</span> <b style="font-size:18px">${run.code?esc(run.code):'Sem solução no unifilar'}</b><br><small>Na estaca ${esc(est.label)} · ${GEO.sent} · ${FAIXAS[GEO.faixa]}${GEO.sfConf?'':' (sentido/faixa ainda não confirmados)'}<br>Segmento de projeto: ${labelOf(run.ini)} → ${labelOf(run.fim)}${run.code?` · espessura de projeto: ${ep!=null?fmt(ep,3)+' m':'<b>não cadastrada na legenda</b>'}`:''}</small></div>`}
+  if(s){const segs=panoSegs(s,key);
+   if(!segs)sb+='<p class="geomsg warn" style="margin-top:10px">A estaca inicial do pano não foi encontrada na base do KMZ.</p>';
+   else{sb+=`<div style="margin-top:12px;font-weight:700;font-size:14px">Segmentos de projeto dentro do pano (${segs.length})</div><div class="segs">`+segs.map((g,i)=>{const cur=c.ok&&c.seg===g||(!c.ok&&GEO.segSel===i),ep=espProj(g.code);return `<div class="segi${cur?' cur':''}"><span><b>${labelOf(g.ini)} → ${labelOf(g.fim)}</b><br>${g.code?esc(g.code):'sem solução'} · ${ep!=null?fmt(ep,3)+' m':'esp. não cadastrada'} · ${fmt(g.fim-g.ini,0)} m</span>${segs.length>1?`<button class="act" data-seg="${i}">${GEO.segSel===i?'✓ escolhido':'Usar'}</button>`:''}</div>`}).join('')+'</div>';
+    if(segs.length>1)sb+=`<p class="hint" style="margin:8px 0 0">O pano atravessa ${segs.length} segmentos de projeto; as leituras ficam separadas por segmento.${GEO.segSel!=null?' <button class="link" id="segAuto" style="display:inline;padding:0">Voltar à escolha pela posição</button>':''}</p>`}}
+ }
+ $('solBox').innerHTML=sb;const sa=$('segAuto');if(sa)sa.onclick=()=>{GEO.segSel=null;renderGeo()};
+ if($('legBox').open&&!$('legList').contains(document.activeElement))renderLegend();
+ // comprimento
+ const cl=s?currentLen(s.id):null,hist=s?readingsAll().filter(r=>r.tipo==='comprimento'&&r.panoId===s.id).sort((a,b)=>b.at-a.at):[];
+ $('lenBox').innerHTML=!s?'<div class="empty">Selecione o pano.</div>':cl?`<div class="okbox"><b style="font-size:20px">${fmt(cl.valor)} m</b> ${syncChip(rdStatus(cl))}<small class="by">Registrado ${fmtWhen(cl.at)}${cl.by?' por '+esc(cl.by.name||''):''}${cl.valorAnterior!=null?` · corrigido de ${fmt(cl.valorAnterior)} m`:''}</small></div>${hist.length>1?`<details class="applied"><summary>Histórico do comprimento (${hist.length})</summary>${hist.map(h=>`<div class="by">${fmtWhen(h.at)} · ${fmt(h.valor)} m${h.by?' · '+esc(h.by.name||''):''}${h.anulada?' · anulado':''}</div>`).join('')}</details>`:''}`:`<div class="autobox"><span class="tagauto">não informado</span> Comprimento da Fresagem: ${s?fmtN(s.length)+' m':'—'} (só referência)</div>`;
+ const li=$('lenIn');if(li!==document.activeElement&&!GEO.lenT){li.value=s?(cl?cl.valor:s.length):''}
+ li.parentElement.classList.toggle('suggest',!!s&&!cl&&!GEO.lenT);$('lenBtn').textContent=cl?'Corrigir':'Salvar';
+ // leituras
+ const wi=$('wIn'),ei=$('eIn');if(wi!==document.activeElement)wi.value=f2(GEO.w,2);if(ei!==document.activeElement)ei.value=f2(GEO.e,3);
+ $('rdgW').classList.toggle('suggest',!GEO.wT);$('rdgE').classList.toggle('suggest',!GEO.eT);
+ $('wTag').textContent=GEO.wT?'editado':'sugerido';$('wTag').className='tagauto'+(GEO.wT?' man':'');$('eTag').textContent=GEO.eT?'editado':'sugerido';$('eTag').className='tagauto'+(GEO.eT?' man':'');
+ const segNow=c.ok?c.seg:null,epNow=segNow?espProj(segNow.code):null;
+ $('eCmp').innerHTML=segNow?(epNow!=null?`Projeto ${esc(segNow.code)}: ${fmt(epNow,3)} m · diferença ${pos(GEO.e)?difChip((GEO.e-epNow)*1000,'mm',0):'—'}`:`Sem espessura de projeto cadastrada para ${esc(segNow.code||'este trecho')} — não será comparada.`):'Passo de 0,001 m (1 mm)';
+ if(c.ok&&$('geoErr').textContent&&!/estaca|comprimento|Informe a/.test($('geoErr').textContent))$('geoErr').textContent='';
+ renderReadings(s);
+ // painel inferior
+ const setGb=(k,val,tag,cl2)=>{$('gb'+k).textContent=val;const e=$('gb'+k+'T');e.textContent=tag||'';e.className=cl2||''};
+ setGb('St',est?est.label:'—',est?(est.src==='manual'?'manual':est.status==='ok'?`GPS ±${est.acc} m`:est.status==='fora'?'fora do trecho':'impreciso'):'sem posição',est?(est.src==='manual'?'man':est.status==='ok'?'ok':'warn'):'warn');
+ setGb('Pano',s?`${S.fres.indexOf(s)+1} · ${s.start}`:'—',s?(GEO.panoManual?'manual':'automático'):(GEO.cands&&GEO.cands.length>1?'sobreposição':'não definido'),s?(GEO.panoManual?'man':'ok'):'warn');
+ const code=c.ok?c.seg.code:(est&&GEO.sent&&GEO.faixa&&d&&est.status!=='fora'?runAt(est.h,colKey(GEO.sent,GEO.faixa)).code:null);
+ setGb('Sol',code||'—',c.ok?(epNow!=null?fmt(epNow*100,1)+' cm':'sem esp.'):(c.needSeg?'escolher seg.':'a definir'),c.ok?(epNow!=null?'ok':'warn'):'warn');
+ setGb('Sent',GEO.sent?(GEO.sent==='Crescente'?'↑ Cresc.':'↓ Decr.'):'—',GEO.sfConf?'confirmado':GEO.sent?'a confirmar':'informar',GEO.sfConf?'ok':'warn');
+ setGb('Fx',GEO.faixa?FAIXA_CURTA[GEO.faixa]:'—',GEO.sfConf?'confirmada':GEO.faixa?'a confirmar':'informar',GEO.sfConf?'ok':'warn');
+}
+function renderLegend(){
+ if(!GEO.data){$('legList').innerHTML='';return}
+ $('legList').innerHTML='<div class="leg">'+GEO.data.codigos.map(c=>{const v=LEG&&Number.isFinite(LEG[c])?LEG[c]:'';return `<label for="lg-${esc(c)}">${esc(c)}</label><div class="unit" data-unit="m"><input id="lg-${esc(c)}" data-leg="${esc(c)}" type="number" inputmode="decimal" min="0" step="0.001" value="${v}" placeholder="não informada"></div>${LEG_ORIGEM[c]?`<small>${LEG_ORIGEM[c]}</small>`:''}`}).join('')+'</div>';
+}
+function renderReadings(s){
+ const all=readingsAll(),list=s?all.filter(r=>r.panoId===s.id&&r.tipo!=='comprimento'):[];
+ $('rdCount').textContent=s?`(${list.filter(r=>!r.anulada).length} neste pano · ${all.filter(r=>r.tipo!=='comprimento'&&!r.anulada).length} no apontamento)`:'';
+ if(GEO.rdErr){$('rdList').innerHTML=`<p class="geomsg warn">Erro ao ler as leituras do servidor: ${esc(GEO.rdErr)}</p>`;return}
+ if(!s){$('rdList').innerHTML='<div class="empty">Selecione o pano para ver as leituras.</div>';return}
+ if(!list.length){$('rdList').innerHTML='<div class="empty">Nenhuma leitura registrada neste pano.</div>';return}
+ const groups={};list.forEach(r=>{const k=[r.segmento&&r.segmento.hodIni,r.segmento&&r.segmento.hodFim,r.solucao,r.sentido,r.faixa].join('|');(groups[k]=groups[k]||[]).push(r)});
+ const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
+ $('rdList').innerHTML=Object.values(groups).sort((a,b)=>(a[0].segmento?.hodIni||0)-(b[0].segmento?.hodIni||0)).map(g=>{
+  const g0=g[0],act=g.filter(r=>!r.anulada),E=act.filter(r=>r.tipo==='espessura'),W=act.filter(r=>r.tipo==='largura'),Ec=E.filter(r=>Number.isFinite(r.espProjeto));
+  const stats=`<div class="rstats"><div>Espessura (${E.length})<b>${E.length?fmt(avg(E.map(r=>r.valor)),3)+' m':'—'}</b>${Ec.length?`dif. média ${difChip(avg(Ec.map(r=>(r.valor-r.espProjeto)*1000)),'mm',1)}`:E.length?'sem projeto p/ comparar':''}</div><div>Largura (${W.length})<b>${W.length?fmt(avg(W.map(r=>r.valor)),2)+' m':'—'}</b>média das leituras</div></div>`;
+  const items=g.sort((a,b)=>b.at-a.at).map(r=>{const dif=r.tipo==='espessura'&&Number.isFinite(r.espProjeto)?difChip((r.valor-r.espProjeto)*1000,'mm',0):'';return `<div class="ritem${r.anulada?' void':''}"><span class="rt">${r.tipo}</span><span class="rv">${fmt(r.valor,r.tipo==='largura'?2:3)} m ${dif}</span>${syncChip(rdStatus(r))}<small>${new Date(r.at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})} · ${r.estaca?esc(r.estaca)+' ('+(r.fonteEstaca==='gps'?`GPS ±${r.gps&&r.gps.precisao_m!=null?r.gps.precisao_m:'?'} m`:r.fonteEstaca)+')':'sem estaca'}${r.situacaoLocalizacao==='impreciso'?' · posição imprecisa':''}${r.panoManual?' · pano manual':''}${r.tipo==='espessura'?` · projeto ${Number.isFinite(r.espProjeto)?fmt(r.espProjeto,3)+' m':'não cadastrado'}`:''}${r.by?' · '+esc(r.by.name||''):''}${r.anulada?' · <b>anulada</b>':''}${GEO.fail[r.id]?' · '+esc(GEO.fail[r.id]):''}</small>${r.anulada?'':`<button class="act del" data-void="${r.id}" style="grid-column:1/-1;justify-self:end;min-height:34px;font-size:12.5px">Anular</button>`}</div>`}).join('');
+  return `<div class="rgroup"><div class="rgroup-h"><b>${esc(g0.segmento?g0.segmento.ini+' → '+g0.segmento.fim:'segmento ?')} · ${esc(g0.solucao||'sem solução')}</b><small>${esc(g0.sentido||'')} · ${esc(FAIXAS[g0.faixa]||'')}</small></div>${stats}${items}</div>`}).join('');
+}
+// eventos da página
+$('gpsBtn').onclick=gpsToggle;
+$('manStBtn').onclick=useManual;$('manSt').addEventListener('keydown',e=>{if(e.key==='Enter')useManual()});
+$('panoAllBox').addEventListener('toggle',()=>renderGeo());
+$('legBox').addEventListener('toggle',()=>{if($('legBox').open)renderLegend()});
+$('panel-geo').addEventListener('click',e=>{
+ const p=e.target.closest('[data-pano]');if(p){selectPano(p.dataset.pano,true);$('panoAllBox').open=false;geoRefresh();return}
+ const sg=e.target.closest('[data-seg]');if(sg){GEO.segSel=+sg.dataset.seg;renderGeo();return}
+ const vd=e.target.closest('[data-void]');if(vd){voidReading(vd.dataset.void);return}
+ const st=e.target.closest('[data-step]');if(st){const [k,dir]=st.dataset.step.split(':');if(k==='w'){GEO.w=Math.max(0.01,+((pos(GEO.w)?GEO.w:0)+(+dir)*0.01).toFixed(2));GEO.wT=true}else{GEO.e=Math.max(0.001,+((pos(GEO.e)?GEO.e:0)+(+dir)*0.001).toFixed(3));GEO.eT=true}renderGeo()}
+});
+document.querySelectorAll('input[name="gSent"]').forEach(r=>r.addEventListener('change',()=>{GEO.sent=r.value;if(GEO.faixa)GEO.sfConf=true;geoRefresh()}));
+document.querySelectorAll('input[name="gFaixa"]').forEach(r=>r.addEventListener('change',()=>{GEO.faixa=r.value;if(GEO.sent)GEO.sfConf=true;geoRefresh()}));
+$('sfConfirm').onclick=()=>{if(!GEO.sent||!GEO.faixa){$('geoErr').textContent='Escolha o sentido e a faixa.';return}GEO.sfConf=true;geoRefresh()};
+$('wIn').addEventListener('input',e=>{GEO.w=e.target.value===''?NaN:Number(e.target.value);GEO.wT=true;renderGeo()});
+$('eIn').addEventListener('input',e=>{GEO.e=e.target.value===''?NaN:Number(e.target.value);GEO.eT=true;renderGeo()});
+$('lenIn').addEventListener('input',()=>{GEO.lenT=true;$('lenIn').parentElement.classList.remove('suggest')});
+$('wReg').onclick=()=>registerReading('largura');$('eReg').onclick=()=>registerReading('espessura');$('lenBtn').onclick=saveLength;
+$('legList').addEventListener('change',e=>{const c=e.target.dataset.leg;if(!c)return;const v=e.target.value===''?null:Number(e.target.value);if(v!==null&&!(v>=0&&v<2)){e.target.value='';return}LEG[c]=v;
+ if(CLOUD&&USER){CLOUD.mergeAt(['config','geometria'],{legenda:{[c]:v},atualizadoPor:me(),atualizadoEm:Date.now()}).catch(err=>toast('✕ Falha ao salvar a legenda',errMsg(err),'fail'))}
+ else{const o={};Object.keys(LEG).forEach(k=>o[k]=LEG[k]);try{localStorage.setItem('cm-legenda',JSON.stringify(o))}catch{}}
+ renderGeo()});
+
+/* ======================= Aviso (toast) ======================= */
+let toastT=0;
+function toast(title,detail,cls,ms){const t=$('toast');t.className='toast '+(cls||'');t.innerHTML=`<b>${esc(title)}</b>${esc(detail||'')}`;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>{t.hidden=true},ms||4200);return t}
+$('toast').onclick=()=>{$('toast').hidden=true};
+
+/* ======================= Viagens de fresado ======================= */
+const FROTA=[
+ {n:1,placa:'MJA-4F65',mot:'Paulo Sérgio Moser',eq:'Pavimentação'},
+ {n:2,placa:'ARI-5A13',mot:'Ari Junior Corrêa',eq:'Pavimentação'},
+ {n:3,placa:'AAY-4B96',mot:'Eduardo Scariot Volkweis',eq:'Barreira'},
+ {n:4,placa:'CNI-1H26',mot:'Osni Franca',eq:'Pavimentação'},
+ {n:5,placa:'AWP-0C10',mot:'Daniel Roberto Moser',eq:'Pavimentação'},
+ {n:6,placa:'MJT-2F09',mot:'Diego Ferreira',eq:'Pavimentação'},
+ {n:7,placa:'MLP-8E24',mot:'Amilton',eq:'Pavimentação'}];
+const TIPO_TXT={chegada:'Chegada',saida:'Saída'};
+const VG={day:null,remote:[],local:{},fail:{},unsub:null,sel:null,armed:null,busy:false,fixId:null,err:''};
+const localDay=ms=>{const d=new Date(ms);return new Date(ms-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+const hhmm=ms=>new Date(ms).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+function vLocalAll(){try{return JSON.parse(localStorage.getItem('cm-viagens')||'[]')}catch{return []}}
+function vLocalSave(a){try{localStorage.setItem('cm-viagens',JSON.stringify(a));return true}catch{return false}}
+function vEvents(day){
+ if(CLOUD){const ids=new Set(VG.remote.map(e=>e.id));return [...VG.remote,...Object.values(VG.local).filter(e=>!ids.has(e.id))].filter(e=>e.dia===day)}
+ return vLocalAll().filter(e=>e.dia===day);
+}
+function vStatus(e){if(!CLOUD)return 'loc';if(VG.fail[e.id])return 'fail';if(e._pend||!VG.remote.some(x=>x.id===e.id))return 'pend';return 'ok'}
+function viagWatch(){
+ if(!CLOUD)return;if(!VG.day)VG.day=localDay(Date.now());if(VG.unsub)VG.unsub();VG.remote=[];
+ VG.unsub=CLOUD.watchCol(['viagensFresado'],['dia',VG.day],(docs,m)=>{if(!docs){VG.err=errMsg(m&&m.error);renderViag();return}VG.err='';VG.remote=docs.map(d=>({...d.data,id:d.id,_pend:d.pending}));renderViag()});
+}
+function viagEnter(){if(!VG.day)VG.day=localDay(Date.now());$('vDay').value=VG.day;if(CLOUD&&!VG.unsub&&USER)viagWatch();renderViag()}
+function lastActive(placa,day){return vEvents(day).filter(e=>e.placa===placa&&e.status!=='cancelado').sort((a,b)=>b.at-a.at)[0]||null}
+function renderViag(){
+ if(tab!=='viag')return;
+ const day=VG.day,evs=vEvents(day),act=evs.filter(e=>e.status!=='cancelado');
+ $('vStore').innerHTML=CLOUD?(navigator.onLine?'<span class="tagauto ok">servidor</span>':'<span class="tagauto man">sem conexão</span>'):'<span class="tagauto">só neste aparelho</span>';
+ $('vTrucks').innerHTML=FROTA.map(t=>{const mine=act.filter(e=>e.placa===t.placa),ch=mine.filter(e=>e.tipo==='chegada').length,sa=mine.filter(e=>e.tipo==='saida').length,last=mine.sort((a,b)=>b.at-a.at)[0];
+  return `<button class="truck${last?' st-'+last.tipo:''}" data-truck="${t.placa}"><span class="plate">${t.placa}</span><span class="nome">${esc(t.mot)}</span><span class="eq">${t.n} · ${esc(t.eq)}</span><span class="last">${last?`Último: ${TIPO_TXT[last.tipo]} ${hhmm(last.at)}`:'Sem registros no dia'}</span><span class="cnt"><span>⬇ ${ch}</span><span>⬆ ${sa}</span></span></button>`}).join('');
+ $('vCount').textContent=`(${act.length} registro${act.length===1?'':'s'})`;
+ const canFix=e=>!CLOUD||(USER&&e.by&&e.by.uid===USER.uid);
+ $('vHist').innerHTML=VG.err?`<p class="geomsg warn">Erro ao ler do servidor: ${esc(VG.err)}</p>`:evs.length?evs.sort((a,b)=>b.at-a.at).map(e=>{const t=FROTA.find(x=>x.placa===e.placa);const fx=(e.correcoes||[]);
+  return `<div class="vitem${e.status==='cancelado'?' cancel':''}"><span class="vt">${hhmm(e.at)}</span><span><span class="plate">${esc(e.placa)}</span></span><span class="vtp ${e.tipo}">${e.tipo==='saida'?'⬆':'⬇'} ${TIPO_TXT[e.tipo]}</span>
+  <small>${t?esc(t.mot)+' · ':''}${e.by?'registrado por '+esc(e.by.name||'')+' · ':''}${syncChip(vStatus(e))}${e.status==='cancelado'?' · <b>cancelado</b>':''}${fx.length?` · corrigido ${fx.length}×`:''}${VG.fail[e.id]?' · '+esc(VG.fail[e.id]):''}</small>
+  ${fx.length?`<small><details><summary>Histórico de correções</summary>${fx.map(c=>`<div class="fixlog">${fmtWhen(c.em)}${c.by?' · '+esc(c.by.name||''):''}: ${esc(TIPO_TXT[c.antes.tipo]||c.antes.tipo)} ${hhmm(c.antes.at)}${c.antes.status==='cancelado'?' (cancelado)':''} → ${esc(TIPO_TXT[c.depois.tipo]||c.depois.tipo)} ${hhmm(c.depois.at)}${c.depois.status==='cancelado'?' (cancelado)':''}${c.motivo?' · “'+esc(c.motivo)+'”':''}</div>`).join('')}</details></small>`:''}
+  ${canFix(e)?`<small style="text-align:right"><button class="act" data-fix="${e.id}">Corrigir</button></small>`:''}</div>`}).join(''):'<div class="empty">Nenhum registro neste dia.</div>';
+}
+function openTruck(placa){
+ const t=FROTA.find(x=>x.placa===placa);if(!t)return;VG.sel=t;VG.armed=null;
+ const today=localDay(Date.now()),last=lastActive(placa,today);
+ $('vsTitle').textContent=t.placa;$('vsDriver').textContent=t.mot;$('vsLast').textContent=last?`Último registro hoje: ${TIPO_TXT[last.tipo]} às ${hhmm(last.at)}`:'Sem registros hoje';
+ $('vsWarn').hidden=true;$('vsIn').classList.remove('confirm');$('vsOut').classList.remove('confirm');$('vsIn').innerHTML='<span>⬇</span>Chegada';$('vsOut').innerHTML='<span>⬆</span>Saída';$('vsIn').disabled=$('vsOut').disabled=false;
+ $('vSheet').classList.add('open');$('sheetBg').classList.add('open');
+}
+function closeTruck(){$('vSheet').classList.remove('open');$('vFix').classList.remove('open');$('sheetBg').classList.remove('open');VG.sel=null;VG.armed=null;VG.fixId=null}
+function vRegister(tipo){
+ const t=VG.sel;if(!t)return;const now=Date.now(),today=localDay(now),evs=vEvents(today);
+ const dup=evs.find(e=>e.placa===t.placa&&e.tipo===tipo&&e.status!=='cancelado'&&Math.abs(now-e.at)<60000);
+ if(dup){closeTruck();toast('Toque repetido ignorado',`${TIPO_TXT[tipo]} de ${t.placa} já foi registrada há ${Math.max(1,Math.round((now-dup.at)/1000))} s.`,'warn');return}
+ const last=lastActive(t.placa,today);
+ if(last&&last.tipo===tipo&&VG.armed!==tipo){VG.armed=tipo;const w=$('vsWarn');w.hidden=false;w.textContent=`Atenção: o último registro deste caminhão hoje também foi ${TIPO_TXT[tipo].toUpperCase()} (às ${hhmm(last.at)}). Toque de novo para registrar mesmo assim.`;const b=tipo==='chegada'?$('vsIn'):$('vsOut');b.classList.add('confirm');b.innerHTML=`<span>${tipo==='chegada'?'⬇':'⬆'}</span>Registrar mesmo assim`;return}
+ $('vsIn').disabled=$('vsOut').disabled=true;
+ const rec={id:uid(),placa:t.placa,motorista:t.mot,tipo,at:now,iso:new Date(now).toISOString(),dia:today,criadoEm:now,by:CLOUD&&USER?me():null,status:'ativo',correcoes:[]};
+ closeTruck();
+ if(VG.day!==today){VG.day=today;$('vDay').value=today;if(CLOUD)viagWatch()}
+ const title=`✓ ${TIPO_TXT[tipo]} registrada`,det=`${t.placa} · ${hhmm(now)} · ${t.mot}`;
+ if(CLOUD){VG.local[rec.id]=rec;delete VG.fail[rec.id];
+  const tt=toast(title,det+(navigator.onLine?' · enviando ao servidor…':' · SEM CONEXÃO: envio pendente'),'pend',6000);
+  CLOUD.setAt(['viagensFresado',rec.id],rec).then(()=>{if(!tt.hidden&&tt.textContent.includes(t.placa))toast(title,det+' · salvo no servidor','',3500);renderViag()}).catch(e=>{VG.fail[rec.id]=errMsg(e);toast('✕ Falha ao salvar no servidor',`${t.placa} · ${TIPO_TXT[tipo]} ${hhmm(now)}: ${errMsg(e)}`,'fail',8000);renderViag()});
+ }else{const a=vLocalAll();a.push(rec);if(vLocalSave(a))toast(title,det+' · salvo só neste aparelho (sem servidor configurado)','');else toast('✕ Não foi possível salvar','Armazenamento do aparelho indisponível.','fail')}
+ renderViag();
+}
+function openFix(id){
+ const e=vEvents(VG.day).find(x=>x.id===id);if(!e)return;VG.fixId=id;
+ document.querySelectorAll('input[name="vfTipo"]').forEach(r=>r.checked=r.value===e.tipo);
+ $('vfTime').value=new Date(e.at).toTimeString().slice(0,5);$('vfWhy').value='';$('vfErr').textContent='';
+ $('vfTitle').textContent=`Corrigir ${e.placa} · ${TIPO_TXT[e.tipo]} ${hhmm(e.at)}`;$('vfCancelRec').hidden=e.status==='cancelado';$('vfCancelRec').textContent='Cancelar este registro';
+ $('vFix').classList.add('open');$('sheetBg').classList.add('open');
+}
+function applyFix(cancel){
+ const e=vEvents(VG.day).find(x=>x.id===VG.fixId);if(!e)return;
+ const tipo=document.querySelector('input[name="vfTipo"]:checked')?.value||e.tipo,[hh,mm]=($('vfTime').value||'').split(':').map(Number);
+ if(!cancel&&!(Number.isInteger(hh)&&Number.isInteger(mm))){$('vfErr').textContent='Informe o horário.';return}
+ let at=e.at;if(!cancel){const d=new Date(e.at);d.setHours(hh,mm,0,0);at=d.getTime()}
+ const depois={tipo:cancel?e.tipo:tipo,at,status:cancel?'cancelado':e.status};
+ if(!cancel&&depois.tipo===e.tipo&&depois.at===e.at){$('vfErr').textContent='Nada foi alterado.';return}
+ if(cancel&&!confirm('Cancelar este registro? Ele continua no histórico, marcado como cancelado.'))return;
+ const corr={em:Date.now(),by:CLOUD&&USER?me():null,antes:{tipo:e.tipo,at:e.at,status:e.status},depois,motivo:$('vfWhy').value.trim().slice(0,140)};
+ const fields={tipo:depois.tipo,at:depois.at,status:depois.status,correcoes:[...(e.correcoes||[]),corr]};
+ closeTruck();
+ if(CLOUD){if(VG.local[e.id])Object.assign(VG.local[e.id],fields);CLOUD.updateAt(['viagensFresado',e.id],fields).then(()=>toast('✓ Correção salva no servidor',`${e.placa}`,'')).catch(err=>toast('✕ Falha ao salvar a correção',errMsg(err),'fail',8000));toast('Correção registrada',navigator.onLine?'Enviando ao servidor…':'Sem conexão: envio pendente','pend')}
+ else{const a=vLocalAll(),x=a.find(y=>y.id===e.id);if(x){Object.assign(x,fields);vLocalSave(a)}toast('✓ Correção salva',cancel?'Registro cancelado (mantido no histórico)':'Histórico da correção guardado','')}
+ renderViag();
+}
+$('vTrucks').addEventListener('click',e=>{const b=e.target.closest('[data-truck]');if(b)openTruck(b.dataset.truck)});
+$('vHist').addEventListener('click',e=>{const b=e.target.closest('[data-fix]');if(b)openFix(b.dataset.fix)});
+$('vsIn').onclick=()=>vRegister('chegada');$('vsOut').onclick=()=>vRegister('saida');$('vsClose').onclick=closeTruck;
+$('vfSave').onclick=()=>applyFix(false);$('vfCancelRec').onclick=()=>applyFix(true);$('vfClose').onclick=closeTruck;
+$('vDay').addEventListener('change',e=>{VG.day=e.target.value||localDay(Date.now());if(CLOUD)viagWatch();renderViag()});
+$('sheetBg').addEventListener('click',()=>{if($('vSheet').classList.contains('open')||$('vFix').classList.contains('open'))closeTruck()});
+addEventListener('online',()=>{renderViag();renderGeo()});addEventListener('offline',()=>{renderViag();renderGeo()});
+
 /* ======================= Início ======================= */
 (async()=>{
  const impl=window.__cloudImpl||(FIREBASE_CONFIG?await makeFirebaseCloud(FIREBASE_CONFIG).catch(e=>{console.error(e);return null}):null);
  if(impl){S=emptyState();renderAll();setTab('fres');startCloud(impl);return}
  if(FIREBASE_CONFIG){$('status').textContent='Não foi possível conectar à nuvem (sem internet?). Abrindo no modo local deste aparelho.'}
  S=load();renderAll();
- try{const t=localStorage.getItem(STORE+'-tab');setTab(['fres','rdo','acomp'].includes(t)?t:'fres')}catch{setTab('fres')}
+ try{setTab(localStorage.getItem(STORE+'-tab')||'fres')}catch{setTab('fres')}
 })();
 </script>
 </body>
