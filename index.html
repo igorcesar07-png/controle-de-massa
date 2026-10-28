@@ -558,6 +558,22 @@ body.geo-on{padding-bottom:calc(150px + var(--safe-b))}
 #vSheet .btn,#vFix .btn{justify-content:center}
 .vs-head>div:last-child{min-width:0}
 @media (max-width:420px){.brand b{font-size:11.5px;padding-left:8px}}
+
+/* ================= Ordem dos panos ================= */
+.sortbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 6px;padding:10px 12px;background:#f1f2f3;border-radius:12px}
+.sortbar span{font-size:13px;font-weight:700;color:#3a3a3a;margin-right:auto}
+.sortbar .act{min-height:40px}
+.act.mv{min-width:44px;padding:0;font-size:16px}
+.act.mv:disabled{opacity:.35}
+.srow .sa .mvgrp{display:flex;gap:6px;margin-right:auto}
+.srow.moved{animation:moved .9s ease}
+@keyframes moved{0%{background:#fdeeee}100%{background:transparent}}
+#edPos{width:100%;min-height:50px;padding:10px 12px;font-size:17px;border:1px solid #c4c7cb;border-radius:10px;background:#fff;color:var(--ink)}
+.srow .sa{flex-wrap:nowrap;gap:6px}
+.srow .sa .act{padding:0 10px;font-size:13.5px;white-space:nowrap}
+.srow .sa .act.mv{min-width:40px;padding:0;font-size:15px}
+.srow .sa .mvgrp{gap:6px}
+@media (max-width:380px){.srow .sa .act{padding:0 7px;font-size:12.5px}}
 </style>
 </head>
 <body>
@@ -605,7 +621,8 @@ body.geo-on{padding-bottom:calc(150px + var(--safe-b))}
 
     <section class="section">
       <h2>Resumo dos segmentos <span class="count" id="fCount2"></span></h2>
-      <p class="hint">Toque em <b>Editar</b> para alterar um segmento. Todo segmento criado aqui vai automaticamente para o RDO da aplicação.</p>
+      <p class="hint">Toque em <b>Editar</b> para alterar um segmento e em <b>▲ ▼</b> para mudar a posição dele na sequência. A ordem definida aqui vale para o RDO, o Acompanhamento e os relatórios.</p>
+      <div class="sortbar" id="sortBar"><span>Ordenar por estaca:</span><button class="act" data-sort="asc">↑ Crescente</button><button class="act" data-sort="desc">↓ Decrescente</button></div>
       <div class="srows" id="fresRows"></div>
       <div class="stotal"><div>Extensão<b id="fSumLen"></b></div><div>Volume<b id="fSumVol"></b></div><div>Massa<b id="fSumMass"></b></div></div>
       <div class="bigtotal"><span>Total de massa “fresada”</span><b id="fSumBig"></b></div>
@@ -836,6 +853,7 @@ body.geo-on{padding-bottom:calc(150px + var(--safe-b))}
   <div class="eb">
     <div class="fields">
       <div class="full edref" id="edRef" hidden></div>
+      <div class="field full" id="edPosWrap" hidden><label for="edPos">Posição na sequência</label><select id="edPos"></select><small id="edPosH"></small></div>
       <div class="field full" id="edSeqWrap"><label class="switch"><input type="checkbox" role="switch" id="edSeq">Sequencial ao segmento anterior</label></div>
       <div class="field"><label for="edStart">Estaca inicial</label><input id="edStart" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="230+830" required></div>
       <div class="field"><label for="edEnd">Estaca final</label><input id="edEnd" type="text" readonly tabindex="-1"></div>
@@ -978,11 +996,43 @@ function byLine(id,what){
  const b=what==='rdo'?(m.rdoBy?{p:m.rdoBy,t:m.rdoAt,l:'RDO por'}:null):what==='applied'?(S.applied[id]&&m.appliedBy?{p:m.appliedBy,t:m.appliedAt,l:'Aplicado por'}:null):(m.fresBy?{p:m.fresBy,t:m.fresAt,l:m.fresAt&&m.createdAt&&m.fresAt!==m.createdAt?'Alterado por':'Lançado por'}:null);
  return b&&b.p?`<span class="by">👤 ${b.l} ${esc(b.p.name||'')} · ${fmtWhen(b.t)}</span>`:'';
 }
+let LAST_MOVED=null;
+function stKey(l){const m=String(l||'').trim().match(/^(\d+)\s*\+\s*(\d+(?:[.,]\d+)?)$/);return m?[+m[1],+m[2].replace(',','.')]:null}
+// Aplica uma nova ordem aos panos. Pano "sequencial" cujo anterior mudou deixa de ser sequencial,
+// mantendo a estaca inicial atual (assim nenhuma estaca muda sem você pedir).
+function applyOrder(newList,keepId){
+ chainFres();
+ const prevOf={};S.fres.forEach((x,i)=>prevOf[x.id]=i?S.fres[i-1].id:null);
+ let freed=0;
+ newList.forEach((x,i)=>{const np=i?newList[i-1].id:null;if(x.id!==keepId&&x.sequential&&prevOf[x.id]!==np){x.sequential=false;freed++}});
+ S.fres.length=0;newList.forEach(x=>S.fres.push(x));
+ if(S.ord)S.fres.forEach((x,i)=>S.ord[x.id]=i+1);
+ return freed;
+}
+function moveSeg(id,dir){
+ const i=S.fres.findIndex(x=>x.id===id),j=i+dir;if(i<0||j<0||j>=S.fres.length)return;
+ const nl=S.fres.slice();[nl[i],nl[j]]=[nl[j],nl[i]];
+ const freed=applyOrder(nl);LAST_MOVED=id;changed();
+ $('status').textContent=`Segmento movido para a posição ${j+1}.`+(freed?` ${freed} segmento(s) deixaram de ser “sequencial” e mantiveram a estaca inicial.`:'');
+ const el=$('fr-'+id);if(el)el.scrollIntoView({block:'nearest',behavior:'smooth'});
+ setTimeout(()=>{LAST_MOVED=null},1000);
+}
+function sortSegs(dir){
+ if(S.fres.length<2)return;
+ if(!confirm(`Ordenar todos os panos por estaca inicial em ordem ${dir==='asc'?'CRESCENTE':'DECRESCENTE'}?`))return;
+ const nl=S.fres.map((x,i)=>({x,i,k:stKey(x.start)})).sort((a,b)=>{if(!a.k&&!b.k)return a.i-b.i;if(!a.k)return 1;if(!b.k)return -1;const c=(a.k[0]-b.k[0])||(a.k[1]-b.k[1]);return (dir==='asc'?c:-c)||a.i-b.i}).map(o=>o.x);
+ const freed=applyOrder(nl);changed();
+ $('status').textContent=`Panos ordenados por estaca ${dir==='asc'?'crescente':'decrescente'}.`+(freed?` ${freed} segmento(s) deixaram de ser “sequencial” e mantiveram a estaca inicial.`:'');
+}
+document.addEventListener('click',e=>{
+ const mv=e.target.closest('[data-move]');if(mv){const [id,d]=mv.dataset.move.split(':');moveSeg(id,+d);return}
+ const so=e.target.closest('[data-sort]');if(so)sortSegs(so.dataset.sort);
+});
 function sRow(s,n,opts={}){
  const ok=segOk(s),v=segVol(s),m=v*S.density;
  const chips=[];if(s.sequential)chips.push('<span class="chip">sequencial</span>');if(opts.extra)chips.push('<span class="chip extra">extra</span>');if(opts.edited)chips.push('<span class="chip edit">alterado no RDO</span>');
- const acts=opts.toggle||opts.actions?`<div class="sa">${opts.toggle?`<label class="switch green" style="margin-right:auto"><input type="checkbox" role="switch" data-apply="${s.id}" ${S.applied[s.id]?'checked':''}>Aplicado</label>`:''}${opts.actions?`<button class="act" data-edit="${opts.kind}:${s.id}">✏️ Editar</button><button class="act del" data-del="${opts.kind}:${s.id}">🗑 Excluir</button>`:''}</div>`:'';
- return `<div class="srow"><div class="sn">${n}</div><div class="si"><b>${esc(s.start)} → ${esc(s.end||'?')}</b><small>${esc(segDesc(s))}</small>${byLine(s.id,opts.toggle?'applied':'fres')}</div><div class="sm"><b>${ok&&pos(S.density)?fmt(m):'—'} t</b><small>${ok?fmt(v):'—'} m³</small></div>${chips.length?`<div class="chips">${chips.join('')}</div>`:''}${acts}</div>`;
+ const acts=opts.toggle||opts.actions?`<div class="sa">${opts.toggle?`<label class="switch green" style="margin-right:auto"><input type="checkbox" role="switch" data-apply="${s.id}" ${S.applied[s.id]?'checked':''}>Aplicado</label>`:''}${opts.kind==='fres'?`<span class="mvgrp"><button class="act mv" data-move="${s.id}:-1" aria-label="Subir pano ${n}" ${n===1?'disabled':''}>▲</button><button class="act mv" data-move="${s.id}:1" aria-label="Descer pano ${n}" ${n===S.fres.length?'disabled':''}>▼</button></span>`:''}${opts.actions?`<button class="act" data-edit="${opts.kind}:${s.id}">✏️ Editar</button><button class="act del" data-del="${opts.kind}:${s.id}">🗑 Excluir</button>`:''}</div>`:'';
+ return `<div class="srow${opts.kind==='fres'&&s.id===LAST_MOVED?' moved':''}" id="${opts.kind==='fres'?'fr-'+s.id:''}"><div class="sn">${n}</div><div class="si"><b>${esc(s.start)} → ${esc(s.end||'?')}</b><small>${esc(segDesc(s))}</small>${byLine(s.id,opts.toggle?'applied':'fres')}</div><div class="sm"><b>${ok&&pos(S.density)?fmt(m):'—'} t</b><small>${ok?fmt(v):'—'} m³</small></div>${chips.length?`<div class="chips">${chips.join('')}</div>`:''}${acts}</div>`;
 }
 
 /* ======================= Render: Fresagem ======================= */
@@ -1163,9 +1213,10 @@ function openEditor(kind,id){
  else{list=kind==='fres'?S.fres:S.extras;idx=id?list.findIndex(x=>x.id===id):-1;cur=idx>=0?list[idx]:null;
   prev=kind==='fres'?(idx>=0?S.fres[idx-1]:S.fres[S.fres.length-1]):null;const last=list[list.length-1];
   draft=cur?{...cur}:{id:uid(),start:'',end:'',direction:last?last.direction:'Crescente',lane:last?last.lane:1,length:NaN,width:last?last.width:3.5,thickness:last?last.thickness:.08,sequential:kind==='fres'&&!!prev}}
- ED={kind,id:cur?cur.id:null,draft,prev,src:cur};
+ ED={kind,id:cur?cur.id:null,draft,prev,src:cur,pos:idx>=0?idx+1:list.length+1};
  const n=idx>=0?idx+1:list.length+1;
  $('edTitle').textContent=kind==='rdo'?`Editar apontamento ${n} (RDO)`:(cur?'Editar ':'Novo ')+(kind==='extra'?`segmento extra E${n}`:`segmento ${n}`);
+ $('edPosWrap').hidden=kind!=='fres';if(kind==='fres'){const max=cur?list.length:list.length+1;$('edPos').innerHTML=Array.from({length:max},(_,k)=>{const q=k+1,others=list.filter(x=>x!==cur),after=others[k-1];return `<option value="${q}">${q}º${q===1?' — início':after?' — depois de '+after.start:''}${q===max?' (final)':''}</option>`}).join('');$('edPos').value=String(ED.pos);edPosHint()}
  $('edSeqWrap').hidden=kind!=='fres'||!prev;$('edSeq').disabled=!prev;$('edSeq').checked=!!draft.sequential&&!!prev;
  $('edObsWrap').hidden=kind!=='rdo';$('edObs').value=draft.obs||'';
  $('edRef').hidden=kind!=='rdo';if(kind==='rdo')$('edRef').innerHTML=`Fresagem: <b>${esc(cur.start)} → ${esc(cur.end)}</b> · ${esc(segDesc(cur))}`;
@@ -1187,6 +1238,9 @@ function edSync(){
  const ok=segOk(d),v=segVol(d);$('edVol').textContent=ok?fmt(v)+' m³':'—';$('edMass').textContent=ok&&pos(S.density)?fmt(v*S.density)+' t':'—';
  const dd=$('edDiff');if(ED.kind==='rdo'){const dl=diffLines(ED.src,d);dd.hidden=!dl.length;dd.innerHTML=dl.join('')}else dd.hidden=true;
 }
+function edPosHint(){const list=S.fres.filter(x=>x.id!==ED.id),p=ED.pos;$('edPosH').textContent=p===1?'Será o primeiro da sequência.':`Fica depois do segmento ${list[p-2].start} → ${list[p-2].end||'?'}`}
+$('edPos').addEventListener('change',()=>{if(!ED||ED.kind!=='fres')return;ED.pos=+$('edPos').value;const list=S.fres.filter(x=>x.id!==ED.id);ED.prev=list[ED.pos-2]||null;
+ $('edSeqWrap').hidden=!ED.prev;$('edSeq').disabled=!ED.prev;if(!ED.prev)$('edSeq').checked=false;edPosHint();edSync()});
 function closeEditor(){ED=null;$('editor').classList.remove('open');$('sheetBg').classList.remove('open');document.body.classList.remove('lock')}
 function saveEditor(){
  edSync();const d=ED.draft,errs=[];
@@ -1196,9 +1250,11 @@ function saveEditor(){
  if(errs.length){$('edErr').textContent='Confira: '+errs.join(', ')+'.';return}
  if(ED.kind==='rdo'){const src=findSeg(ED.id);if(!src){$('edErr').textContent='Este segmento foi excluído por outra pessoa.';return}const r=rdoRec(src.id);r.over={};KEYS.forEach(k=>{if(!same(d[k],src[k]))r.over[k]=d[k]});r.obs=(d.obs||'').slice(0,1000);closeEditor();changed();$('status').textContent=r.over&&Object.keys(r.over).length?'Apontamento do RDO atualizado.':'Apontamento igual à fresagem.';return}
  const kind=ED.kind,list=kind==='fres'?S.fres:S.extras,{id:_,obs:__,...vals}=d,editing=!!ED.id;
- if(editing){const tgt=list.find(s=>s.id===ED.id);if(!tgt){$('edErr').textContent='Este segmento foi excluído por outra pessoa.';return}Object.assign(tgt,vals)}else{list.push({...d});if(kind==='fres')rdoRec(d.id)}
+ let tgt;if(editing){tgt=list.find(s=>s.id===ED.id);if(!tgt){$('edErr').textContent='Este segmento foi excluído por outra pessoa.';return}Object.assign(tgt,vals)}else{tgt={...d};list.push(tgt);if(kind==='fres')rdoRec(d.id)}
+ let moved='',freed=0;
+ if(kind==='fres'){const nl=S.fres.filter(x=>x!==tgt),p=Math.max(1,Math.min(ED.pos||nl.length+1,nl.length+1));nl.splice(p-1,0,tgt);if(nl.some((x,i)=>x!==S.fres[i])){freed=applyOrder(nl,tgt.id);moved=` Posição ${p} na sequência.`;LAST_MOVED=tgt.id;setTimeout(()=>{LAST_MOVED=null},1000)}}
  closeEditor();
- changed();$('status').textContent=editing?'Segmento atualizado.':'Segmento adicionado.';
+ changed();if(moved)$('status').textContent=(editing?'Segmento atualizado.':'Segmento adicionado.')+moved+(freed?` ${freed} segmento(s) deixaram de ser “sequencial” e mantiveram a estaca inicial.`:'');if(moved)return;$('status').textContent=editing?'Segmento atualizado.':'Segmento adicionado.';
 }
 ['edStart','edLength','edLane','edWidth','edThick'].forEach(id=>$(id).addEventListener('input',edSync));
 document.querySelectorAll('input[name="edDir"]').forEach(r=>r.addEventListener('change',edSync));

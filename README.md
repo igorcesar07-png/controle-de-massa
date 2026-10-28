@@ -26,6 +26,10 @@ Amarelo = sobra, vermelho = falta, verde = dentro da tolerância.
 
 No Acompanhamento, o quadro de caminhões mostra o total usinado, o nº e a placa do último aplicado e os restantes a aplicar (total − nº do último, +1 se o último teve sobra).
 
+## Ordem dos panos
+
+Na Fresagem, cada pano tem ▲ ▼ para mudar de posição, e o formulário de adicionar/editar tem “Posição na sequência”. Também é possível ordenar todos por estaca crescente ou decrescente. A ordem vale para o RDO, o Acompanhamento e os relatórios. Se um pano “sequencial” ficar depois de outro pano, ele deixa de ser sequencial e mantém a estaca inicial (nenhuma estaca muda sozinha).
+
 ## Navegação
 
 Menu lateral (☰, canto superior esquerdo) com as páginas: Fresagem, RDO aplicação, Acompanhamento, **Controle de geometria** e **Viagens de fresado**.
