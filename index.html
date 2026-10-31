@@ -591,6 +591,40 @@ body.geo-on{padding-bottom:calc(150px + var(--safe-b))}
 .ds-state .ok{color:var(--ok)}.ds-state .warn{color:#8a5200}.ds-state .off{color:#5f6368}
 .drawer-sync small{display:block;font-size:12px;color:var(--muted);line-height:1.4;padding-bottom:6px}
 .offbar{position:sticky;top:0;z-index:5;background:#3a3c40;color:#fff;font-size:12.5px;font-weight:700;text-align:center;padding:5px 10px}
+
+/* ================= Linha de pano (minimalista) ================= */
+.srow.v2{display:block;padding:12px 2px 10px}
+.srow.v2.changed{padding:12px 10px 10px}
+.r2-top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.r2n{flex:0 0 auto;min-width:20px;height:20px;padding:0 5px;border-radius:6px;background:#ececec;color:#55595e;font-size:11px;font-weight:800;display:inline-grid;place-items:center;align-self:center}
+.srow.changed .r2n{background:var(--red);color:#fff}
+.r2st{font-size:19px;font-weight:800;letter-spacing:-.3px;color:var(--black);font-variant-numeric:tabular-nums;white-space:nowrap}
+.r2st .ar{color:#9aa0a6;font-weight:600;margin:0 1px}
+.r2len{font-size:15px;font-weight:700;color:#3a3a3a;background:#f1f2f3;border-radius:7px;padding:2px 8px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.r2-dims{display:flex;gap:8px;margin:8px 0 6px 28px;flex-wrap:wrap}
+.dim{display:inline-flex;align-items:baseline;gap:6px;border:0;border-radius:8px;padding:5px 10px;background:#eef0f2}
+.srow.changed .dim{background:#fff}
+.dim small{font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#7a7d82}
+.dim b{font-size:16px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+.r2-foot{display:flex;align-items:center;gap:8px;margin-left:28px;min-height:36px}
+.r2meta{flex:1;min-width:0;font-size:12.5px;color:#7a7d82;line-height:1.45}
+.r2meta .chips{display:inline-flex;gap:4px;flex-wrap:wrap;vertical-align:middle}
+.r2meta .chip{font-size:10.5px;padding:2px 6px}
+.r2meta .by,.r2meta .obs{display:block;font-size:11.5px;margin-top:1px}
+.r2acts{display:flex;align-items:center;gap:2px;flex:0 0 auto}
+.ib{width:38px;height:38px;border:0;border-radius:10px;background:transparent;color:#4a4d52;display:grid;place-items:center;padding:0}
+.ib svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ib:active{background:#e9eaec}
+@media (hover:hover){.ib:hover{background:#f1f2f3}}
+.ib:disabled{color:#c9ccd0;background:transparent}
+.ib.danger{color:var(--red-dark)}
+.ibsep{width:1px;height:20px;background:#e1e3e6;margin:0 4px}
+.switch.mini{font-size:12.5px;min-height:38px;gap:6px;margin-right:4px}
+.switch.mini input{width:40px;height:24px;flex-basis:40px}
+.switch.mini input::after{width:18px;height:18px}
+.switch.mini input:checked::after{transform:translateX(16px)}
+.srow.v2 .diffs{margin:8px 0 2px 28px}
+@media (max-width:370px){.r2st{font-size:17px}.r2-dims,.r2-foot,.srow.v2 .diffs{margin-left:0}.ib{width:34px}}
 </style>
 </head>
 <body>
@@ -1052,11 +1086,30 @@ document.addEventListener('click',e=>{
  const mv=e.target.closest('[data-move]');if(mv){const [id,d]=mv.dataset.move.split(':');moveSeg(id,+d);return}
  const so=e.target.closest('[data-sort]');if(so)sortSegs(so.dataset.sort);
 });
+const ICO={
+ up:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>',
+ down:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>',
+ edit:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>',
+ del:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v5M14 11v5"/></svg>',
+ undo:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h11a5 5 0 0 1 0 10H9"/><path d="M8 5L4 9l4 4"/></svg>'};
+// Linha de pano: 1º estaqueamento + comprimento, 2º largura e espessura, 3º demais informações
+function segCard(e,n,o){
+ const ok=segValid(e,e.end),v=vol(e.length,e.width,e.thickness),m=v*S.density;
+ const meta=[`${e.direction==='Decrescente'?'↓':'↑'} ${e.direction}`,`faixa ${e.lane}`,ok&&pos(S.density)?`${fmt(m)} t`:'— t',ok?`${fmt(v)} m³`:'— m³'].join(' · ');
+ return `<div class="srow v2${o.cls||''}" id="${o.id||''}">
+  <div class="r2-top"><span class="r2n">${n}</span><span class="r2st">${esc(e.start)} <span class="ar">→</span> ${esc(e.end||'?')}</span><span class="r2len">${pos(e.length)?fmtN(e.length)+' m':'— m'}</span></div>
+  <div class="r2-dims"><span class="dim"><small>Larg.</small><b>${pos(e.width)?fmt(e.width,2)+' m':'—'}</b></span><span class="dim"><small>Esp.</small><b>${pos(e.thickness)?fmt(e.thickness*100,1)+' cm':'—'}</b></span></div>
+  <div class="r2-foot"><div class="r2meta">${meta}${o.chips&&o.chips.length?` <span class="chips">${o.chips.join('')}</span>`:''}${o.obs||''}${o.by||''}</div>${o.acts?`<div class="r2acts">${o.acts}</div>`:''}</div>
+  ${o.after||''}</div>`;
+}
+const ib=(attr,ico,label,cls='',dis=false)=>`<button class="ib${cls?' '+cls:''}" ${attr} aria-label="${label}" title="${label}" ${dis?'disabled':''}>${ICO[ico]}</button>`;
 function sRow(s,n,opts={}){
- const ok=segOk(s),v=segVol(s),m=v*S.density;
  const chips=[];if(s.sequential)chips.push('<span class="chip">sequencial</span>');if(opts.extra)chips.push('<span class="chip extra">extra</span>');if(opts.edited)chips.push('<span class="chip edit">alterado no RDO</span>');
- const acts=opts.toggle||opts.actions?`<div class="sa">${opts.toggle?`<label class="switch green" style="margin-right:auto"><input type="checkbox" role="switch" data-apply="${s.id}" ${S.applied[s.id]?'checked':''}>Aplicado</label>`:''}${opts.kind==='fres'?`<span class="mvgrp"><button class="act mv" data-move="${s.id}:-1" aria-label="Subir pano ${n}" ${n===1?'disabled':''}>▲</button><button class="act mv" data-move="${s.id}:1" aria-label="Descer pano ${n}" ${n===S.fres.length?'disabled':''}>▼</button></span>`:''}${opts.actions?`<button class="act" data-edit="${opts.kind}:${s.id}">✏️ Editar</button><button class="act del" data-del="${opts.kind}:${s.id}">🗑 Excluir</button>`:''}</div>`:'';
- return `<div class="srow${opts.kind==='fres'&&s.id===LAST_MOVED?' moved':''}" id="${opts.kind==='fres'?'fr-'+s.id:''}"><div class="sn">${n}</div><div class="si"><b>${esc(s.start)} → ${esc(s.end||'?')}</b><small>${esc(segDesc(s))}</small>${byLine(s.id,opts.toggle?'applied':'fres')}</div><div class="sm"><b>${ok&&pos(S.density)?fmt(m):'—'} t</b><small>${ok?fmt(v):'—'} m³</small></div>${chips.length?`<div class="chips">${chips.join('')}</div>`:''}${acts}</div>`;
+ let acts='';
+ if(opts.toggle)acts+=`<label class="switch green mini"><input type="checkbox" role="switch" data-apply="${s.id}" ${S.applied[s.id]?'checked':''}>Aplicado</label>`;
+ if(opts.kind==='fres')acts+=ib(`data-move="${s.id}:-1"`,'up',`Subir pano ${n}`,'',n===1)+ib(`data-move="${s.id}:1"`,'down',`Descer pano ${n}`,'',n===S.fres.length)+'<span class="ibsep"></span>';
+ if(opts.actions)acts+=ib(`data-edit="${opts.kind}:${s.id}"`,'edit',`Editar pano ${n}`)+ib(`data-del="${opts.kind}:${s.id}"`,'del',`Excluir pano ${n}`,'danger');
+ return segCard(s,n,{cls:opts.kind==='fres'&&s.id===LAST_MOVED?' moved':'',id:opts.kind==='fres'?'fr-'+s.id:'',chips,by:byLine(s.id,opts.toggle?'applied':'fres'),acts});
 }
 
 /* ======================= Render: Fresagem ======================= */
@@ -1095,10 +1148,9 @@ function diffLines(s,e){ // e = valores RDO (efetivos ou rascunho)
  return out;
 }
 function rRow(s,i){
- const e=rEff(s),ok=rdoOk(s),v=rdoVol(s),m=v*S.density,dl=diffLines(s,e),obs=rdoRec(s.id).obs;
- return `<div class="srow${dl.length?' changed':''}" id="rr-${s.id}"><div class="sn">${i+1}</div><div class="si"><b>${esc(e.start)} → ${esc(e.end||'?')}</b><small>${esc(segDesc(e))}</small>${obs?`<span class="obs">📝 ${esc(obs)}</span>`:''}${byLine(s.id,'rdo')}</div><div class="sm"><b>${ok&&pos(S.density)?fmt(m):'—'} t</b><small>${ok?fmt(v):'—'} m³</small></div>
- ${dl.length?`<div class="diffs">${dl.join('')}</div>`:''}
- <div class="sa">${dl.length?`<button class="act" data-reset="${s.id}">↺ Restaurar</button>`:''}<button class="act" data-edit="rdo:${s.id}">✏️ Editar</button></div></div>`;
+ const e=rEff(s),dl=diffLines(s,e),obs=rdoRec(s.id).obs;
+ const acts=(dl.length?ib(`data-reset="${s.id}"`,'undo',`Restaurar valores da fresagem no apontamento ${i+1}`):'')+ib(`data-edit="rdo:${s.id}"`,'edit',`Editar apontamento ${i+1}`);
+ return segCard(e,i+1,{cls:dl.length?' changed':'',id:'rr-'+s.id,obs:obs?`<span class="obs">📝 ${esc(obs)}</span>`:'',by:byLine(s.id,'rdo'),acts,after:dl.length?`<div class="diffs">${dl.join('')}</div>`:''});
 }
 function renderRdoSummary(t){
  const D=n=>t.dOk?fmt(n):'—',uVol=t.dOk?t.U/t.d:NaN,okAll=t.uOk&&t.rdoAllOk&&t.dOk;
