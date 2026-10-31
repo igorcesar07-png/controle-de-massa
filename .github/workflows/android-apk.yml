@@ -4,7 +4,7 @@ name: App Android (APK)
 on:
   push:
     branches: [main]
-    paths-ignore: ['README.md', 'data-src/**', 'tools/**']
+    paths-ignore: ['README.md', 'data-src/**', 'tools/build_geo.py']
   workflow_dispatch:
   schedule:
     - cron: '17 9 * * 1'   # semanal: mantém a chave de assinatura guardada no cache
@@ -64,18 +64,8 @@ jobs:
 
       - name: Ícone e tela de abertura Neovia
         run: |
-          cd build/android/app/src/main/res
-          rm -rf mipmap-anydpi-v26
-          for d in mdpi:48 hdpi:72 xhdpi:96 xxhdpi:144 xxxhdpi:192; do
-            n=${d%%:*}; s=${d##*:}
-            for f in ic_launcher ic_launcher_round ic_launcher_foreground; do
-              convert ../../../../../../icon-512.png -resize ${s}x${s} mipmap-$n/$f.png
-            done
-          done
-          for f in $(find . -name 'splash.png'); do
-            WH=$(identify -format '%wx%h' "$f"); W=${WH%x*}; H=${WH#*x}; S=$(( (W<H?W:H)/3 ))
-            convert -size ${WH} xc:'#141414' \( ../../../../../../neovia-mark.png -resize ${S}x${S} \) -gravity center -composite "$f"
-          done
+          python3 -m pip install --quiet pillow
+          python3 tools/android_icons.py build/android/app/src/main/res icon-512.png neovia-mark.png
 
       - name: Compilar e assinar o APK
         run: |
