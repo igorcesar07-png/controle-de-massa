@@ -11,6 +11,7 @@
 <meta name="description" content="Controle de fresagem, RDO da aplicação e acompanhamento de CBUQ.">
 <link rel="icon" type="image/png" href="neovia-mark.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
 <style>
 :root{
   --ink:#1a1a1a;--muted:#696969;--line:#dedede;--bg:#f1f1f1;--card:#fff;--navy:#141414;--navy2:#232427;--amber:#f5bb40;
@@ -574,15 +575,33 @@ body.geo-on{padding-bottom:calc(150px + var(--safe-b))}
 .srow .sa .act.mv{min-width:40px;padding:0;font-size:15px}
 .srow .sa .mvgrp{gap:6px}
 @media (max-width:380px){.srow .sa .act{padding:0 7px;font-size:12.5px}}
+
+/* ================= Offline e sincronização ================= */
+.syncbtn{position:relative;margin-left:4px;flex:0 0 44px}
+.syncbtn .sic{font-size:22px;line-height:1;display:inline-block}
+.syncbtn.spin .sic{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sbadge{position:absolute;top:-5px;right:-5px;min-width:19px;height:19px;padding:0 5px;border-radius:10px;background:#f2b01e;color:#1a1200;font-size:11px;font-weight:800;display:grid;place-items:center;box-shadow:0 0 0 2px var(--black)}
+.snet{position:absolute;bottom:5px;right:5px;width:8px;height:8px;border-radius:50%;background:#35c26f;box-shadow:0 0 0 2px var(--black)}
+.snet.off{background:#9aa0a6}
+.snet.upd{background:var(--red)}
+.drawer-sync{border-top:1px solid var(--line);padding:12px 14px 4px}
+.drawer-sync .btn{margin:8px 0 6px;justify-content:center}
+.ds-state{font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.4}
+.ds-state .ok{color:var(--ok)}.ds-state .warn{color:#8a5200}.ds-state .off{color:#5f6368}
+.drawer-sync small{display:block;font-size:12px;color:var(--muted);line-height:1.4;padding-bottom:6px}
+.offbar{position:sticky;top:0;z-index:5;background:#3a3c40;color:#fff;font-size:12.5px;font-weight:700;text-align:center;padding:5px 10px}
 </style>
 </head>
 <body>
 
 <header class="top">
+  <div class="offbar" id="offBar" hidden>Sem internet — trabalhando offline. Os dados ficam salvos no aparelho.</div>
   <div class="bar">
     <button class="iconbtn burger" id="burger" aria-label="Abrir menu de páginas" aria-controls="drawer" aria-expanded="false"><span></span><span></span><span></span><i class="bdot" id="burgerDot"></i></button>
     <div class="brand"><img class="blogo" src="logo-neovia-white.png" alt="Neovia Engenharia" width="108" height="28"><b id="brandTitle">CONTROLE DE MASSA</b></div>
     <div class="who" id="who" hidden title="Sincronização"><span class="sync" id="syncDot"></span><span id="userName"></span></div>
+    <button class="iconbtn syncbtn" id="syncBtn" aria-label="Sincronizar" title="Sincronizar"><span class="sic">⟳</span><span class="sbadge" id="syncBadge" hidden></span><i class="snet" id="syncNet"></i></button>
     <button class="iconbtn" id="menuBtn" aria-label="Abrir menu" aria-haspopup="dialog">⋯<span class="dot"></span></button>
   </div>
   <button id="massAlert" class="alert" data-state="invalid" aria-live="polite" aria-atomic="true" >
@@ -805,6 +824,11 @@ body.geo-on{padding-bottom:calc(150px + var(--safe-b))}
     <button class="nav" data-nav="geo"><span class="ni">📐</span>Controle de geometria</button>
     <button class="nav" data-nav="viag"><span class="ni">🚚</span>Viagens de fresado</button>
   </nav>
+  <div class="drawer-sync">
+    <div class="ds-state" id="dsState">—</div>
+    <button class="btn primary" id="dsBtn">⟳ Sincronizar agora</button>
+    <small id="dsInfo"></small>
+  </div>
   <div class="drawer-foot" id="drawerUser"></div>
 </aside>
 
@@ -1391,6 +1415,7 @@ async function makeFirebaseCloud(cfg){
   setAt:(path,data)=>F.setDoc(F.doc(db,...path),data),
   mergeAt:(path,data)=>F.setDoc(F.doc(db,...path),data,{merge:true}),
   updateAt:(path,f)=>F.updateDoc(F.doc(db,...path),f),
+  flush:async()=>{await F.enableNetwork(db);await F.waitForPendingWrites(db)},
   watchApont:(id,onH,onS)=>{
    const u1=F.onSnapshot(hdr(id),{includeMetadataChanges:true},d=>onH(d.exists()?d.data():null,{pending:d.metadata.hasPendingWrites,cache:d.metadata.fromCache}),e=>onH(null,{error:e}));
    const u2=F.onSnapshot(F.collection(db,'apontamentos',id,'segmentos'),{includeMetadataChanges:true},q=>onS(q.docs.map(d=>({id:d.id,data:d.data()})),{pending:q.metadata.hasPendingWrites,cache:q.metadata.fromCache}),e=>onS(null,{error:e}));
@@ -1456,7 +1481,8 @@ function applyRemote(){
  lastRemote=toRemote(S);
  fillStatic();update();hideGate();
 }
-function setSync(pending,cache){const d=$('syncDot');d.classList.toggle('pending',!!pending);d.classList.toggle('off',!pending&&!!cache&&!navigator.onLine);$('who').title=pending?'Salvando… (os dados sobem quando houver sinal)':!navigator.onLine?'Sem sinal — alterações ficam salvas no aparelho':'Sincronizado'}
+let SYNC_HDR_PEND=false;
+function setSync(pending,cache){SYNC_HDR_PEND=!!pending;const d=$('syncDot');d.classList.toggle('pending',!!pending);d.classList.toggle('off',!pending&&!!cache&&!navigator.onLine);$('who').title=pending?'Salvando… (os dados sobem quando houver sinal)':!navigator.onLine?'Sem sinal — alterações ficam salvas no aparelho':'Sincronizado'}
 function openApont(id){
  if(unwatch)unwatch();AID=id;RH=null;RSEGS=null;lastRemote=null;
  try{localStorage.setItem('cm-last-apont',id)}catch{}
@@ -1881,6 +1907,66 @@ $('vfSave').onclick=()=>applyFix(false);$('vfCancelRec').onclick=()=>applyFix(tr
 $('vDay').addEventListener('change',e=>{VG.day=e.target.value||localDay(Date.now());if(CLOUD)viagWatch();renderViag()});
 $('sheetBg').addEventListener('click',()=>{if($('vSheet').classList.contains('open')||$('vFix').classList.contains('open'))closeTruck()});
 addEventListener('online',()=>{renderViag();renderGeo()});addEventListener('offline',()=>{renderViag();renderGeo()});
+
+/* ======================= Offline e sincronização ======================= */
+const OFF={reg:null,update:false,busy:false,last:+(localStorage.getItem('cm-last-sync')||0)||0};
+function pendingCount(){
+ if(!CLOUD)return 0;let n=SYNC_HDR_PEND?1:0;
+ n+=GEO.rdRemote.filter(r=>r._pend).length+Object.values(GEO.local).filter(r=>r._aid===AID&&!GEO.rdRemote.some(x=>x.id===r.id)&&!GEO.fail[r.id]).length;
+ n+=VG.remote.filter(e=>e._pend).length+Object.values(VG.local).filter(e=>!VG.remote.some(x=>x.id===e.id)&&!VG.fail[e.id]).length;
+ return n;
+}
+function failCount(){return CLOUD?Object.keys(GEO.fail).length+Object.keys(VG.fail).length:0}
+function syncUI(){
+ const on=navigator.onLine,pend=pendingCount(),fail=failCount();
+ $('offBar').hidden=on;
+ const b=$('syncBadge');b.hidden=!(pend||fail);b.textContent=fail?'!':String(pend);
+ const n=$('syncNet');n.className='snet'+(!on?' off':OFF.update?' upd':'');
+ const when=OFF.last?new Date(OFF.last).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'nunca';
+ let st;
+ if(!CLOUD)st=`<span class="off">Modo local</span> · os dados ficam salvos só neste aparelho`;
+ else if(!on)st=`<span class="off">Sem internet</span>${pend?` · ${pend} registro(s) aguardando envio`:' · nada pendente'}`;
+ else if(fail)st=`<span class="warn">${fail} envio(s) falharam</span> · toque em Sincronizar`;
+ else if(pend)st=`<span class="warn">${pend} registro(s) aguardando envio</span>`;
+ else st=`<span class="ok">Tudo sincronizado</span>`;
+ $('dsState').innerHTML=st+(OFF.update?'<br><span class="warn">Nova versão do app disponível</span>':'');
+ $('dsInfo').textContent=`${CLOUD?'Última sincronização: '+when+'. ':''}App disponível offline neste aparelho${OFF.reg?'':' (aguardando a primeira abertura com internet)'}.`;
+}
+async function syncNow(){
+ if(OFF.busy)return;
+ if(!navigator.onLine){syncUI();toast('Sem internet','Seus dados estão salvos no aparelho. Toque em Sincronizar quando houver sinal.','pend',5000);return}
+ OFF.busy=true;$('syncBtn').classList.add('spin');$('dsBtn').disabled=true;
+ let msg=[],cls='';
+ try{
+  if(CLOUD){
+   // reenvia o que falhou e espera o servidor confirmar tudo
+   const retryR=Object.keys(GEO.fail).map(id=>GEO.local[id]).filter(Boolean),retryV=Object.keys(VG.fail).map(id=>VG.local[id]).filter(Boolean);
+   retryR.forEach(r=>{delete GEO.fail[r.id];const {_aid,...rec}=r;CLOUD.setAt(['apontamentos',_aid,'leituras',r.id],rec).catch(e=>{GEO.fail[r.id]=errMsg(e)})});
+   retryV.forEach(e=>{delete VG.fail[e.id];CLOUD.setAt(['viagensFresado',e.id],e).catch(x=>{VG.fail[e.id]=errMsg(x)})});
+   const before=pendingCount();
+   await Promise.race([CLOUD.flush?CLOUD.flush():Promise.resolve(),new Promise((_,rej)=>setTimeout(()=>rej(new Error('tempo esgotado')),25000))]);
+   OFF.last=Date.now();try{localStorage.setItem('cm-last-sync',String(OFF.last))}catch{}
+   msg.push(before?`${before} registro(s) enviados ao servidor`:'Dados em dia com o servidor');
+   if(failCount()){msg.push(`${failCount()} envio(s) ainda com falha`);cls='fail'}
+  }else msg.push('Modo local: os dados ficam só neste aparelho (servidor não configurado)');
+  // atualização do app
+  if(OFF.reg){try{OFF.reg.active&&OFF.reg.active.postMessage('check-update');await OFF.reg.update()}catch{}}
+  await new Promise(r=>setTimeout(r,1200));
+  if(OFF.update){msg.push('nova versão do app — recarregando');toast('✓ Sincronizado',msg.join(' · '),'',2500);setTimeout(()=>location.reload(),1500);return}
+  msg.push('app na versão mais recente');
+  toast(cls?'Sincronização incompleta':'✓ Sincronizado',msg.join(' · '),cls,5000);
+ }catch(e){toast('Sincronização não concluída',`${errMsg(e)}. Os dados continuam salvos no aparelho; tente de novo.`,'fail',7000)}
+ finally{OFF.busy=false;$('syncBtn').classList.remove('spin');$('dsBtn').disabled=false;syncUI()}
+}
+$('syncBtn').onclick=syncNow;$('dsBtn').onclick=()=>{closeDrawer();syncNow()};
+addEventListener('online',()=>{syncUI();if(CLOUD&&pendingCount())setTimeout(()=>{if(navigator.onLine)syncNow()},1500)});   // ao voltar o sinal, envia sozinho
+addEventListener('offline',syncUI);
+setInterval(syncUI,2000);
+if('serviceWorker' in navigator&&location.protocol!=='file:'){
+ navigator.serviceWorker.addEventListener('message',e=>{if(e.data&&e.data.type==='app-update'){OFF.update=true;syncUI()}});
+ navigator.serviceWorker.register('sw.js').then(r=>{OFF.reg=r;syncUI()}).catch(()=>{});
+ if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+}
 
 /* ======================= Início ======================= */
 (async()=>{

@@ -1,0 +1,16 @@
+{
+  "name": "Neovia · Controle de massa",
+  "short_name": "Neovia Massa",
+  "description": "Fresagem, RDO, acompanhamento de CBUQ, geometria e viagens — funciona sem internet.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#141414",
+  "theme_color": "#141414",
+  "lang": "pt-BR",
+  "icons": [
+    {"src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}

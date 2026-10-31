@@ -26,6 +26,14 @@ Amarelo = sobra, vermelho = falta, verde = dentro da tolerância.
 
 No Acompanhamento, o quadro de caminhões mostra o total usinado, o nº e a placa do último aplicado e os restantes a aplicar (total − nº do último, +1 se o último teve sobra).
 
+## Funcionamento offline e sincronização
+
+- `sw.js` (service worker) guarda no aparelho, na primeira abertura com internet, o app, a base de estacas (`geo.json`), logos e a biblioteca do Firebase. Depois o app abre e funciona sem internet.
+- Com internet, a versão nova do app é baixada em segundo plano; o botão **⟳ Sincronizar** (topo e menu lateral) aplica a atualização.
+- Com o servidor (Firebase) configurado, o que é lançado offline fica numa fila no aparelho e é enviado automaticamente quando o sinal volta; o botão Sincronizar força o envio, reenvia o que falhou e mostra quantos registros estão pendentes.
+- Sem servidor configurado, o app funciona no modo local: os dados ficam só no aparelho.
+- No iPhone, use Safari → Compartilhar → Adicionar à Tela de Início para o app ficar guardado de forma permanente.
+
 ## Ordem dos panos
 
 Na Fresagem, cada pano tem ▲ ▼ para mudar de posição, e o formulário de adicionar/editar tem “Posição na sequência”. Também é possível ordenar todos por estaca crescente ou decrescente. A ordem vale para o RDO, o Acompanhamento e os relatórios. Se um pano “sequencial” ficar depois de outro pano, ele deixa de ser sequencial e mantém a estaca inicial (nenhuma estaca muda sozinha).
