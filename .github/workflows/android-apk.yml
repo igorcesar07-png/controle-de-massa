@@ -1,0 +1,103 @@
+# Gera o APK Android do app (Capacitor) a cada atualização e publica em
+# https://github.com/igorcesar07-png/controle-de-massa/releases/download/apk-latest/NeoviaMassa.apk
+name: App Android (APK)
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['README.md', 'data-src/**', 'tools/**']
+  workflow_dispatch:
+  schedule:
+    - cron: '17 9 * * 1'   # semanal: mantém a chave de assinatura guardada no cache
+permissions:
+  contents: write
+concurrency:
+  group: android-apk
+  cancel-in-progress: true
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+
+      # A mesma chave precisa assinar todas as versões, senão o Android não instala a atualização por cima.
+      - name: Chave de assinatura (guardada)
+        uses: actions/cache@v4
+        with:
+          path: ~/.neovia-keystore
+          key: neovia-android-keystore-v1
+      - name: Preparar chave de assinatura
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+        run: |
+          mkdir -p ~/.neovia-keystore
+          if [ -n "$KS_B64" ]; then
+            echo "$KS_B64" | base64 -d > ~/.neovia-keystore/release.jks; printf %s "$KS_PASS" > ~/.neovia-keystore/pass
+          elif [ ! -f ~/.neovia-keystore/release.jks ]; then
+            P=$(openssl rand -hex 16); printf %s "$P" > ~/.neovia-keystore/pass
+            keytool -genkeypair -keystore ~/.neovia-keystore/release.jks -alias neovia -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass "$P" -keypass "$P" -dname "CN=Neovia Controle de Massa, O=Neovia Engenharia, C=BR"
+            echo "::notice::Nova chave de assinatura criada."
+          fi
+
+      - name: Montar projeto Android (Capacitor)
+        run: |
+          mkdir -p build/www && cd build
+          cp ../index.html ../geo.json ../manifest.webmanifest ../*.png www/
+          npm init -y >/dev/null
+          npm i --no-audit --no-fund @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
+          cat > capacitor.config.json <<'JSON'
+          {"appId":"br.com.neovia.controlemassa","appName":"Neovia Massa","webDir":"www","android":{"backgroundColor":"#141414"}}
+          JSON
+          npx cap add android
+          npx cap sync android
+          M=android/app/src/main/AndroidManifest.xml
+          sed -i 's#<uses-permission android:name="android.permission.INTERNET" />#<uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-feature android:name="android.hardware.location.gps" android:required="false" />#' $M
+          grep -q ACCESS_FINE_LOCATION $M
+          G=android/app/build.gradle
+          sed -i "s/versionCode 1$/versionCode ${{ github.run_number }}/; s/versionName \"1.0\"/versionName \"1.${{ github.run_number }}\"/" $G
+          grep -E "versionCode|versionName" $G
+
+      - name: Ícone e tela de abertura Neovia
+        run: |
+          cd build/android/app/src/main/res
+          rm -rf mipmap-anydpi-v26
+          for d in mdpi:48 hdpi:72 xhdpi:96 xxhdpi:144 xxxhdpi:192; do
+            n=${d%%:*}; s=${d##*:}
+            for f in ic_launcher ic_launcher_round ic_launcher_foreground; do
+              convert ../../../../../../icon-512.png -resize ${s}x${s} mipmap-$n/$f.png
+            done
+          done
+          for f in $(find . -name 'splash.png'); do
+            WH=$(identify -format '%wx%h' "$f"); W=${WH%x*}; H=${WH#*x}; S=$(( (W<H?W:H)/3 ))
+            convert -size ${WH} xc:'#141414' \( ../../../../../../neovia-mark.png -resize ${S}x${S} \) -gravity center -composite "$f"
+          done
+
+      - name: Compilar e assinar o APK
+        run: |
+          cd build/android && chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon -q
+          BT=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -1)
+          U=app/build/outputs/apk/release/app-release-unsigned.apk
+          $BT/zipalign -p -f 4 $U aligned.apk
+          P=$(cat ~/.neovia-keystore/pass)
+          $BT/apksigner sign --ks ~/.neovia-keystore/release.jks --ks-key-alias neovia --ks-pass pass:$P --key-pass pass:$P --out ../../NeoviaMassa.apk aligned.apk
+          $BT/apksigner verify ../../NeoviaMassa.apk
+          ls -la ../../NeoviaMassa.apk
+
+      - uses: actions/upload-artifact@v4
+        with: { name: NeoviaMassa-apk, path: NeoviaMassa.apk }
+
+      - name: Publicar link de download
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete apk-latest -y --cleanup-tag 2>/dev/null || true
+          gh release create apk-latest NeoviaMassa.apk \
+            --title "App Android (APK) — versão 1.${{ github.run_number }}" \
+            --notes "Instalar no Android: baixar NeoviaMassa.apk, abrir o arquivo e permitir a instalação. Versão gerada automaticamente a partir do commit ${GITHUB_SHA::7}." \
+            --latest
