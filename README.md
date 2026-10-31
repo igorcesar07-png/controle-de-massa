@@ -26,6 +26,13 @@ Amarelo = sobra, vermelho = falta, verde = dentro da tolerância.
 
 No Acompanhamento, o quadro de caminhões mostra o total usinado, o nº e a placa do último aplicado e os restantes a aplicar (total − nº do último, +1 se o último teve sobra).
 
+## App Android (APK)
+
+- Download: https://github.com/igorcesar07-png/controle-de-massa/releases/download/apk-latest/NeoviaMassa.apk (também no menu lateral, quando aberto no Android).
+- Gerado automaticamente pelo workflow `.github/workflows/android-apk.yml` (Capacitor 6) a cada atualização do app; o app fica dentro do APK e funciona offline.
+- Todas as versões são assinadas com a mesma chave (guardada no cache do GitHub Actions e renovada por uma execução semanal), para instalar a atualização por cima sem perder os dados. Para guardar a chave de forma definitiva, cadastre os segredos `ANDROID_KEYSTORE_B64` e `ANDROID_KEYSTORE_PASS` no repositório.
+- Ícones e tela de abertura: `tools/android_icons.py`.
+
 ## Funcionamento offline e sincronização
 
 - `sw.js` (service worker) guarda no aparelho, na primeira abertura com internet, o app, a base de estacas (`geo.json`), logos e a biblioteca do Firebase. Depois o app abre e funciona sem internet.
