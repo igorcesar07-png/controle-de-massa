@@ -625,6 +625,11 @@ body.geo-on{padding-bottom:calc(150px + var(--safe-b))}
 .switch.mini input:checked::after{transform:translateX(16px)}
 .srow.v2 .diffs{margin:8px 0 2px 28px}
 @media (max-width:370px){.r2st{font-size:17px}.r2-dims,.r2-foot,.srow.v2 .diffs{margin-left:0}.ib{width:34px}}
+
+.clearall{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:44px;margin-top:10px;border:0;background:transparent;color:var(--red-dark);font-weight:700;font-size:14px;border-radius:10px}
+.clearall:active{background:var(--red-bg)}
+.clearall[hidden]{display:none}
+.toast .undo{display:inline-block;margin-top:8px;padding:8px 14px;border:1px solid #fff;border-radius:10px;background:transparent;color:#fff;font-weight:800;font-size:14px}
 </style>
 </head>
 <body>
@@ -680,6 +685,7 @@ body.geo-on{padding-bottom:calc(150px + var(--safe-b))}
       <div class="stotal"><div>Extensão<b id="fSumLen"></b></div><div>Volume<b id="fSumVol"></b></div><div>Massa<b id="fSumMass"></b></div></div>
       <div class="bigtotal"><span>Total de massa “fresada”</span><b id="fSumBig"></b></div>
       <button class="addinline" id="addInline">+ Adicionar segmento</button>
+      <button class="clearall" id="clearAll">Limpar todos os panos</button>
     </section>
     <button class="btn printbtn" data-print="fres">🖨️ Imprimir relatório de Fresagem</button>
   </section>
@@ -1076,6 +1082,27 @@ function moveSeg(id,dir){
  const el=$('fr-'+id);if(el)el.scrollIntoView({block:'nearest',behavior:'smooth'});
  setTimeout(()=>{LAST_MOVED=null},1000);
 }
+// Limpar todos os panos da Fresagem (com confirmação e desfazer)
+let UNDO_CLEAR=null;
+function clearAllSegs(){
+ const n=S.fres.length;if(!n)return;
+ if(!confirm(`Excluir TODOS os ${n} panos da Fresagem?\n\nEles também saem do RDO da aplicação e da lista A APLICAR do Acompanhamento. Os segmentos extras e os dados da obra (densidade, massa usinada, caminhões) continuam.`))return;
+ const ids=new Set(S.fres.map(x=>x.id));
+ UNDO_CLEAR={fres:JSON.parse(JSON.stringify(S.fres)),rdo:{},applied:{},ord:{},meta:{}};
+ ids.forEach(id=>{if(S.rdo[id])UNDO_CLEAR.rdo[id]=JSON.parse(JSON.stringify(S.rdo[id]));if(S.applied[id])UNDO_CLEAR.applied[id]=true;if(S.ord&&S.ord[id]!=null)UNDO_CLEAR.ord[id]=S.ord[id];delete S.rdo[id];delete S.applied[id];if(S.ord)delete S.ord[id]});
+ S.fres.length=0;
+ if(typeof GEO!=='undefined'&&GEO.panoId&&ids.has(GEO.panoId)){GEO.panoId=null;GEO.panoManual=false}
+ changed();$('status').textContent=`${n} panos excluídos.`;
+ const t=toast(`${n} panos excluídos`,'Toque em Desfazer para recuperar.','warn',10000);
+ const b=document.createElement('button');b.className='undo';b.textContent='↺ Desfazer';b.onclick=ev=>{ev.stopPropagation();undoClearAll();t.hidden=true};t.appendChild(document.createElement('br'));t.appendChild(b);
+ setTimeout(()=>{UNDO_CLEAR=null},10000);
+}
+function undoClearAll(){
+ if(!UNDO_CLEAR)return;const u=UNDO_CLEAR;UNDO_CLEAR=null;
+ u.fres.forEach(x=>S.fres.push(x));Object.assign(S.rdo,u.rdo);Object.assign(S.applied,u.applied);if(S.ord)Object.assign(S.ord,u.ord);
+ changed();$('status').textContent=`${u.fres.length} panos recuperados.`;
+}
+$('clearAll').onclick=clearAllSegs;
 function sortSegs(dir){
  if(S.fres.length<2)return;
  if(!confirm(`Ordenar todos os panos por estaca inicial em ordem ${dir==='asc'?'CRESCENTE':'DECRESCENTE'}?`))return;
@@ -1117,7 +1144,7 @@ function sRow(s,n,opts={}){
 function renderFres(t){
  const D=n=>t.dOk?fmt(n):'—';
  $('fresRows').innerHTML=S.fres.length?S.fres.map((s,i)=>sRow(s,i+1,{actions:true,kind:'fres'})).join(''):'<div class="empty">Nenhum segmento. Toque em “+ Adicionar segmento” para começar.</div>';
- $('fCount').textContent=S.fres.length;$('fCount2').textContent=`(${S.fres.length})`;
+ $('fCount').textContent=S.fres.length;$('clearAll').hidden=S.fres.length<2;$('fCount2').textContent=`(${S.fres.length})`;
  $('fLen').innerHTML=fmt(t.fLen)+' <span>m</span>';$('fVol').innerHTML=fmt(t.fVol)+' <span>m³</span>';$('fMass').innerHTML=(t.fresAllOk?D(t.fMass):'—')+' <span>t</span>';
  $('fSumLen').textContent=fmt(t.fLen,0)+' m';$('fSumVol').textContent=fmt(t.fVol)+' m³';$('fSumMass').textContent=(t.fresAllOk?D(t.fMass):'—')+' t';$('fSumBig').textContent=(t.fresAllOk?D(t.fMass):'—')+' t';
 }
