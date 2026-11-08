@@ -630,6 +630,29 @@ body.geo-on{padding-bottom:calc(150px + var(--safe-b))}
 .clearall:active{background:var(--red-bg)}
 .clearall[hidden]{display:none}
 .toast .undo{display:inline-block;margin-top:8px;padding:8px 14px;border:1px solid #fff;border-radius:10px;background:transparent;color:#fff;font-weight:800;font-size:14px}
+
+/* ================= Solução de projeto e RMP ================= */
+.dim.proj{background:transparent;border:1px dashed #b5b8bc}
+.dim.proj b{color:#55595e;font-weight:700}
+.dim.rmp{background:#fdeeee}
+.dim.rmp b{color:var(--red-dark)}
+.chip.prj{background:#e8f4ec;color:#1f7a4a}
+.chip.rmp{background:#fdeeee;color:#a50d12}
+.chip.rmpx{background:#fff1d1;color:#7a4b00}
+.r2meta .grp{display:block;font-size:11.5px;color:#55595e;margin-top:1px}
+.sph{margin:16px 0 8px;font-size:14px;color:var(--black);text-transform:uppercase;letter-spacing:.5px}
+.sppart{border:1px solid #d6d9dc;border-radius:12px;padding:10px;margin-bottom:8px;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end}
+.sppart .ph{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-weight:800;font-size:14px}
+.sppart .field label{font-size:11.5px;margin-bottom:4px}
+.sppart .field input{min-height:44px;font-size:16px;padding:8px}
+.sppart .unit input{padding-right:26px}
+.sppart .unit::after{right:8px;font-size:12px}
+.spsum{margin-top:10px;border-radius:12px;padding:10px 12px;font-size:14px;line-height:1.5;background:#f1f2f3}
+.spsum.ok{background:var(--ok-bg);color:#14502f}
+.spsum.ext{background:#fff1d1;color:#5c3700}
+.spsum.less{background:#fdeeee;color:#6e1418}
+.spsum .segctl{margin-top:8px;background:#fff}
+@media (max-width:370px){.sppart{grid-template-columns:1fr 1fr}.sppart .ib{grid-column:1/-1;justify-self:end}}
 </style>
 </head>
 <body>
@@ -928,6 +951,8 @@ body.geo-on{padding-bottom:calc(150px + var(--safe-b))}
       <div class="field"><label for="edWidth">Largura</label><div class="unit" data-unit="m"><input id="edWidth" type="number" inputmode="decimal" min="0.01" step="0.01" required></div></div>
       <div class="field"><label for="edThick">Espessura</label><div class="unit" data-unit="m"><input id="edThick" type="number" inputmode="decimal" min="0.001" step="0.001" required></div><small id="edThickH"></small></div>
       <div class="field full" id="edObsWrap" hidden><label for="edObs">Observação</label><textarea id="edObs" placeholder="Opcional" maxlength="1000"></textarea></div>
+      <div class="field" id="edProjWrap1"><label for="edEspProj">Espessura de projeto</label><div class="unit" data-unit="m"><input id="edEspProj" type="number" inputmode="decimal" min="0.001" step="0.001"></div><small id="edEspProjH">Solução de projeto</small></div>
+      <div class="field" id="edProjWrap2"><label for="edSol">Solução (código)</label><input id="edSol" maxlength="20" autocomplete="off" autocapitalize="characters" placeholder="Ex.: FF"></div>
       <div class="result"><div>Volume<b id="edVol"></b></div><div>Massa<b id="edMass"></b></div></div>
       <div class="diffs" id="edDiff" hidden></div>
     </div>
@@ -967,6 +992,26 @@ body.geo-on{padding-bottom:calc(150px + var(--safe-b))}
     <button class="link" id="pkBack" hidden>← Voltar ao apontamento aberto</button>
     <button class="link" id="pkLogout">Sair da conta</button>
   </div>
+</div>
+<div class="sheet editor" id="spSheet" role="dialog" aria-modal="true" aria-labelledby="spTitle">
+  <div class="grab" style="margin-bottom:4px"></div>
+  <div class="eh"><h3 id="spTitle">Dividir pano / RMP</h3><button class="sq" id="spX" aria-label="Fechar">✕</button></div>
+  <div class="eb">
+    <div class="autobox" id="spInfo"></div>
+    <h4 class="sph">Pano original de projeto</h4>
+    <div class="fields">
+      <div class="field"><label for="spLen">Extensão de projeto</label><div class="unit" data-unit="m"><input id="spLen" type="number" inputmode="decimal" min="0.01" step="0.01"></div></div>
+      <div class="field"><label for="spEsp">Espessura de projeto</label><div class="unit" data-unit="m"><input id="spEsp" type="number" inputmode="decimal" min="0.001" step="0.001"></div><small id="spEspH"></small></div>
+      <div class="field full"><label for="spSol">Solução de projeto (código)</label><div class="inrow"><input id="spSol" maxlength="20" autocomplete="off" autocapitalize="characters" placeholder="Ex.: FF"><button class="act" id="spUni">Buscar no unifilar</button></div><small id="spUniH">Opcional. O unifilar dá o código; a espessura vem da legenda do Controle de geometria.</small></div>
+    </div>
+    <h4 class="sph">Segmentos executados</h4>
+    <div id="spParts"></div>
+    <button class="addinline" id="spAdd" style="margin-top:8px">+ Adicionar segmento</button>
+    <div id="spSum"></div>
+    <p class="err" id="spErr"></p>
+    <button class="link" id="spRestore">Voltar ao pano de projeto (um segmento)</button>
+  </div>
+  <div class="ef"><button class="btn" id="spCancel">Cancelar</button><button class="btn primary" id="spSave">Salvar</button></div>
 </div>
 <input id="import" type="file" accept=".json,application/json" hidden>
 
@@ -1114,11 +1159,36 @@ document.addEventListener('click',e=>{
  const mv=e.target.closest('[data-move]');if(mv){const [id,d]=mv.dataset.move.split(':');moveSeg(id,+d);return}
  const so=e.target.closest('[data-sort]');if(so)sortSegs(so.dataset.sort);
 });
+/* ======================= Solução de projeto e RMP ======================= */
+const ESP_TOL=0.0005,EXT_TOL=0.005;let CLS={};
+function cleanProj(x){ // campos opcionais de projeto (validação para importação e nuvem)
+ const out={};if(!x||typeof x!=='object')return out;
+ if(Number.isFinite(x.espProjeto)&&x.espProjeto>0)out.espProjeto=x.espProjeto;
+ if(typeof x.solucao==='string'&&x.solucao.trim())out.solucao=x.solucao.trim().slice(0,20);
+ const o=x.origem;if(o&&typeof o==='object'&&typeof o.id==='string'&&o.id&&Number.isFinite(o.comprimento)&&o.comprimento>0)
+  out.origem={id:o.id,comprimento:o.comprimento,espessura:Number.isFinite(o.espessura)&&o.espessura>0?o.espessura:null,solucao:typeof o.solucao==='string'?o.solucao.slice(0,20):'',inicio:typeof o.inicio==='string'?o.inicio:'',acrescimoEm:o.acrescimoEm==='inicio'?'inicio':'fim',parte:Number.isInteger(o.parte)&&o.parte>0?o.parte:1};
+ return out;
+}
+function projEsp(x){return Number.isFinite(x.espProjeto)&&x.espProjeto>0?x.espProjeto:(x.origem&&Number.isFinite(x.origem.espessura)&&x.origem.espessura>0?x.origem.espessura:null)}
+function groupOf(x){return x.origem?S.fres.filter(y=>y.origem&&y.origem.id===x.origem.id).sort((a,b)=>(a.origem.parte||0)-(b.origem.parte||0)||S.fres.indexOf(a)-S.fres.indexOf(b)):[x]}
+// Regras: RMP de espessura = espessura diferente da de projeto. RMP de extensão = só o que passar da extensão
+// original do pano (soma dos segmentos do mesmo pano original), atribuído ao 1º ou ao último segmento.
+function classifyAll(){
+ const out={},seen={};
+ S.fres.forEach(x=>{const p=projEsp(x);out[x.id]={proj:p,rmpEsp:p!=null&&pos(x.thickness)&&Math.abs(x.thickness-p)>ESP_TOL,extM:0,grupo:null}});
+ S.fres.forEach(x=>{if(!x.origem||seen[x.origem.id])return;seen[x.origem.id]=1;const g=groupOf(x),o=x.origem;
+  const total=g.reduce((a,y)=>a+(pos(y.length)?y.length:0),0),exc=Math.round((total-o.comprimento)*100)/100;
+  const idx=exc>EXT_TOL?(o.acrescimoEm==='inicio'?0:g.length-1):-1;
+  g.forEach((y,i)=>{const c=out[y.id];c.grupo={parte:i+1,partes:g.length,total,orig:o.comprimento,exc,inicio:o.inicio};if(i===idx)c.extM=exc})});
+ Object.values(out).forEach(c=>{c.cls=c.rmpEsp&&c.extM?'RMP de espessura e de extensão':c.rmpEsp?'RMP de espessura':c.extM?'RMP de extensão':c.proj!=null?'Projeto':''});
+ return out;
+}
 const ICO={
  up:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>',
  down:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>',
  edit:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>',
  del:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v5M14 11v5"/></svg>',
+ split:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="6" r="2.6"/><circle cx="6" cy="18" r="2.6"/><path d="M20 5L8.2 15.6M14.6 13.8L20 19M8.2 8.4L11.8 11.6"/></svg>',
  undo:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h11a5 5 0 0 1 0 10H9"/><path d="M8 5L4 9l4 4"/></svg>'};
 // Linha de pano: 1º estaqueamento + comprimento, 2º largura e espessura, 3º demais informações
 function segCard(e,n,o){
@@ -1126,8 +1196,8 @@ function segCard(e,n,o){
  const meta=[`${e.direction==='Decrescente'?'↓':'↑'} ${e.direction}`,`faixa ${e.lane}`,ok&&pos(S.density)?`${fmt(m)} t`:'— t',ok?`${fmt(v)} m³`:'— m³'].join(' · ');
  return `<div class="srow v2${o.cls||''}" id="${o.id||''}">
   <div class="r2-top"><span class="r2n">${n}</span><span class="r2st">${esc(e.start)} <span class="ar">→</span> ${esc(e.end||'?')}</span><span class="r2len">${pos(e.length)?fmtN(e.length)+' m':'— m'}</span></div>
-  <div class="r2-dims"><span class="dim"><small>Larg.</small><b>${pos(e.width)?fmt(e.width,2)+' m':'—'}</b></span><span class="dim"><small>Esp.</small><b>${pos(e.thickness)?fmt(e.thickness*100,1)+' cm':'—'}</b></span></div>
-  <div class="r2-foot"><div class="r2meta">${meta}${o.chips&&o.chips.length?` <span class="chips">${o.chips.join('')}</span>`:''}${o.obs||''}${o.by||''}</div>${o.acts?`<div class="r2acts">${o.acts}</div>`:''}</div>
+  <div class="r2-dims"><span class="dim"><small>Larg.</small><b>${pos(e.width)?fmt(e.width,2)+' m':'—'}</b></span><span class="dim${o.rmpEsp?' rmp':''}"><small>Esp.</small><b>${pos(e.thickness)?fmt(e.thickness*100,1)+' cm':'—'}</b></span>${o.proj!=null?`<span class="dim proj" title="Espessura da solução de projeto"><small>Proj.${o.sol?' '+esc(o.sol):''}</small><b>${fmt(o.proj*100,1)} cm</b></span>`:''}</div>
+  <div class="r2-foot"><div class="r2meta">${meta}${o.chips&&o.chips.length?` <span class="chips">${o.chips.join('')}</span>`:''}${o.grp||''}${o.obs||''}${o.by||''}</div>${o.acts?`<div class="r2acts">${o.acts}</div>`:''}</div>
   ${o.after||''}</div>`;
 }
 const ib=(attr,ico,label,cls='',dis=false)=>`<button class="ib${cls?' '+cls:''}" ${attr} aria-label="${label}" title="${label}" ${dis?'disabled':''}>${ICO[ico]}</button>`;
@@ -1136,8 +1206,12 @@ function sRow(s,n,opts={}){
  let acts='';
  if(opts.toggle)acts+=`<label class="switch green mini"><input type="checkbox" role="switch" data-apply="${s.id}" ${S.applied[s.id]?'checked':''}>Aplicado</label>`;
  if(opts.kind==='fres')acts+=ib(`data-move="${s.id}:-1"`,'up',`Subir pano ${n}`,'',n===1)+ib(`data-move="${s.id}:1"`,'down',`Descer pano ${n}`,'',n===S.fres.length)+'<span class="ibsep"></span>';
+ if(opts.kind==='fres')acts+=ib(`data-split="${s.id}"`,'split',`Dividir pano ${n} / RMP`);
  if(opts.actions)acts+=ib(`data-edit="${opts.kind}:${s.id}"`,'edit',`Editar pano ${n}`)+ib(`data-del="${opts.kind}:${s.id}"`,'del',`Excluir pano ${n}`,'danger');
- return segCard(s,n,{cls:opts.kind==='fres'&&s.id===LAST_MOVED?' moved':'',id:opts.kind==='fres'?'fr-'+s.id:'',chips,by:byLine(s.id,opts.toggle?'applied':'fres'),acts});
+ const c=CLS[s.id];let grp='';
+ if(c){if(c.cls==='Projeto')chips.unshift('<span class="chip prj">Projeto</span>');if(c.rmpEsp)chips.unshift('<span class="chip rmp">RMP de espessura</span>');if(c.extM)chips.unshift(`<span class="chip rmpx">RMP de extensão +${fmtN(c.extM)} m</span>`);
+  if(c.grupo){const g=c.grupo,d=Math.round((g.total-g.orig)*100)/100;grp=`<span class="grp">Pano original ${esc(g.inicio||'')} · projeto ${fmtN(g.orig)} m · segmento ${g.parte}/${g.partes} · soma ${fmtN(g.total)} m${d>EXT_TOL?` (+${fmtN(d)} m)`:d<-EXT_TOL?` (${fmtN(d)} m, menor que o projeto)`:' (= projeto)'}</span>`}}
+ return segCard(s,n,{cls:opts.kind==='fres'&&s.id===LAST_MOVED?' moved':'',id:opts.kind==='fres'?'fr-'+s.id:'',chips,grp,by:byLine(s.id,opts.toggle?'applied':'fres'),acts,proj:c?c.proj:null,sol:s.solucao||(s.origem&&s.origem.solucao)||'',rmpEsp:c&&c.rmpEsp});
 }
 
 /* ======================= Render: Fresagem ======================= */
@@ -1258,17 +1332,19 @@ function whoName(p){return p&&p.name?p.name:''}
 function segTable(rows,opts={}){ // rows: [{n,e,obs,tipo}]
  const d=S.density;let L=0,A=0,V=0,M=0;
  const body=rows.map(r=>{const e=r.e,ok=segValid(e,e.end),a=e.length*e.width,v=vol(e.length,e.width,e.thickness),m=v*d;L+=e.length;A+=a;V+=v;M+=m;
-  return `<tr><td>${r.n}</td>${opts.tipo?`<td>${r.tipo}</td>`:''}<td>${esc(e.start)}</td><td>${esc(e.end||'—')}</td><td>${e.direction}</td><td class="n">${e.lane}</td><td class="n">${fmtN(e.length)}</td><td class="n">${fmt(e.width)}</td><td class="n">${fmt(e.thickness*100,1)}</td><td class="n">${ok?fmt(a):'—'}</td><td class="n">${ok?fmt(v):'—'}</td><td class="n">${ok?fmt(m):'—'}</td>${opts.obs?`<td>${esc(r.obs||'')}</td>`:''}${opts.by?`<td>${esc(r.by||'')}</td>`:''}</tr>`}).join('')||`<tr><td colspan="${11+(opts.tipo?1:0)+(opts.obs?1:0)+(opts.by?1:0)}">Sem segmentos.</td></tr>`;
+  return `<tr><td>${r.n}</td>${opts.tipo?`<td>${r.tipo}</td>`:''}<td>${esc(e.start)}</td><td>${esc(e.end||'—')}</td><td>${e.direction}</td><td class="n">${e.lane}</td><td class="n">${fmtN(e.length)}</td><td class="n">${fmt(e.width)}</td><td class="n">${fmt(e.thickness*100,1)}</td>${opts.proj?`<td class="n">${r.proj!=null?fmt(r.proj*100,1):'—'}</td><td>${esc(r.cls||'')}${r.extM?` (+${fmtN(r.extM)} m)`:''}</td>`:''}<td class="n">${ok?fmt(a):'—'}</td><td class="n">${ok?fmt(v):'—'}</td><td class="n">${ok?fmt(m):'—'}</td>${opts.obs?`<td>${esc(r.obs||'')}</td>`:''}${opts.by?`<td>${esc(r.by||'')}</td>`:''}</tr>`}).join('')||`<tr><td colspan="${11+(opts.tipo?1:0)+(opts.obs?1:0)+(opts.by?1:0)+(opts.proj?2:0)}">Sem segmentos.</td></tr>`;
  const pre=5+(opts.tipo?1:0);
- return {html:`<table class="ptable"><thead><tr><th>#</th>${opts.tipo?'<th>Tipo</th>':''}<th>Estaca inicial</th><th>Estaca final</th><th>Sentido</th><th class="n">Faixa</th><th class="n">Compr. (m)</th><th class="n">Larg. (m)</th><th class="n">Esp. (cm)</th><th class="n">Área (m²)</th><th class="n">Volume (m³)</th><th class="n">Massa (t)</th>${opts.obs?'<th>Obs.</th>':''}${opts.by?'<th>Lançado por</th>':''}</tr></thead><tbody>${body}</tbody><tfoot><tr><td colspan="${pre}">Total</td><td class="n">${fmtN(L)}</td><td></td><td></td><td class="n">${fmt(A)}</td><td class="n">${fmt(V)}</td><td class="n">${fmt(M)}</td>${opts.obs?'<td></td>':''}${opts.by?'<td></td>':''}</tr></tfoot></table>`,L,A,V,M};
+ return {html:`<table class="ptable"><thead><tr><th>#</th>${opts.tipo?'<th>Tipo</th>':''}<th>Estaca inicial</th><th>Estaca final</th><th>Sentido</th><th class="n">Faixa</th><th class="n">Compr. (m)</th><th class="n">Larg. (m)</th><th class="n">Esp. (cm)</th>${opts.proj?'<th class="n">Esp. proj. (cm)</th><th>Classificação</th>':''}<th class="n">Área (m²)</th><th class="n">Volume (m³)</th><th class="n">Massa (t)</th>${opts.obs?'<th>Obs.</th>':''}${opts.by?'<th>Lançado por</th>':''}</tr></thead><tbody>${body}</tbody><tfoot><tr><td colspan="${pre}">Total</td><td class="n">${fmtN(L)}</td><td></td><td></td>${opts.proj?'<td></td><td></td>':''}<td class="n">${fmt(A)}</td><td class="n">${fmt(V)}</td><td class="n">${fmt(M)}</td>${opts.obs?'<td></td>':''}${opts.by?'<td></td>':''}</tr></tfoot></table>`,L,A,V,M};
 }
 function buildReport(kind){
  const t=calc(),d=S.density;
  if(kind==='fres'){
-  const hasMeta=!!S.meta;const T=segTable(S.fres.map((s,i)=>({n:i+1,e:s,by:hasMeta?whoName(S.meta[s.id]&&(S.meta[s.id].fresBy||S.meta[s.id].createdBy)):''})),{by:hasMeta});
+  const hasMeta=!!S.meta;CLS=classifyAll();const T=segTable(S.fres.map((s,i)=>({n:i+1,e:s,proj:CLS[s.id]?CLS[s.id].proj:null,cls:CLS[s.id]?CLS[s.id].cls:'',extM:CLS[s.id]?CLS[s.id].extM:0,by:hasMeta?whoName(S.meta[s.id]&&(S.meta[s.id].fresBy||S.meta[s.id].createdBy)):''})),{by:hasMeta,proj:true});
+  const nRE=Object.values(CLS).filter(c=>c.rmpEsp).length,xRE=Object.values(CLS).reduce((a,c)=>a+(c.extM||0),0);
   return `<div class="rep">${repHead('Relatório de Fresagem','Controle de fresagem · massa equivalente de CBUQ')}
   <div class="rep-kpis"><div class="hl">Massa usinada do dia<b>${fmt(S.usinado||0)} t</b></div><div>Densidade<b>${fmtN(d)} t/m³</b></div><div>Segmentos<b>${S.fres.length}</b></div><div>Extensão fresada<b>${fmtN(T.L)} m</b></div></div>
   <h2>Segmentos fresados</h2>${T.html}
+  <div class="rep-kpis"><div>RMP de espessura<b>${nRE} segmento(s)</b></div><div>RMP de extensão<b>${xRE?'+'+fmtN(Math.round(xRE*100)/100)+' m':'nenhum'}</b></div></div>
   <h2>Totais</h2><div class="rep-kpis"><div>Área fresada<b>${fmt(T.A)} m²</b></div><div>Volume fresado<b>${fmt(T.V)} m³</b></div><div class="hl">Massa fresada<b>${fmt(T.M)} t</b></div><div>Massa = volume × densidade<b style="font-size:10px">${fmt(T.V)} × ${fmtN(d)}</b></div></div>
   ${repFoot()}</div>`;
  }
@@ -1300,7 +1376,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-print]');i
 
 /* ======================= Atualização geral ======================= */
 function update(){
- const t=calc();
+ const t=calc();CLS=classifyAll();
  $('brandTitle').textContent=S.job?S.job:'CONTROLE DE MASSA';
  renderFres(t);
  renderRdoSummary(t);
@@ -1322,6 +1398,7 @@ function openEditor(kind,id){
  $('edTitle').textContent=kind==='rdo'?`Editar apontamento ${n} (RDO)`:(cur?'Editar ':'Novo ')+(kind==='extra'?`segmento extra E${n}`:`segmento ${n}`);
  $('edPosWrap').hidden=kind!=='fres';if(kind==='fres'){const max=cur?list.length:list.length+1;$('edPos').innerHTML=Array.from({length:max},(_,k)=>{const q=k+1,others=list.filter(x=>x!==cur),after=others[k-1];return `<option value="${q}">${q}º${q===1?' — início':after?' — depois de '+after.start:''}${q===max?' (final)':''}</option>`}).join('');$('edPos').value=String(ED.pos);edPosHint()}
  $('edSeqWrap').hidden=kind!=='fres'||!prev;$('edSeq').disabled=!prev;$('edSeq').checked=!!draft.sequential&&!!prev;
+ $('edProjWrap1').hidden=$('edProjWrap2').hidden=kind!=='fres';$('edEspProj').value=kind==='fres'&&Number.isFinite(draft.espProjeto)?draft.espProjeto:'';$('edSol').value=kind==='fres'?(draft.solucao||''):'';$('edEspProjH').textContent=kind==='fres'&&!cur?'Se ficar vazio, usa a espessura acima como projeto.':(draft.origem?'Pano dividido: o projeto é definido em “Dividir / RMP”.':'Solução de projeto');
  $('edObsWrap').hidden=kind!=='rdo';$('edObs').value=draft.obs||'';
  $('edRef').hidden=kind!=='rdo';if(kind==='rdo')$('edRef').innerHTML=`Fresagem: <b>${esc(cur.start)} → ${esc(cur.end)}</b> · ${esc(segDesc(cur))}`;
  $('edStart').value=draft.start;$('edLength').value=Number.isFinite(draft.length)?draft.length:'';$('edLane').value=draft.lane;$('edWidth').value=draft.width;$('edThick').value=draft.thickness;
@@ -1334,6 +1411,7 @@ function edSync(){
  if(!ED)return;const d=ED.draft,num=id=>$(id).value===''?NaN:Number($(id).value);
  d.sequential=ED.kind==='fres'&&!!ED.prev&&$('edSeq').checked;
  d.length=num('edLength');d.lane=num('edLane');d.width=num('edWidth');d.thickness=num('edThick');d.obs=$('edObs').value;
+ if(ED.kind==='fres'){d.espProjeto=num('edEspProj');d.solucao=$('edSol').value.trim().toUpperCase()}
  d.direction=document.querySelector('input[name="edDir"]:checked')?.value||'Crescente';
  if(d.sequential){d.start=ED.prev.end;$('edStart').value=d.start}else d.start=$('edStart').value.trim();
  $('edStart').readOnly=d.sequential;
@@ -1353,8 +1431,9 @@ function saveEditor(){
  if(!errs.length&&!d.end)errs.push('estaca final ficaria negativa — confira o sentido');
  if(errs.length){$('edErr').textContent='Confira: '+errs.join(', ')+'.';return}
  if(ED.kind==='rdo'){const src=findSeg(ED.id);if(!src){$('edErr').textContent='Este segmento foi excluído por outra pessoa.';return}const r=rdoRec(src.id);r.over={};KEYS.forEach(k=>{if(!same(d[k],src[k]))r.over[k]=d[k]});r.obs=(d.obs||'').slice(0,1000);closeEditor();changed();$('status').textContent=r.over&&Object.keys(r.over).length?'Apontamento do RDO atualizado.':'Apontamento igual à fresagem.';return}
+ if(ED.kind==='fres'){if(!ED.id&&!pos(d.espProjeto))d.espProjeto=d.thickness;if(!pos(d.espProjeto))delete d.espProjeto;if(!d.solucao)delete d.solucao}
  const kind=ED.kind,list=kind==='fres'?S.fres:S.extras,{id:_,obs:__,...vals}=d,editing=!!ED.id;
- let tgt;if(editing){tgt=list.find(s=>s.id===ED.id);if(!tgt){$('edErr').textContent='Este segmento foi excluído por outra pessoa.';return}Object.assign(tgt,vals)}else{tgt={...d};list.push(tgt);if(kind==='fres')rdoRec(d.id)}
+ let tgt;if(editing){tgt=list.find(s=>s.id===ED.id);if(!tgt){$('edErr').textContent='Este segmento foi excluído por outra pessoa.';return}Object.assign(tgt,vals);if(kind==='fres'){if(!('espProjeto' in vals))delete tgt.espProjeto;if(!('solucao' in vals))delete tgt.solucao}}else{tgt={...d};list.push(tgt);if(kind==='fres')rdoRec(d.id)}
  let moved='',freed=0;
  if(kind==='fres'){const nl=S.fres.filter(x=>x!==tgt),p=Math.max(1,Math.min(ED.pos||nl.length+1,nl.length+1));nl.splice(p-1,0,tgt);if(nl.some((x,i)=>x!==S.fres[i])){freed=applyOrder(nl,tgt.id);moved=` Posição ${p} na sequência.`;LAST_MOVED=tgt.id;setTimeout(()=>{LAST_MOVED=null},1000)}}
  closeEditor();
@@ -1362,7 +1441,7 @@ function saveEditor(){
 }
 ['edStart','edLength','edLane','edWidth','edThick'].forEach(id=>$(id).addEventListener('input',edSync));
 document.querySelectorAll('input[name="edDir"]').forEach(r=>r.addEventListener('change',edSync));
-$('edSeq').addEventListener('change',edSync);$('edObs').addEventListener('input',edSync);
+$('edSeq').addEventListener('change',edSync);$('edEspProj').addEventListener('input',edSync);$('edSol').addEventListener('input',edSync);$('edObs').addEventListener('input',edSync);
 $('edSave').onclick=saveEditor;$('edCancel').onclick=closeEditor;$('edX').onclick=closeEditor;
 
 function delSeg(kind,id){
@@ -1378,6 +1457,92 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('change',e=>{const id=e.target.dataset&&e.target.dataset.apply;if(!id)return;if(e.target.checked)S.applied[id]=true;else delete S.applied[id];changed()});
 
+/* ======================= Dividir pano / RMP ======================= */
+let SP=null;
+function openSplit(id){
+ const s0=findSeg(id);if(!s0)return;chainFres();
+ const g=groupOf(s0),b=g[0];
+ const o=b.origem?{...b.origem}:{id:uid(),comprimento:b.length,espessura:projEsp(b)??b.thickness,solucao:b.solucao||'',inicio:b.start,acrescimoEm:'fim',parte:1};
+ SP={ids:g.map(x=>x.id),o,base:{direction:b.direction,lane:b.lane,sequential:b.sequential,width:b.width,start:o.inicio||b.start},
+  parts:g.map(x=>({id:x.id,length:x.length,thickness:x.thickness,width:x.width}))};
+ $('spInfo').innerHTML=`<b>${esc(SP.base.start)}</b> · ${SP.base.direction==='Decrescente'?'↓':'↑'} ${SP.base.direction} · faixa ${SP.base.lane}${g.length>1?` · já dividido em ${g.length} segmentos`:''}<br><small>Divida o pano quando a espessura mudar em um trecho. Só vira RMP de extensão o que passar da extensão de projeto.</small>`;
+ $('spLen').value=o.comprimento;$('spEsp').value=o.espessura??'';$('spSol').value=o.solucao||'';$('spUniH').textContent='Opcional. O unifilar dá o código; a espessura vem da legenda do Controle de geometria.';$('spErr').textContent='';
+ renderSplit();closeMenu();$('spSheet').classList.add('open');$('sheetBg').classList.add('open');document.body.classList.add('lock');
+}
+function closeSplit(){SP=null;$('spSheet').classList.remove('open');$('sheetBg').classList.remove('open');document.body.classList.remove('lock')}
+function spRead(){if(!SP)return;const n=v=>v===''?NaN:Number(v);SP.o.comprimento=n($('spLen').value);SP.o.espessura=n($('spEsp').value);SP.o.solucao=$('spSol').value.trim().toUpperCase();
+ document.querySelectorAll('#spParts [data-p]').forEach(inp=>{const [k,f]=inp.dataset.p.split(':');SP.parts[+k][f]=n(inp.value)})}
+function spClassify(){
+ const o=SP.o,tot=SP.parts.reduce((a,p)=>a+(pos(p.length)?p.length:0),0),exc=Math.round((tot-(pos(o.comprimento)?o.comprimento:0))*100)/100;
+ const idx=exc>EXT_TOL?(o.acrescimoEm==='inicio'?0:SP.parts.length-1):-1;
+ return {tot,exc,cls:SP.parts.map((p,i)=>{const e=pos(o.espessura)&&pos(p.thickness)&&Math.abs(p.thickness-o.espessura)>ESP_TOL,x=i===idx?exc:0;return {e,x,t:e&&x?'RMP de espessura e de extensão':e?'RMP de espessura':x?'RMP de extensão':'Projeto'}})};
+}
+function renderSplit(focus){
+ const k=spClassify();
+ $('spParts').innerHTML=SP.parts.map((p,i)=>{const c=k.cls[i];return `<div class="sppart"><div class="ph">Segmento ${i+1} <span class="chip ${c.e?'rmp':c.x?'rmpx':'prj'}">${c.t}${c.x?` +${fmtN(c.x)} m`:''}</span></div>
+  <div class="field"><label>Compr.</label><div class="unit" data-unit="m"><input data-p="${i}:length" type="number" inputmode="decimal" min="0.01" step="0.01" value="${Number.isFinite(p.length)?p.length:''}"></div></div>
+  <div class="field"><label>Espessura</label><div class="unit" data-unit="m"><input data-p="${i}:thickness" type="number" inputmode="decimal" min="0.001" step="0.001" value="${Number.isFinite(p.thickness)?p.thickness:''}"></div></div>
+  <div class="field"><label>Largura</label><div class="unit" data-unit="m"><input data-p="${i}:width" type="number" inputmode="decimal" min="0.01" step="0.01" value="${Number.isFinite(p.width)?p.width:''}"></div></div>
+  ${SP.parts.length>1?ib(`data-sprm="${i}"`,'del',`Remover segmento ${i+1}`,'danger'):'<span></span>'}</div>`}).join('');
+ spSummary(k);
+}
+function spSummary(k){
+ k=k||spClassify();const o=SP.o,L=o.comprimento;let h,cl;
+ if(!pos(L))h='Informe a extensão de projeto.';
+ else if(k.exc>EXT_TOL){cl='ext';h=`Soma dos segmentos <b>${fmtN(k.tot)} m</b> · projeto ${fmtN(L)} m → <b>acréscimo de ${fmtN(k.exc)} m (RMP de extensão)</b>.<br>Onde o acréscimo foi incorporado?<div class="segctl"><label><input type="radio" name="spAcr" value="inicio" ${o.acrescimoEm==='inicio'?'checked':''}>No início do pano</label><label><input type="radio" name="spAcr" value="fim" ${o.acrescimoEm!=='inicio'?'checked':''}>No final do pano</label></div>`}
+ else if(k.exc<-EXT_TOL){cl='less';h=`Soma dos segmentos <b>${fmtN(k.tot)} m</b> · projeto ${fmtN(L)} m → faltam ${fmtN(-k.exc)} m em relação ao projeto (não é RMP de extensão).`}
+ else{cl='ok';h=`Soma dos segmentos <b>${fmtN(k.tot)} m</b> = extensão de projeto. Sem RMP de extensão${SP.parts.length>1?'; a divisão é só por espessura':''}.`}
+ $('spSum').innerHTML=`<div class="spsum ${cl||''}">${h}</div>`;
+ $('spEspH').textContent=pos(o.espessura)?'= '+fmt(o.espessura*100,1)+' cm':'';
+ // atualiza os rótulos sem redesenhar os campos
+ document.querySelectorAll('#spParts .sppart').forEach((el,i)=>{const c=k.cls[i],ch=el.querySelector('.chip');if(ch&&c){ch.className='chip '+(c.e?'rmp':c.x?'rmpx':'prj');ch.textContent=c.t+(c.x?` +${fmtN(c.x)} m`:'')}});
+}
+function saveSplit(){
+ spRead();const o=SP.o,errs=[];
+ if(!pos(o.comprimento))errs.push('extensão de projeto');if(!pos(o.espessura))errs.push('espessura de projeto');
+ SP.parts.forEach((p,i)=>{if(!pos(p.length)||!pos(p.thickness)||!pos(p.width))errs.push(`segmento ${i+1}`)});
+ if(errs.length){$('spErr').textContent='Confira: '+errs.join(', ')+'.';return}
+ const g=SP.ids.map(findSeg).filter(Boolean);if(!g.length){$('spErr').textContent='Este pano foi excluído.';return}
+ const k=spClassify(),dir=SP.base.direction;let start=SP.base.start,seq=!!SP.base.sequential;
+ if(k.exc>EXT_TOL&&o.acrescimoEm==='inicio'){start=stationEnd(SP.base.start,k.exc,dir==='Decrescente'?'Crescente':'Decrescente');seq=false;if(!start){$('spErr').textContent='O acréscimo no início levaria a estaca para antes do km 0.';return}}
+ const origem={id:o.id,comprimento:o.comprimento,espessura:o.espessura,solucao:o.solucao||'',inicio:SP.base.start,acrescimoEm:o.acrescimoEm==='inicio'?'inicio':'fim'};
+ const used=new Set();
+ const segs=SP.parts.map((p,i)=>{const id=p.id&&!used.has(p.id)?p.id:uid();used.add(id);const old=findSeg(id)||{};
+  const x={...old,id,start:i===0?start:'',end:'',direction:dir,lane:SP.base.lane,length:p.length,width:p.width,thickness:p.thickness,sequential:i===0?seq:true,espProjeto:o.espessura,origem:{...origem,parte:i+1}};
+  if(o.solucao)x.solucao=o.solucao;else delete x.solucao;return x});
+ const at=Math.min(...g.map(x=>S.fres.indexOf(x)));
+ const removed=g.filter(x=>!used.has(x.id));
+ const nl=S.fres.filter(x=>!SP.ids.includes(x.id));nl.splice(at,0,...segs);
+ S.fres.length=0;nl.forEach(x=>S.fres.push(x));
+ removed.forEach(x=>{delete S.rdo[x.id];delete S.applied[x.id];if(S.ord)delete S.ord[x.id]});
+ segs.forEach(x=>{rdoRec(x.id)});if(S.ord){const base=S.ord[segs[0].id];S.fres.forEach((x,i)=>S.ord[x.id]=i+1)}
+ const nE=k.cls.filter(c=>c.e).length;closeSplit();changed();
+ $('status').textContent=`Pano salvo em ${segs.length} segmento(s): ${nE?nE+' com RMP de espessura':'sem RMP de espessura'}${k.exc>EXT_TOL?` · RMP de extensão +${fmtN(k.exc)} m no ${o.acrescimoEm==='inicio'?'primeiro':'último'} segmento`:''}.`;
+}
+async function spUnifilar(){
+ const h=$('spUniH');spRead();h.textContent='Buscando no unifilar…';
+ if(!LEG){try{legLoadLocal()}catch{}}
+ if(!GEO.data){loadGeo();for(let i=0;i<40&&!GEO.data&&!GEO.err;i++)await new Promise(r=>setTimeout(r,150))}
+ if(!GEO.data){h.textContent='Não foi possível carregar a base do unifilar (abra o Controle de geometria uma vez com internet).';return}
+ const fx=SP.base.lane===1?'f1':SP.base.lane===2?'f2':null;if(!fx){h.textContent=`Faixa ${SP.base.lane} não corresponde a uma coluna do unifilar (faixa 1 ou 2). Informe a solução manualmente.`;return}
+ const fake={start:SP.base.start,length:pos(SP.o.comprimento)?SP.o.comprimento:SP.parts.reduce((a,p)=>a+(p.length||0),0),direction:SP.base.direction};
+ const gs=panoSegs(fake,colKey(SP.base.direction,fx));if(!gs){h.textContent=`A estaca ${SP.base.start} não foi encontrada na base do KMZ.`;return}
+ const by={};gs.forEach(x=>{const c=x.code||'sem solução';by[c]=(by[c]||0)+(x.fim-x.ini)});const list=Object.entries(by).sort((a,b)=>b[1]-a[1]);
+ const top=list[0][0];if(top!=='sem solução')$('spSol').value=top;const ep=top!=='sem solução'&&LEG&&Number.isFinite(LEG[top])?LEG[top]:null;
+ if(ep!=null){$('spEsp').value=ep}
+ h.textContent=(list.length>1?`Atenção: o pano atravessa ${list.map(([c,m])=>`${c} (${fmtN(Math.round(m))} m)`).join(', ')}. `:`Unifilar: ${top}. `)+(ep!=null?`Espessura ${fmt(ep,3)} m pela legenda.`:'Espessura não cadastrada na legenda — informe acima.');
+ spRead();spSummary();
+}
+$('spParts').addEventListener('input',()=>{spRead();spSummary()});
+$('spParts').addEventListener('click',e=>{const b=e.target.closest('[data-sprm]');if(!b)return;spRead();SP.parts.splice(+b.dataset.sprm,1);renderSplit()});
+$('spSum').addEventListener('change',e=>{if(e.target.name==='spAcr'){SP.o.acrescimoEm=e.target.value;spSummary()}});
+['spLen','spEsp','spSol'].forEach(id=>$(id).addEventListener('input',()=>{spRead();spSummary()}));
+$('spAdd').onclick=()=>{spRead();const last=SP.parts[SP.parts.length-1];SP.parts.push({id:null,length:NaN,thickness:SP.o.espessura,width:last?last.width:SP.base.width});renderSplit();const ins=document.querySelectorAll('#spParts [data-p$=":length"]');ins[ins.length-1].focus()};
+$('spRestore').onclick=()=>{spRead();SP.parts=[{id:SP.parts[0].id,length:SP.o.comprimento,thickness:SP.o.espessura,width:SP.parts[0].width}];SP.o.acrescimoEm='fim';renderSplit()};
+$('spUni').onclick=spUnifilar;$('spSave').onclick=saveSplit;$('spCancel').onclick=closeSplit;$('spX').onclick=closeSplit;
+document.addEventListener('click',e=>{const b=e.target.closest('[data-split]');if(b)openSplit(b.dataset.split)});
+$('sheetBg').addEventListener('click',()=>{if(SP)closeSplit()});
+
 /* ======================= Persistência ======================= */
 let saveTimer;
 function flush(){if(CLOUD)return;clearTimeout(saveTimer);try{localStorage.setItem(STORE,JSON.stringify(S))}catch{}}
@@ -1388,7 +1553,7 @@ function changed(){setDirty(true);persist();update()}
 function normalize(d){
  if(!d||typeof d!=='object')throw Error('Arquivo inválido.');
  const okSeg=r=>r&&typeof r.start==='string'&&['Crescente','Decrescente'].includes(r.direction)&&Number.isInteger(r.lane)&&r.lane>0&&['length','width','thickness'].every(k=>Number.isFinite(r[k])&&r[k]>0);
- const clean=s=>({id:typeof s.id==='string'&&s.id?s.id:uid(),start:s.start,end:'',direction:s.direction,lane:s.lane,length:s.length,width:s.width,thickness:s.thickness,sequential:s.sequential===true});
+ const clean=s=>({id:typeof s.id==='string'&&s.id?s.id:uid(),start:s.start,end:'',direction:s.direction,lane:s.lane,length:s.length,width:s.width,thickness:s.thickness,sequential:s.sequential===true,...cleanProj(s)});
  const out=emptyState();
  if(d.version===1){
   if(!Array.isArray(d.rows)||!d.rows.every(okSeg)||!Number.isFinite(d.density)||!Number.isFinite(d.produced))throw Error('Formato de apontamento inválido.');
@@ -1455,7 +1620,7 @@ function openMenu(){$('sheet').classList.add('open');$('sheetBg').classList.add(
 function closeMenu(){$('sheet').classList.remove('open');if(!ED)$('sheetBg').classList.remove('open')}
 $('menuBtn').onclick=openMenu;$('closeMenu').onclick=closeMenu;$('sheetBg').onclick=()=>{if(ED)closeEditor();closeMenu()};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(ED)closeEditor();closeMenu()}});
-$('saveMenu').onclick=()=>{closeMenu();const data=JSON.parse(JSON.stringify(S));data.version=3;if(CLOUD)data.leituras=readingsAll().map(({_pend,...r})=>r);const name='apontamento-massa'+(S.job?'-'+S.job.replace(/[^\w-]+/g,'_').slice(0,40):'')+'.json';const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setDirty(false);$('status').textContent='Arquivo gerado. Guarde-o para reabrir em outro aparelho.'};
+$('saveMenu').onclick=()=>{closeMenu();const data=JSON.parse(JSON.stringify(S));data.version=3;CLS=classifyAll();(data.fres||[]).forEach(x=>{const c=CLS[x.id];if(c)x.rmp={classificacao:c.cls||'Sem projeto',espessuraProjeto:c.proj,rmpEspessura:c.rmpEsp,rmpExtensao_m:c.extM}});if(CLOUD)data.leituras=readingsAll().map(({_pend,...r})=>r);const name='apontamento-massa'+(S.job?'-'+S.job.replace(/[^\w-]+/g,'_').slice(0,40):'')+'.json';const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setDirty(false);$('status').textContent='Arquivo gerado. Guarde-o para reabrir em outro aparelho.'};
 $('printMenu').onclick=()=>printReport(tab);
 $('newMenu').onclick=()=>{closeMenu();if(CLOUD){showPicker();$('pkNewBox').open=true;setTimeout(()=>$('pkJob').focus(),100);return}if(!confirm('Começar um apontamento vazio? Salve em arquivo antes se quiser guardar o atual.'))return;S=emptyState();renderAll();changed();setTab('fres')};
 $('import').onchange=async e=>{closeMenu();const f=e.target.files[0];if(!f)return;try{if(f.size>3000000)throw Error('Arquivo muito grande.');const d=normalize(JSON.parse(await f.text()));if(CLOUD){if(!confirm('Criar um novo apontamento na nuvem com os dados deste arquivo?'))return;const f2={};HF.forEach(k=>f2[k]=d[k]);if(!f2.job)f2.job=f.name.replace(/\.json$/i,'');createApont(f2,d);$('status').textContent='Apontamento importado para a nuvem.';return}if(dirty&&!confirm('Substituir o apontamento atual pelo arquivo?'))return;S=d;renderAll();persist();setDirty(false);$('status').textContent='Apontamento carregado.'}catch(err){$('status').textContent='Não foi possível abrir: '+err.message}finally{e.target.value=''}};
@@ -1464,8 +1629,8 @@ $('import').onchange=async e=>{closeMenu();const f=e.target.files[0];if(!f)retur
 let unwatchL=null,unwatchLeg=null;
 let CLOUD=null,USER=null,AID=null,unwatch=null,unlist=null,lastRemote=null,RH=null,RSEGS=null;
 const HF=['job','date','resp','density','usinado','plate','accum','truckFull','truckLeft','tolerance','planWidth','planThickness','trucksTotal','truckNo'];
-const SEGF=['kind','order','start','direction','lane','length','width','thickness','sequential','applied','rdoOver','rdoObs'];
-const FRESF=['start','direction','lane','length','width','thickness','sequential'];
+const SEGF=['kind','order','start','direction','lane','length','width','thickness','sequential','applied','rdoOver','rdoObs','espProjeto','solucao','origem'];
+const FRESF=['start','direction','lane','length','width','thickness','sequential','espProjeto','solucao','origem'];
 const nn=v=>typeof v==='number'&&!Number.isFinite(v)?null:v;           // NaN -> null ao gravar
 const nv=(v,def)=>v===null||v===undefined?def:v;                       // null -> padrão ao ler
 const me=()=>({uid:USER.uid,name:USER.name||USER.email});
@@ -1511,7 +1676,7 @@ function toRemote(st){
  const segs={},ord=st.ord||(st.ord={});
  const put=(s,kind)=>{if(!Number.isFinite(ord[s.id]))ord[s.id]=Math.max(0,...Object.values(ord).filter(Number.isFinite))+1;
   const r=st.rdo[s.id]||{over:{},obs:''};
-  segs[s.id]={kind,order:ord[s.id],start:s.start,direction:s.direction,lane:nn(s.lane),length:nn(s.length),width:nn(s.width),thickness:nn(s.thickness),sequential:!!s.sequential,applied:!!st.applied[s.id],rdoOver:kind==='fres'?JSON.parse(JSON.stringify(r.over||{},(k,v)=>nn(v))):{},rdoObs:kind==='fres'?(r.obs||''):''}};
+  segs[s.id]={kind,order:ord[s.id],start:s.start,direction:s.direction,lane:nn(s.lane),length:nn(s.length),width:nn(s.width),thickness:nn(s.thickness),sequential:!!s.sequential,applied:!!st.applied[s.id],rdoOver:kind==='fres'?JSON.parse(JSON.stringify(r.over||{},(k,v)=>nn(v))):{},rdoObs:kind==='fres'?(r.obs||''):'',espProjeto:Number.isFinite(s.espProjeto)?s.espProjeto:null,solucao:s.solucao||'',origem:s.origem?JSON.parse(JSON.stringify(s.origem)):null}};
  st.fres.forEach(s=>put(s,'fres'));st.extras.forEach(s=>put(s,'extra'));
  return {header,segs};
 }
@@ -1521,7 +1686,7 @@ function fromRemote(h,docs){
  st.meta={};st.ord={};
  const segs=(docs||[]).map(x=>({id:x.id,...x.data})).filter(d=>typeof d.start==='string'&&['Crescente','Decrescente'].includes(d.direction));
  segs.sort((a,b)=>(a.order??0)-(b.order??0)||(a.createdAt??0)-(b.createdAt??0)||(a.id<b.id?-1:1));
- segs.forEach(d=>{const s={id:d.id,start:d.start,end:'',direction:d.direction,lane:nv(d.lane,NaN),length:nv(d.length,NaN),width:nv(d.width,NaN),thickness:nv(d.thickness,NaN),sequential:d.sequential===true};
+ segs.forEach(d=>{const s={id:d.id,start:d.start,end:'',direction:d.direction,lane:nv(d.lane,NaN),length:nv(d.length,NaN),width:nv(d.width,NaN),thickness:nv(d.thickness,NaN),sequential:d.sequential===true,...cleanProj({espProjeto:d.espProjeto,solucao:d.solucao,origem:d.origem})};
   st.ord[d.id]=d.order;
   if(d.kind==='extra'){s.sequential=false;st.extras.push(s)}else{st.fres.push(s);const over={};Object.entries(d.rdoOver||{}).forEach(([k,v])=>{if(KEYS.includes(k))over[k]=v===null?NaN:v});st.rdo[s.id]={over,obs:d.rdoObs||''}}
   if(d.applied)st.applied[s.id]=true;

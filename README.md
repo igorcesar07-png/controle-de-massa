@@ -85,3 +85,11 @@ Sem configuração (`FIREBASE_CONFIG = null`), o app funciona só no aparelho, c
 
 - Salvos automaticamente no próprio aparelho (navegador).
 - Menu ⋯: salvar/abrir arquivo `.json` (abre arquivos das versões anteriores), imprimir relatório, novo apontamento.
+
+## Solução de projeto e RMP (Fresagem)
+
+- Cada pano guarda a **espessura de projeto** (e, opcionalmente, o código da solução). Em pano novo, se o campo ficar vazio, vale a espessura informada.
+- O botão **✂ Dividir / RMP** divide um pano original em segmentos, mantendo a identificação do pano original (`origem`).
+- **RMP de espessura**: somente os segmentos com espessura diferente da de projeto.
+- **RMP de extensão**: só o que a soma dos segmentos do mesmo pano original passar da extensão de projeto, atribuído ao primeiro segmento (acréscimo no início) ou ao último (acréscimo no final). Dividir sem aumentar a extensão não é RMP de extensão.
+- JSON: campos opcionais `espProjeto`, `solucao` e `origem` em `fres[]`, mais `rmp` (classificação calculada) na exportação. Arquivos antigos continuam abrindo normalmente.
