@@ -943,7 +943,7 @@ body.geo-on{padding-bottom:calc(150px + var(--safe-b))}
       <div class="full edref" id="edRef" hidden></div>
       <div class="field full" id="edPosWrap" hidden><label for="edPos">Posição na sequência</label><select id="edPos"></select><small id="edPosH"></small></div>
       <div class="field full" id="edSeqWrap"><label class="switch"><input type="checkbox" role="switch" id="edSeq">Sequencial ao segmento anterior</label></div>
-      <div class="field"><label for="edStart">Estaca inicial</label><input id="edStart" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="230+830" required></div>
+      <div class="field"><label for="edStart">Estaca inicial</label><input id="edStart" type="text" inputmode="decimal" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="230+830 ou 230830" required></div>
       <div class="field"><label for="edEnd">Estaca final</label><input id="edEnd" type="text" readonly tabindex="-1"></div>
       <div class="field full"><span class="lbl">Sentido</span><div class="segctl"><label><input type="radio" name="edDir" value="Crescente">↑ Crescente</label><label><input type="radio" name="edDir" value="Decrescente">↓ Decrescente</label></div></div>
       <div class="field"><label for="edLength">Comprimento</label><div class="unit" data-unit="m"><input id="edLength" type="number" inputmode="decimal" min="1" step="1" required></div></div>
@@ -1043,6 +1043,14 @@ const nonneg=n=>Number.isFinite(n)&&n>=0;
 const KEYS=['start','direction','lane','length','width','thickness'];
 
 /* ======================= Estacas ======================= */
+// Aceita 232+760, 232760, 232,760, 232.760, 232,76 → "232+760" (km + metros com 3 dígitos).
+function normSt(v){
+ const t=String(v??'').trim().replace(/\s+/g,'');let m;
+ if(m=t.match(/^(\d+)\+(\d+)(?:[.,](\d+))?$/))return m[1].replace(/^0+(?=\d)/,'')+'+'+m[2].padStart(3,'0')+(m[3]?','+m[3]:'');
+ if(m=t.match(/^(\d+)[.,](\d+)$/)){const d=m[2].padEnd(3,'0');return m[1].replace(/^0+(?=\d)/,'')+'+'+d.slice(0,3)+(d.length>3?','+d.slice(3):'')}
+ if(m=t.match(/^(\d{1,})$/)){const n=m[1].replace(/^0+(?=\d)/,''),km=n.length>3?n.slice(0,-3):'0';return km+'+'+n.slice(-3).padStart(3,'0')}
+ return String(v??'').trim();
+}
 function stationMeters(st){const m=String(st).trim().match(/^(\d+)\+(\d{1,3}(?:[.,]\d+)?)$/);if(!m)return null;const o=Number(m[2].replace(',','.'));return o>=1000?null:Number(m[1])*1000+o}
 function stationEnd(start,length,direction){
  const match=String(start).trim().match(/^(\d+)\+(\d{1,3}(?:[.,]\d+)?)$/);
@@ -1413,7 +1421,7 @@ function edSync(){
  d.length=num('edLength');d.lane=num('edLane');d.width=num('edWidth');d.thickness=num('edThick');d.obs=$('edObs').value;
  if(ED.kind==='fres'){d.espProjeto=num('edEspProj');d.solucao=$('edSol').value.trim().toUpperCase()}
  d.direction=document.querySelector('input[name="edDir"]:checked')?.value||'Crescente';
- if(d.sequential){d.start=ED.prev.end;$('edStart').value=d.start}else d.start=$('edStart').value.trim();
+ if(d.sequential){d.start=ED.prev.end;$('edStart').value=d.start}else d.start=normSt($('edStart').value);
  $('edStart').readOnly=d.sequential;
  d.end=stationEnd(d.start,d.length,d.direction);$('edEnd').value=d.end;
  $('edThickH').textContent=pos(d.thickness)?'= '+fmt(d.thickness*100,1)+' cm':'Em metros (8 cm = 0,080)';
@@ -1440,6 +1448,7 @@ function saveEditor(){
  changed();if(moved)$('status').textContent=(editing?'Segmento atualizado.':'Segmento adicionado.')+moved+(freed?` ${freed} segmento(s) deixaram de ser “sequencial” e mantiveram a estaca inicial.`:'');if(moved)return;$('status').textContent=editing?'Segmento atualizado.':'Segmento adicionado.';
 }
 ['edStart','edLength','edLane','edWidth','edThick'].forEach(id=>$(id).addEventListener('input',edSync));
+$('edStart').addEventListener('blur',()=>{const el=$('edStart');if(!el.readOnly){const v=normSt(el.value);if(v!==el.value){el.value=v;edSync()}}});
 document.querySelectorAll('input[name="edDir"]').forEach(r=>r.addEventListener('change',edSync));
 $('edSeq').addEventListener('change',edSync);$('edEspProj').addEventListener('input',edSync);$('edSol').addEventListener('input',edSync);$('edObs').addEventListener('input',edSync);
 $('edSave').onclick=saveEditor;$('edCancel').onclick=closeEditor;$('edX').onclick=closeEditor;
