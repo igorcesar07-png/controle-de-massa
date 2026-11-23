@@ -775,6 +775,55 @@ main{padding:10px 10px 8px}
 .sheet.editor .field input[type=date]{text-align:left}
 #panel-fres .field input{font-weight:600}
 #panel-fres .field label{color:#6b7076;font-weight:600}
+
+/* ============ Tabela de segmentos ============ */
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:4px -12px 0;border-top:1px solid #e3e5e8;border-bottom:1px solid #e3e5e8;overscroll-behavior-x:contain}
+.tgrid{--acw:152px;--cols:var(--acw) 92px 84px 64px 62px 60px 74px 84px 42px 82px 76px;min-width:max-content}
+.tgrid.k-rdo,.tgrid.k-ref,.tgrid.k-acomp{--cols:var(--acw) 92px 84px 64px 62px 60px 84px 42px 82px 76px}
+.tgrid.k-rdo{--acw:100px}.tgrid.k-ref{--acw:44px}.tgrid.k-acomp{--acw:154px}
+.tr{display:grid;grid-template-columns:var(--cols);align-items:center;background:#fff;border-bottom:1px solid #eceef0;position:relative}
+.tr:nth-child(odd){background:#f5f6f7}
+.tr.th{background:#fff;border-bottom:1px solid #d9dce0;position:sticky;top:0}
+.tc{padding:7px 6px;min-width:0;font-size:13.5px;font-weight:600;color:#1d1f22;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tr.th .tc{padding:6px 6px;font-size:10.5px;font-weight:600;color:#868b91;letter-spacing:.2px}
+.tc.st{font-weight:800;color:var(--black);font-size:14px}
+.tc.rmp{color:var(--red-dark);background:#fde9ea}
+.tc.pj{color:#6b7076;font-weight:500}
+.tc.pj i{font-style:normal;font-size:10.5px;color:#8a8f95}
+.tc.ms{font-weight:700}
+.tc.ta{position:sticky;left:0;z-index:1;background:inherit;display:flex;align-items:center;gap:1px;padding:4px 4px 4px 8px;overflow:visible;box-shadow:1px 0 0 #e3e5e8}
+.tr.th .tc.ta{background:#fff;padding-left:12px}
+.tc.ta .r2n{flex:0 0 auto;min-width:22px;height:22px;padding:0 4px;border-radius:6px;background:#e4e6e9;color:#222;display:grid;place-items:center;font-weight:800;font-size:11.5px;margin-right:4px}
+.tr.changed{background:#fdf1f1}.tr.changed .tc.ta .r2n{background:var(--red);color:#fff}
+.tr .ib{width:26px;height:32px;border-radius:7px;flex:0 0 auto}
+.tr .ib svg{width:17px;height:17px}
+.tr .ud{display:flex;flex-direction:column}
+.tr .ud .ib{height:17px;width:24px}
+.tr .ud .ib svg{width:15px;height:15px}
+.tr .switch.mini{min-height:30px;font-size:11.5px;margin:0 2px 0 0}
+.tg{display:inline-block;margin-left:4px;font-size:9.5px;font-weight:700;color:#6b7076;background:#e6e8eb;border-radius:4px;padding:1px 4px;vertical-align:2px;letter-spacing:.2px}
+.tg.sq{display:inline;background:transparent;color:#9aa0a6;font-size:12px;padding:0;margin:0 2px 0 0;vertical-align:baseline}
+.tg.ex{background:#fff1d1;color:#7a4b00}
+.tsub{grid-column:1/-1;padding:0 0 6px}
+.tsub>div{position:sticky;left:0;display:block;width:min(100%,calc(100vw - 48px));padding:0 10px 0 12px;font-size:11.5px;color:var(--muted);line-height:1.45;white-space:normal}
+.tsub .chips{display:inline-flex;flex-wrap:wrap;gap:4px;margin-right:6px}
+.tsub .chip{font-size:10.5px;padding:1px 7px}
+.tsub .grp,.tsub .obs,.tsub .by{display:block}
+.tsub .diffs{margin:4px 0 0}
+.tgrid .tr:last-child{border-bottom:0}
+@media (min-width:900px){
+ .tscroll{margin:4px 0 0;border:1px solid #e3e5e8;border-radius:10px}
+ .tgrid{--cols:var(--acw) minmax(84px,1.3fr) minmax(84px,1.3fr) minmax(60px,1fr) minmax(60px,1fr) minmax(56px,1fr) minmax(64px,1fr) minmax(76px,1fr) minmax(40px,.6fr) minmax(76px,1fr) minmax(76px,1fr)}
+ .tgrid.k-rdo,.tgrid.k-ref,.tgrid.k-acomp{--cols:var(--acw) minmax(84px,1.3fr) minmax(84px,1.3fr) minmax(60px,1fr) minmax(60px,1fr) minmax(56px,1fr) minmax(76px,1fr) minmax(40px,.6fr) minmax(76px,1fr) minmax(76px,1fr)}
+ .tgrid{min-width:0}
+}
+@media (min-width:1000px){#panel-fres .srows{display:block}}
+/* contraste do seletor de sentido (vermelho com texto branco) */
+.sheet.editor .segctl label,#panel-fres .segctl label{color:#2b2b2b;font-weight:700}
+.segctl label:has(input:checked),.sheet.editor .segctl label:has(input:checked){background:var(--red);color:#fff!important;font-weight:800}
+.segctl.pending label:has(input:checked){background:#55595e}
+.field.edited .segctl label:has(input:checked){background:var(--edit)}
+.tr.moved{animation:moved 1.2s ease}
 </style>
 </head>
 <body>
@@ -1259,10 +1308,18 @@ function applyOrder(newList,keepId){
  if(S.ord)S.fres.forEach((x,i)=>S.ord[x.id]=i+1);
  return freed;
 }
+function flipRows(fn,hl){
+ const box=$('fresRows'),before={};box.querySelectorAll('.tr[data-row]').forEach(r=>before[r.dataset.row]=r.getBoundingClientRect().top);
+ fn();
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ $('fresRows').querySelectorAll('.tr[data-row]').forEach(r=>{const b=before[r.dataset.row];if(b==null)return;const d=b-r.getBoundingClientRect().top;if(!d)return;
+  r.animate([{transform:`translateY(${d}px)`},{transform:'translateY(0)'}],{duration:380,easing:'cubic-bezier(.2,.8,.2,1)'})});
+ if(hl){const el=$('fr-'+hl);if(el)el.animate([{backgroundColor:'#fde2e3'},{backgroundColor:'#fde2e3',offset:.35},{backgroundColor:getComputedStyle(el).backgroundColor}],{duration:1200,easing:'ease-out'})}
+}
 function moveSeg(id,dir){
  const i=S.fres.findIndex(x=>x.id===id),j=i+dir;if(i<0||j<0||j>=S.fres.length)return;
  const nl=S.fres.slice();[nl[i],nl[j]]=[nl[j],nl[i]];
- const freed=applyOrder(nl);LAST_MOVED=id;changed();
+ let freed;flipRows(()=>{freed=applyOrder(nl);changed()},id);
  $('status').textContent=`Segmento movido para a posição ${j+1}.`+(freed?` ${freed} segmento(s) deixaram de ser “sequencial” e mantiveram a estaca inicial.`:'');
  const el=$('fr-'+id);if(el)el.scrollIntoView({block:'nearest',behavior:'smooth'});
  setTimeout(()=>{LAST_MOVED=null},1000);
@@ -1292,7 +1349,7 @@ function sortSegs(dir){
  if(S.fres.length<2)return;
  if(!confirm(`Ordenar todos os panos por estaca inicial em ordem ${dir==='asc'?'CRESCENTE':'DECRESCENTE'}?`))return;
  const nl=S.fres.map((x,i)=>({x,i,k:stKey(x.start)})).sort((a,b)=>{if(!a.k&&!b.k)return a.i-b.i;if(!a.k)return 1;if(!b.k)return -1;const c=(a.k[0]-b.k[0])||(a.k[1]-b.k[1]);return (dir==='asc'?c:-c)||a.i-b.i}).map(o=>o.x);
- const freed=applyOrder(nl);changed();
+ let freed;flipRows(()=>{freed=applyOrder(nl);changed()});
  $('status').textContent=`Panos ordenados por estaca ${dir==='asc'?'crescente':'decrescente'}.`+(freed?` ${freed} segmento(s) deixaram de ser “sequencial” e mantiveram a estaca inicial.`:'');
 }
 document.addEventListener('click',e=>{
@@ -1331,39 +1388,40 @@ const ICO={
  split:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="6" r="2.6"/><circle cx="6" cy="18" r="2.6"/><path d="M20 5L8.2 15.6M14.6 13.8L20 19M8.2 8.4L11.8 11.6"/></svg>',
  undo:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h11a5 5 0 0 1 0 10H9"/><path d="M8 5L4 9l4 4"/></svg>'};
 // Linha de pano: 1º estaqueamento + comprimento, 2º largura e espessura, 3º demais informações
+// Lista de segmentos em formato de tabela: cabeçalho único + uma linha por segmento.
+const TCOLS=[['Estaca inicial','st'],['Estaca final','st'],['Compr.',''],['Largura',''],['Espessura',''],['Esp. projeto','pj'],['Sentido/pista',''],['Faixa',''],['Volume',''],['Massa','']];
+function segHead(proj){return `<div class="tr th"><div class="tc ta">Nº</div>${TCOLS.filter(c=>proj||c[1]!=='pj').map(c=>`<div class="tc">${c[0]}</div>`).join('')}</div>`}
+function tblWrap(rows,kind){return rows.length?`<div class="tscroll"><div class="tgrid k-${kind}">${segHead(kind==='fres')}${rows.join('')}</div></div>`:''}
 function segCard(e,n,o){
  const ok=segValid(e,e.end),v=vol(e.length,e.width,e.thickness),m=v*S.density;
- const C=(l,val,cls='')=>`<div class="sc${cls}"><small>${l}</small><b>${val}</b></div>`;
- const cells=[C('Estaca inicial',esc(e.start||'—'),' st'),C('Estaca final',esc(e.end||'—'),' st'),C('Comprimento',pos(e.length)?fmtN(e.length)+' m':'—'),C('Largura',pos(e.width)?fmt(e.width,2)+' m':'—'),
-  C('Espessura',pos(e.thickness)?fmt(e.thickness*100,1)+' cm':'—',o.rmpEsp?' rmp':'')];
- if(o.proj!=null)cells.push(C('Esp. projeto'+(o.sol?' · '+esc(o.sol):''),fmt(o.proj*100,1)+' cm',' proj'));
- cells.push(C('Sentido/pista',`${e.direction==='Decrescente'?'↓':'↑'} ${esc(e.direction||'—')}`),C('Faixa',esc(e.lane??'—')),C('Volume',ok?fmt(v)+' m³':'—'),C('Massa',ok&&pos(S.density)?fmt(m)+' t':'—'));
+ const C=(val,cls='',t='')=>`<div class="tc${cls}"${t?` title="${t}"`:''}>${val}</div>`;
+ const tags=(o.tags||[]).join('');
+ const cells=[C(tags+esc(e.start||'—'),' st'),C(esc(e.end||'—'),' st'),C(pos(e.length)?fmtN(e.length)+' m':'—'),C(pos(e.width)?fmt(e.width,2)+' m':'—'),
+  C(pos(e.thickness)?fmt(e.thickness*100,1)+' cm':'—',o.rmpEsp?' rmp':'')];
+ if(o.projCol)cells.push(C(o.proj!=null?fmt(o.proj*100,1)+' cm'+(o.sol?` <i>${esc(o.sol)}</i>`:''):'—',' pj','Espessura da solução de projeto'));
+ cells.push(C(`${e.direction==='Decrescente'?'↓ Decresc.':'↑ Cresc.'}`,'',esc(e.direction||'')),C(esc(e.lane??'—')),C(ok?fmt(v)+' m³':'—'),C(ok&&pos(S.density)?fmt(m)+' t':'—',' ms'));
  const chips=o.chips&&o.chips.length?`<span class="chips">${o.chips.join('')}</span>`:'';
- const foot=(o.grp||'')+(o.obs||'')+(o.by||'');
- return `<div class="srow v3${o.cls||''}" id="${o.id||''}">
-  <div class="s3-head"><span class="r2n">${n}</span>${chips}${o.acts?`<div class="r2acts">${o.acts}</div>`:''}</div>
-  <div class="s3-grid">${cells.join('')}</div>
-  ${foot?`<div class="s3-foot">${foot}</div>`:''}
-  ${o.after||''}</div>`;
+ const sub=chips+(o.grp||'')+(o.obs||'')+(o.by||'')+(o.after||'');
+ return `<div class="tr${o.cls||''}" id="${o.id||''}" data-row="${o.id||''}"><div class="tc ta"><span class="r2n">${n}</span>${o.acts||''}</div>${cells.join('')}${sub?`<div class="tsub"><div>${sub}</div></div>`:''}</div>`;
 }
 const ib=(attr,ico,label,cls='',dis=false)=>`<button class="ib${cls?' '+cls:''}" ${attr} aria-label="${label}" title="${label}" ${dis?'disabled':''}>${ICO[ico]}</button>`;
 function sRow(s,n,opts={}){
- const chips=[];if(s.sequential)chips.push('<span class="chip">sequencial</span>');if(opts.extra)chips.push('<span class="chip extra">extra</span>');if(opts.edited)chips.push('<span class="chip edit">alterado no RDO</span>');
+ const chips=[],tags=[];if(s.sequential)tags.push('<span class="tg sq" title="Sequencial: começa no fim do anterior">↳</span>');if(opts.extra)tags.push('<span class="tg ex">extra</span>');if(opts.edited)chips.push('<span class="chip edit">alterado no RDO</span>');
  let acts='';
  if(opts.toggle)acts+=`<label class="switch green mini"><input type="checkbox" role="switch" data-apply="${s.id}" ${S.applied[s.id]?'checked':''}>Aplicado</label>`;
- if(opts.kind==='fres')acts+=ib(`data-move="${s.id}:-1"`,'up',`Subir pano ${n}`,'',n===1)+ib(`data-move="${s.id}:1"`,'down',`Descer pano ${n}`,'',n===S.fres.length)+'<span class="ibsep"></span>';
+ if(opts.kind==='fres')acts+='<span class="ud">'+ib(`data-move="${s.id}:-1"`,'up',`Subir pano ${n}`,'',n===1)+ib(`data-move="${s.id}:1"`,'down',`Descer pano ${n}`,'',n===S.fres.length)+'</span>';
  if(opts.kind==='fres')acts+=ib(`data-split="${s.id}"`,'split',`Dividir pano ${n} / RMP`);
  if(opts.actions)acts+=ib(`data-edit="${opts.kind}:${s.id}"`,'edit',`Editar pano ${n}`)+ib(`data-del="${opts.kind}:${s.id}"`,'del',`Excluir pano ${n}`,'danger');
  const c=CLS[s.id];let grp='';
- if(c){if(c.cls==='Projeto')chips.unshift('<span class="chip prj">Projeto</span>');if(c.rmpEsp)chips.unshift('<span class="chip rmp">RMP de espessura</span>');if(c.extM)chips.unshift(`<span class="chip rmpx">RMP de extensão +${fmtN(c.extM)} m</span>`);
+ if(c){if(c.rmpEsp)chips.unshift('<span class="chip rmp">RMP de espessura</span>');if(c.extM)chips.unshift(`<span class="chip rmpx">RMP de extensão +${fmtN(c.extM)} m</span>`);
   if(c.grupo){const g=c.grupo,d=Math.round((g.total-g.orig)*100)/100;grp=`<span class="grp">Pano original ${esc(g.inicio||'')} · projeto ${fmtN(g.orig)} m · segmento ${g.parte}/${g.partes} · soma ${fmtN(g.total)} m${d>EXT_TOL?` (+${fmtN(d)} m)`:d<-EXT_TOL?` (${fmtN(d)} m, menor que o projeto)`:' (= projeto)'}</span>`}}
- return segCard(s,n,{cls:opts.kind==='fres'&&s.id===LAST_MOVED?' moved':'',id:opts.kind==='fres'?'fr-'+s.id:'',chips,grp,by:byLine(s.id,opts.toggle?'applied':'fres'),acts,proj:c?c.proj:null,sol:s.solucao||(s.origem&&s.origem.solucao)||'',rmpEsp:c&&c.rmpEsp});
+ return segCard(s,n,{cls:opts.kind==='fres'&&s.id===LAST_MOVED?' moved':'',id:opts.kind==='fres'?'fr-'+s.id:'',chips,tags,projCol:opts.kind==='fres',grp,by:byLine(s.id,opts.toggle?'applied':'fres'),acts,proj:c?c.proj:null,sol:s.solucao||(s.origem&&s.origem.solucao)||'',rmpEsp:c&&c.rmpEsp});
 }
 
 /* ======================= Render: Fresagem ======================= */
 function renderFres(t){
  const D=n=>t.dOk?fmt(n):'—';
- $('fresRows').innerHTML=S.fres.length?S.fres.map((s,i)=>sRow(s,i+1,{actions:true,kind:'fres'})).join(''):'<div class="empty">Nenhum segmento. Toque em “+ Adicionar segmento” para começar.</div>';
+ $('fresRows').innerHTML=S.fres.length?tblWrap(S.fres.map((s,i)=>sRow(s,i+1,{actions:true,kind:'fres'})),'fres'):'<div class="empty">Nenhum segmento. Toque em “+ Adicionar segmento” para começar.</div>';
  $('fCount').textContent=S.fres.length;$('clearAll').hidden=S.fres.length<2;$('fCount2').textContent=`(${S.fres.length})`;
  $('fLen').innerHTML=fmt(t.fLen)+' <span>m</span>';$('fVol').innerHTML=fmt(t.fVol)+' <span>m³</span>';$('fMass').innerHTML=(t.fresAllOk?D(t.fMass):'—')+' <span>t</span>';
  $('fSumLen').textContent=fmt(t.fLen,0)+' m';$('fSumVol').textContent=fmt(t.fVol)+' m³';$('fSumMass').textContent=(t.fresAllOk?D(t.fMass):'—')+' t';$('fSumBig').textContent=(t.fresAllOk?D(t.fMass):'—')+' t';
@@ -1409,10 +1467,10 @@ function renderRdoSummary(t){
   <div class="r"><span style="color:var(--muted)">Referência: fresagem</span><i>${t.fresAllOk?D(t.fMass):'—'} t</i><i>${t.fresAllOk?fmt(t.fVol):'—'} m³</i></div>
   <div class="r"><span style="color:var(--muted)">RDO − fresagem</span><i>${t.fresAllOk&&t.rdoAllOk?difChip(t.rMass-t.fMass,'t'):'—'}</i><i>${t.fresAllOk&&t.rdoAllOk?difChip(t.rVol-t.fVol,'m³'):'—'}</i></div>`;
  $('rCount2').textContent=`(${S.fres.length}${t.edited?` · ${t.edited} alterado${t.edited===1?'':'s'}`:''})`;
- $('rdoRows').innerHTML=S.fres.length?S.fres.map((s,i)=>rRow(s,i)).join(''):'<div class="empty">Nenhum apontamento ainda. Crie os segmentos no painel Fresagem.</div>';
+ $('rdoRows').innerHTML=S.fres.length?tblWrap(S.fres.map((s,i)=>rRow(s,i)),'rdo'):'<div class="empty">Nenhum apontamento ainda. Crie os segmentos no painel Fresagem.</div>';
  const rLen=S.fres.reduce((a,s)=>a+rv(s,'length'),0);
  $('rSumLen').textContent=fmt(rLen,0)+' m';$('rSumVol').textContent=(t.rdoAllOk?fmt(t.rVol):'—')+' m³';$('rSumMass').textContent=(t.rdoAllOk?D(t.rMass):'—')+' t';$('rSumBig').textContent=(t.rdoAllOk?D(t.rMass):'—')+' t';
- $('rRefRows').innerHTML=S.fres.length?S.fres.map((s,i)=>sRow(s,i+1,{edited:rdoDiffKeys(s).length>0})).join(''):'<div class="empty">Sem segmentos na fresagem.</div>';
+ $('rRefRows').innerHTML=S.fres.length?tblWrap(S.fres.map((s,i)=>sRow(s,i+1,{edited:rdoDiffKeys(s).length>0})),'ref'):'<div class="empty">Sem segmentos na fresagem.</div>';
  $('rRefLen').textContent=fmt(t.fLen,0)+' m';$('rRefVol').textContent=fmt(t.fVol)+' m³';$('rRefMass').textContent=(t.fresAllOk?D(t.fMass):'—')+' t';
 }
 
@@ -1429,12 +1487,12 @@ function renderAcomp(t){
  const tMsg=!Number.isFinite(S.trucksTotal)||!Number.isFinite(S.truckNo)?'<div class="msg">Informe o total de caminhões usinados e o nº do último aplicado.</div>':!t.trucksOk?'<div class="msg err">O nº do último caminhão aplicado não pode ser maior que o total usinado (use números inteiros).</div>':`<div class="msg">${S.trucksTotal} usinados − ${S.truckNo} aplicados${t.truckExtra?' + 1 (último caminhão com sobra)':''} = <b>${t.trucksLeft}</b> a aplicar</div>`;
  tb.innerHTML=`<div>Usinados<b>${Number.isFinite(S.trucksTotal)?S.trucksTotal:'—'}</b></div><div>Último aplicado<b>${ord(S.truckNo)}<small>${esc(S.plate||'sem placa')}</small></b></div><div class="rest">Restantes a aplicar<b>${t.trucksLeft!==null?t.trucksLeft:'—'}${t.truckExtra&&t.trucksLeft!==null?'<small>+1 com sobra</small>':''}</b></div>${tMsg}`;
  const pend=[...t.pendFres.map(s=>sRow(s,S.fres.indexOf(s)+1,{toggle:true})),...t.pendExtra.map(s=>sRow(s,'E'+(S.extras.indexOf(s)+1),{toggle:true,actions:true,kind:'extra',extra:true}))];
- $('aPend').innerHTML=pend.join('')||'<div class="empty">Nenhum segmento a aplicar.</div>';
+ $('aPend').innerHTML=tblWrap(pend,'acomp')||'<div class="empty">Nenhum segmento a aplicar.</div>';
  $('aPendCount').textContent=`(${t.pendingCount})`;
  $('aNeed').textContent=(t.dOk&&t.fresAllOk&&t.extrasOk?fmt(t.need):'—')+' t';
  const doneF=S.fres.filter(s=>S.applied[s.id]),doneE=S.extras.filter(s=>S.applied[s.id]);
  $('aDoneSum').textContent=`Aplicados (${doneF.length+doneE.length}) — toque para ver`;
- $('aDone').innerHTML=[...doneF.map(s=>sRow(s,S.fres.indexOf(s)+1,{toggle:true})),...doneE.map(s=>sRow(s,'E'+(S.extras.indexOf(s)+1),{toggle:true,actions:true,kind:'extra',extra:true}))].join('')||'<div class="empty">Nenhum ainda.</div>';
+ $('aDone').innerHTML=tblWrap([...doneF.map(s=>sRow(s,S.fres.indexOf(s)+1,{toggle:true})),...doneE.map(s=>sRow(s,'E'+(S.extras.indexOf(s)+1),{toggle:true,actions:true,kind:'extra',extra:true}))],'acomp')||'<div class="empty">Nenhum ainda.</div>';
  const dec=$('decision');dec.dataset.state=t.state;
  const flow=t.ok?`<div class="flow"><div><span>Massa disponível</span><b>${fmt(t.disp)} t</b></div><div><span>Necessária (A APLICAR)</span><b>− ${fmt(t.need)} t</b></div><div class="eq"><span>Saldo</span><b>${t.saldo>0?'+':t.saldo<0?'−':''}${fmt(Math.abs(t.saldo))} t</b></div></div>`:'';
  let h;
