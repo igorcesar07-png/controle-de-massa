@@ -653,6 +653,78 @@ body.geo-on{padding-bottom:calc(150px + var(--safe-b))}
 .spsum.less{background:#fdeeee;color:#6e1418}
 .spsum .segctl{margin-top:8px;background:#fff}
 @media (max-width:370px){.sppart{grid-template-columns:1fr 1fr}.sppart .ib{grid-column:1/-1;justify-self:end}}
+
+/* ============ Layout compacto (somente visual) ============ */
+/* cabeçalho */
+.bar{padding:6px 12px;gap:8px}
+.blogo{height:22px}
+.brand b{font-size:12px}
+.iconbtn{min-width:40px;min-height:40px;font-size:18px;border-radius:9px}
+.alert{padding:6px 12px}
+.alert .in{gap:10px}
+.alert .ico{flex:0 0 30px;height:30px;font-size:15px}
+.alert .kind{font-size:10.5px;letter-spacing:.8px}
+.alert .amount{font-size:20px}
+.alert .amount small{font-size:13px}
+.alert .side{font-size:15px}
+.alert .side small{font-size:10.5px}
+main{padding:10px 10px 8px}
+.status{font-size:13px;margin:0 0 8px}
+/* página Fresagem */
+#panel-fres .panel-title{margin:2px 2px 8px}
+#panel-fres .panel-title h1{font-size:18px}
+#panel-fres .panel-title span{font-size:12px}
+#panel-fres .section{padding:12px;margin-bottom:10px;border-radius:12px}
+#panel-fres .section h2{font-size:15px;margin:0 0 8px}
+#panel-fres .section h2 .count{font-size:13px}
+#panel-fres .fields{gap:8px 10px}
+#panel-fres .field label{font-size:11.5px;margin-bottom:3px;line-height:1.2}
+#panel-fres .field input{min-height:40px;padding:7px 10px;font-size:16px;border-radius:8px}
+#panel-fres .field input[type=date]{text-align:left;white-space:nowrap}
+#panel-fres .field input[type=date]::-webkit-date-and-time-value{text-align:left}
+#panel-fres .unit input{padding-right:40px}
+#panel-fres .unit::after{right:10px;font-size:12.5px}
+#panel-fres .field small{font-size:11px;margin-top:2px;line-height:1.25}
+#panel-fres .summary{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:10px}
+#panel-fres .kpi{padding:7px 8px;border-radius:10px}
+#panel-fres .kpi .l{font-size:10.5px;line-height:1.15;min-height:2.3em;overflow-wrap:anywhere}
+#panel-fres .kpi .v{font-size:15px;margin-top:2px;letter-spacing:-.3px;line-height:1.15}
+#panel-fres .kpi .v span{font-size:10.5px}
+#panel-fres .kpi .s{font-size:10px;line-height:1.2}
+#panel-fres .kpi.dark{border-top-width:3px}
+#panel-fres .hint{font-size:12px;margin:0 0 8px;line-height:1.35}
+#panel-fres .sortbar{padding:6px 8px;gap:6px;border-radius:10px;margin-bottom:4px}
+#panel-fres .sortbar{flex-wrap:nowrap}#panel-fres .sortbar span{font-size:12px;line-height:1.2}#panel-fres .sortbar .act{white-space:nowrap;flex:0 0 auto}
+@media (max-width:389px){#panel-fres .sortbar{flex-wrap:wrap}}
+#panel-fres .act,#panel-fres .sortbar .act{min-height:34px;padding:0 10px;font-size:13px;border-radius:8px}
+#panel-fres .srow.v2{padding:9px 2px 8px}
+#panel-fres .r2st{font-size:17px}
+#panel-fres .r2len{font-size:13.5px}
+#panel-fres .dim{padding:3px 8px}
+#panel-fres .stotal{padding:8px 10px;gap:6px;border-radius:10px;margin-top:8px}
+#panel-fres .stotal div{font-size:11px}
+#panel-fres .stotal b{font-size:14.5px}
+#panel-fres .bigtotal{padding:9px 12px;border-radius:10px;margin-top:8px}
+#panel-fres .bigtotal span{font-size:12px}
+#panel-fres .bigtotal b{font-size:19px}
+#panel-fres .addinline{min-height:40px;margin-top:8px;font-size:14px;border-width:1.5px;border-radius:10px}
+#panel-fres .clearall{margin-top:6px}
+#panel-fres .printbtn{min-height:40px;font-size:14px;margin:0 0 10px;padding:0 14px;border-radius:10px}
+.section h2 .h2t{display:flex;align-items:baseline;gap:6px;min-width:0}
+.hadd{flex:0 0 auto;min-height:34px;padding:0 12px;border:0;border-radius:8px;background:var(--red);color:#fff;font-weight:700;font-size:13px;letter-spacing:.1px}
+.hadd:active{background:var(--red-dark)}
+/* telas muito estreitas: indicadores em 2 colunas */
+@media (max-width:359px){#panel-fres .summary{grid-template-columns:1fr 1fr}}@media (max-width:329px){#panel-fres .fields{grid-template-columns:1fr}}
+/* tablets e computadores */
+@media (min-width:700px){
+ #panel-fres .kpi .l{min-height:0}
+ #panel-fres .fields.wide{grid-template-columns:2fr 1.2fr 1.6fr 1fr 1.2fr}
+ #panel-fres .fields.wide .field{grid-column:auto}
+ #panel-fres .kpi{padding:10px 12px}
+ #panel-fres .kpi .l{font-size:12px}
+ #panel-fres .kpi .v{font-size:19px}
+}
+@media (min-width:1000px){#panel-fres .srows{display:grid;grid-template-columns:1fr 1fr;column-gap:24px}#panel-fres .srow.v2{border-bottom:1px solid #ededed}}
 </style>
 </head>
 <body>
@@ -701,7 +773,7 @@ body.geo-on{padding-bottom:calc(150px + var(--safe-b))}
     </section>
 
     <section class="section">
-      <h2>Resumo dos segmentos <span class="count" id="fCount2"></span></h2>
+      <h2><span class="h2t">Resumo dos segmentos <span class="count" id="fCount2"></span></span><button class="hadd" id="addHead" aria-label="Adicionar segmento">+ Segmento</button></h2>
       <p class="hint">Toque em <b>Editar</b> para alterar um segmento e em <b>▲ ▼</b> para mudar a posição dele na sequência. A ordem definida aqui vale para o RDO, o Acompanhamento e os relatórios.</p>
       <div class="sortbar" id="sortBar"><span>Ordenar por estaca:</span><button class="act" data-sort="asc">↑ Crescente</button><button class="act" data-sort="desc">↓ Decrescente</button></div>
       <div class="srows" id="fresRows"></div>
@@ -1604,6 +1676,7 @@ $('decision').addEventListener('input',e=>{const k=e.target.dataset.plan;if(!k)r
 $('decision').addEventListener('click',async e=>{if(e.target.id!=='copyCall')return;const t=calc();const msg=`${S.job?S.job+' — ':''}Pedido urgente de CBUQ: faltam ${fmt(-t.saldo)} t para fechar ${t.pendingCount} segmento(s) a aplicar.${S.plate?` Último caminhão aplicado: ${S.plate}.`:''}`;try{if(navigator.share){await navigator.share({text:msg});return}await navigator.clipboard.writeText(msg);$('status').textContent='Pedido copiado: '+msg}catch{$('status').textContent=msg}});
 $('addExtra').onclick=()=>openEditor('extra',null);
 $('addInline').onclick=()=>openEditor('fres',null);
+$('addHead').onclick=()=>openEditor('fres',null);
 $('fab').onclick=()=>openEditor(tab==='acomp'?'extra':'fres',null);
 
 /* ======================= Abas e menu ======================= */
@@ -1612,7 +1685,7 @@ function setTab(t){
  if(!PAGES.includes(t))t='fres';tab=t;
  document.querySelectorAll('.screen[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==t);
  document.querySelectorAll('[data-nav]').forEach(b=>{if(b.dataset.nav===t)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
- $('fab').hidden=!['fres','acomp'].includes(t);$('fab').textContent=t==='acomp'?'+ Extra':'+ Segmento';
+ $('fab').hidden=t!=='acomp';$('fab').textContent=t==='acomp'?'+ Extra':'+ Segmento';
  $('massAlert').hidden=!['fres','rdo','acomp'].includes(t);
  $('geoBar').hidden=t!=='geo';document.body.classList.toggle('geo-on',t==='geo');
  updateAlert(calc());

@@ -2,7 +2,7 @@
    Estratégia: responde do cache na hora (abre mesmo sem sinal) e, quando há internet,
    busca a versão nova em segundo plano. Se o app mudou, avisa a página para o botão
    "Sincronizar" aplicar a atualização. Dados (Firebase) não passam por aqui. */
-const CACHE='controle-massa-app-v1';
+const CACHE='controle-massa-app-v2';
 const SDK='https://www.gstatic.com/firebasejs/10.14.1/';
 const CORE=['./','index.html','geo.json','manifest.webmanifest','logo-neovia.png','logo-neovia-white.png','neovia-mark.png','apple-touch-icon.png','icon-512.png'];
 const EXTRA=[SDK+'firebase-app.js',SDK+'firebase-auth.js',SDK+'firebase-firestore.js'];
