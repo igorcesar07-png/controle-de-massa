@@ -725,6 +725,56 @@ main{padding:10px 10px 8px}
  #panel-fres .kpi .v{font-size:19px}
 }
 @media (min-width:1000px){#panel-fres .srows{display:grid;grid-template-columns:1fr 1fr;column-gap:24px}#panel-fres .srow.v2{border-bottom:1px solid #ededed}}
+
+/* ============ Segmentos em formato de tabela + padronização ============ */
+.srow.v3{display:block;padding:10px 0 10px;border-bottom:1px solid #e9eaec}
+.srow.v3:last-child{border-bottom:0}
+.srow.v3.changed{padding:10px;margin:6px 0}
+.s3-head{display:flex;align-items:center;gap:8px;min-height:34px;margin-bottom:6px}
+.s3-head .r2n{flex:0 0 auto;min-width:26px;height:24px;padding:0 6px;border-radius:7px;background:#ececec;color:#222;display:grid;place-items:center;font-weight:800;font-size:12px}
+.srow.changed .s3-head .r2n{background:var(--red);color:#fff}
+.s3-head .chips{display:flex;flex-wrap:wrap;gap:4px;min-width:0}
+.s3-head .chip{font-size:10.5px;padding:2px 7px}
+.s3-head .r2acts{margin-left:auto;display:flex;align-items:center;gap:2px;flex:0 0 auto}
+.s3-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid #e3e5e8;border-radius:10px;overflow:hidden;background:#fff}
+.sc{background:#fff;padding:6px 8px;min-width:0;box-shadow:1px 0 0 #e3e5e8,0 1px 0 #e3e5e8}
+.sc small{display:block;font-size:11px;font-weight:500;color:#868b91;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc b{display:block;font-size:14px;font-weight:700;color:#1d1f22;font-variant-numeric:tabular-nums;line-height:1.3;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc.st b{font-size:15px;font-weight:800;color:var(--black)}
+.sc.rmp{background:#fdeeee}.sc.rmp b{color:var(--red-dark)}
+.sc.proj{background:#f7f8f9}.sc.proj b{color:#55595e;font-weight:600}
+.s3-foot{margin-top:6px;font-size:11.5px;color:var(--muted);line-height:1.4}
+.s3-foot .grp,.s3-foot .obs,.s3-foot .by{display:block}
+.srow.v3 .diffs{margin-top:6px}
+@media (min-width:560px){.s3-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media (min-width:1000px){#panel-fres .srows{display:block}}
+@media (min-width:1000px){.s3-grid{grid-template-columns:repeat(auto-fit,minmax(98px,1fr))}}
+/* folhas de edição, divisão e relatório no mesmo padrão compacto */
+.sheet.editor .eh{padding:10px 14px}
+.sheet.editor .eh h3{font-size:16px}
+.sheet.editor .eb{padding:10px 14px}
+.sheet.editor .ef{padding:8px 14px calc(8px + var(--safe-b));gap:8px}
+.sheet.editor .ef .btn{min-height:42px;font-size:15px;border-radius:10px}
+.sheet.editor .fields{gap:8px 10px}
+.sheet.editor .field label,.sheet.editor .field .lbl{font-size:11.5px;margin-bottom:3px;line-height:1.2;color:#6b7076;font-weight:600}
+.sheet.editor .field input,.sheet.editor .field select{min-height:40px;padding:7px 10px;font-size:16px;font-weight:600;border-radius:8px}
+.sheet.editor .field textarea{font-size:15px;border-radius:8px}
+.sheet.editor .unit input{padding-right:38px}
+.sheet.editor .unit::after{right:10px;font-size:12.5px}
+.sheet.editor .field small{font-size:11px;margin-top:2px}
+.sheet.editor .segctl label{min-height:38px;font-size:14px}
+.sheet.editor .result{padding:8px 10px;border-radius:10px}
+.sheet.editor .hint{font-size:12px;margin:0 0 8px}
+.sheet.editor .sph{font-size:12px;margin:12px 0 6px}
+.sheet.editor .sppart{padding:8px;gap:6px;border-radius:10px}
+.sheet.editor .sppart .ph{font-size:13px}
+.sheet.editor .sppart .field input{min-height:38px}
+.sheet.editor .addinline{min-height:40px;font-size:14px;border-width:1.5px;border-radius:10px}
+.sheet.editor .autobox{font-size:13px;padding:8px 10px}
+.sheet.editor .act{min-height:38px;font-size:13px;padding:0 10px}
+.sheet.editor .field input[type=date]{text-align:left}
+#panel-fres .field input{font-weight:600}
+#panel-fres .field label{color:#6b7076;font-weight:600}
 </style>
 </head>
 <body>
@@ -755,11 +805,8 @@ main{padding:10px 10px 8px}
     <div class="panel-title"><h1>Controle de fresagem</h1><span>Painel 1 de 3</span></div>
 
     <section class="section">
-      <h2>Dados da obra</h2>
-      <div class="fields wide">
-        <div class="field full-sm"><label for="job">Obra / trecho</label><input id="job" placeholder="Ex.: BR-277 · km 230 · faixa 1" autocomplete="off"></div>
-        <div class="field"><label for="repDate">Data</label><input id="repDate" type="date"></div>
-        <div class="field"><label for="resp">Responsável</label><input id="resp" placeholder="Nome do responsável" autocomplete="off"></div>
+      <h2>Dados do dia</h2>
+      <div class="fields">
         <div class="field"><label for="density">Densidade do CBUQ</label><div class="unit" data-unit="t/m³"><input id="density" type="number" inputmode="decimal" min="0.001" step="0.001" required></div><small>Usada nos cálculos de massa</small></div>
         <div class="field"><label for="usinado">Massa total usinada do dia</label><div class="unit" data-unit="t"><input id="usinado" type="number" inputmode="decimal" min="0" step="0.01" required></div><small>Total da usina no dia</small></div>
       </div>
@@ -1007,6 +1054,19 @@ main{padding:10px 10px 8px}
   <button class="btn dark" id="closeMenu">Fechar</button>
 </div>
 
+<div class="sheet editor" id="repSheet" role="dialog" aria-modal="true" aria-labelledby="rpTitle">
+  <div class="grab" style="margin-bottom:4px"></div>
+  <div class="eh"><h3 id="rpTitle">Emitir relatório</h3><button class="sq" id="rpX" aria-label="Fechar">✕</button></div>
+  <div class="eb">
+    <p class="hint" id="rpHint">Dados da obra para o cabeçalho do relatório. Ficam guardados para os próximos dias.</p>
+    <div class="fields">
+        <div class="field full"><label for="job">Obra / trecho</label><input id="job" placeholder="Ex.: BR-277 · km 230 · faixa 1" autocomplete="off"></div>
+        <div class="field"><label for="repDate">Data</label><input id="repDate" type="date"></div>
+        <div class="field"><label for="resp">Responsável</label><input id="resp" placeholder="Nome do responsável" autocomplete="off"></div>
+    </div>
+  </div>
+  <div class="ef"><button class="btn" id="rpCancel">Cancelar</button><button class="btn primary" id="rpGo">Gerar relatório</button></div>
+</div>
 <div class="sheet editor" id="editor" role="dialog" aria-modal="true" aria-labelledby="edTitle">
   <div class="grab" style="margin-bottom:4px"></div>
   <div class="eh"><h3 id="edTitle">Editar segmento</h3><button class="sq" id="edX" aria-label="Fechar">✕</button></div>
@@ -1273,11 +1333,17 @@ const ICO={
 // Linha de pano: 1º estaqueamento + comprimento, 2º largura e espessura, 3º demais informações
 function segCard(e,n,o){
  const ok=segValid(e,e.end),v=vol(e.length,e.width,e.thickness),m=v*S.density;
- const meta=[`${e.direction==='Decrescente'?'↓':'↑'} ${e.direction}`,`faixa ${e.lane}`,ok&&pos(S.density)?`${fmt(m)} t`:'— t',ok?`${fmt(v)} m³`:'— m³'].join(' · ');
- return `<div class="srow v2${o.cls||''}" id="${o.id||''}">
-  <div class="r2-top"><span class="r2n">${n}</span><span class="r2st">${esc(e.start)} <span class="ar">→</span> ${esc(e.end||'?')}</span><span class="r2len">${pos(e.length)?fmtN(e.length)+' m':'— m'}</span></div>
-  <div class="r2-dims"><span class="dim"><small>Larg.</small><b>${pos(e.width)?fmt(e.width,2)+' m':'—'}</b></span><span class="dim${o.rmpEsp?' rmp':''}"><small>Esp.</small><b>${pos(e.thickness)?fmt(e.thickness*100,1)+' cm':'—'}</b></span>${o.proj!=null?`<span class="dim proj" title="Espessura da solução de projeto"><small>Proj.${o.sol?' '+esc(o.sol):''}</small><b>${fmt(o.proj*100,1)} cm</b></span>`:''}</div>
-  <div class="r2-foot"><div class="r2meta">${meta}${o.chips&&o.chips.length?` <span class="chips">${o.chips.join('')}</span>`:''}${o.grp||''}${o.obs||''}${o.by||''}</div>${o.acts?`<div class="r2acts">${o.acts}</div>`:''}</div>
+ const C=(l,val,cls='')=>`<div class="sc${cls}"><small>${l}</small><b>${val}</b></div>`;
+ const cells=[C('Estaca inicial',esc(e.start||'—'),' st'),C('Estaca final',esc(e.end||'—'),' st'),C('Comprimento',pos(e.length)?fmtN(e.length)+' m':'—'),C('Largura',pos(e.width)?fmt(e.width,2)+' m':'—'),
+  C('Espessura',pos(e.thickness)?fmt(e.thickness*100,1)+' cm':'—',o.rmpEsp?' rmp':'')];
+ if(o.proj!=null)cells.push(C('Esp. projeto'+(o.sol?' · '+esc(o.sol):''),fmt(o.proj*100,1)+' cm',' proj'));
+ cells.push(C('Sentido/pista',`${e.direction==='Decrescente'?'↓':'↑'} ${esc(e.direction||'—')}`),C('Faixa',esc(e.lane??'—')),C('Volume',ok?fmt(v)+' m³':'—'),C('Massa',ok&&pos(S.density)?fmt(m)+' t':'—'));
+ const chips=o.chips&&o.chips.length?`<span class="chips">${o.chips.join('')}</span>`:'';
+ const foot=(o.grp||'')+(o.obs||'')+(o.by||'');
+ return `<div class="srow v3${o.cls||''}" id="${o.id||''}">
+  <div class="s3-head"><span class="r2n">${n}</span>${chips}${o.acts?`<div class="r2acts">${o.acts}</div>`:''}</div>
+  <div class="s3-grid">${cells.join('')}</div>
+  ${foot?`<div class="s3-foot">${foot}</div>`:''}
   ${o.after||''}</div>`;
 }
 const ib=(attr,ico,label,cls='',dis=false)=>`<button class="ib${cls?' '+cls:''}" ${attr} aria-label="${label}" title="${label}" ${dis?'disabled':''}>${ICO[ico]}</button>`;
@@ -1451,7 +1517,23 @@ function buildReport(kind){
  <div class="rep-result ${st}">${res}</div>
  ${repFoot()}</div>`;
 }
-function printReport(kind){closeMenu();if(!['fres','rdo','acomp'].includes(kind||tab)){$('status').textContent='Esta página ainda não tem relatório de impressão.';return}$('printReport').innerHTML=buildReport(kind||tab);setTimeout(()=>window.print(),200)}
+function doPrint(kind){$('printReport').innerHTML=buildReport(kind);setTimeout(()=>window.print(),200)}
+// Dados da obra do relatório: pedidos ao emitir; os últimos ficam guardados por usuário (neste aparelho).
+let RP_KIND=null;
+const rpKey=()=>'cm-relatorio-'+(USER&&USER.uid?USER.uid:'local');
+function rpProfile(){try{return JSON.parse(localStorage.getItem(rpKey())||'{}')||{}}catch{return {}}}
+function printReport(kind){closeMenu();kind=kind||tab;if(!['fres','rdo','acomp'].includes(kind)){$('status').textContent='Esta página ainda não tem relatório de impressão.';return}
+ RP_KIND=kind;const pr=rpProfile(),today=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+ $('job').value=S.job||pr.job||'';$('resp').value=S.resp||pr.resp||(USER&&USER.name)||'';$('repDate').value=S.date||today;
+ $('rpTitle').textContent='Relatório de '+({fres:'Fresagem',rdo:'RDO aplicação',acomp:'Acompanhamento'})[kind];
+ $('repSheet').classList.add('open');$('sheetBg').classList.add('open');document.body.classList.add('lock');setTimeout(()=>{const f=$('job').value?$('rpGo'):$('job');f.focus()},260)}
+function closeRep(){RP_KIND=null;$('repSheet').classList.remove('open');$('sheetBg').classList.remove('open');document.body.classList.remove('lock')}
+$('rpGo').onclick=()=>{const k=RP_KIND;if(!k)return;const job=$('job').value.trim(),resp=$('resp').value.trim(),date=$('repDate').value;
+ const ch=S.job!==job||S.resp!==resp||S.date!==date;S.job=job;S.resp=resp;S.date=date;
+ try{localStorage.setItem(rpKey(),JSON.stringify({job,resp}))}catch{}
+ closeRep();if(ch)changed();doPrint(k)};
+$('rpCancel').onclick=closeRep;$('rpX').onclick=closeRep;
+$('sheetBg').addEventListener('click',()=>{if(RP_KIND)closeRep()});
 document.addEventListener('click',e=>{const b=e.target.closest('[data-print]');if(b)printReport(b.dataset.print)});
 
 /* ======================= Atualização geral ======================= */
